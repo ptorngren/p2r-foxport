@@ -40,6 +40,9 @@ import com.google.gson.GsonBuilder;
  */
 public class BookmarkExporter {
 
+	private static final String JSON = ".json";
+	private static final String JSONLZ4 = ".jsonlz4";
+
 	public class ConfigurationException extends Exception {
 		private static final long serialVersionUID = 8929701975216314212L;
 
@@ -55,8 +58,15 @@ public class BookmarkExporter {
 
 	private static final FileFilter JSON_FILTER = new FileFilter() {
 		public boolean accept(File pathname) {
-			return pathname.getName().toLowerCase().endsWith(".json");
+			String name = pathname.getName().toLowerCase();
+			return name.endsWith(JSON) || name.endsWith(JSONLZ4);
 		}
+
+		@Override
+		public String toString() {
+			return "'*"+JSON+"'";
+		}
+		
 	};
 
 	private static final String ENCODING_JSON = System.getProperty("file.encoding"); // UTF-8? input, defined by your Firefox?
@@ -144,9 +154,7 @@ public class BookmarkExporter {
 	}
 
 	private File findInputFile() throws IOException {
-		File profile = findProfile();
-		File profileDirectory = findProfileDirectory(profile, null);
-		File backupDirectory = new File(profileDirectory, "bookmarkBackups");
+		File backupDirectory = findBookmarkDirectory();
 		File mostRecent = null;
 		for (File file : backupDirectory.listFiles(JSON_FILTER)) {
 			if (mostRecent==null || mostRecent.lastModified() < file.lastModified()) {
@@ -154,9 +162,20 @@ public class BookmarkExporter {
 			}
 		};
 		if (mostRecent==null) {
-			throw new FileNotFoundException("No file found in "+profileDirectory);
+			String msg = "No files found in "+backupDirectory+" using filter " + JSON_FILTER;
+			throw new FileNotFoundException(msg);
 		}
 		return mostRecent;
+	}
+
+	private File findBookmarkDirectory() throws IOException {
+		File profile = findProfile();
+		File profileDirectory = findProfileDirectory(profile, null);
+		File backupDirectory = new File(profileDirectory, "bookmarkBackups");
+		if (!backupDirectory.isDirectory()) {
+			throw new FileNotFoundException("Backup directory not found: " + backupDirectory);
+		}
+		return backupDirectory;
 	}
 
 	private File findProfileDirectory(File profile, String profileName) throws IOException {
@@ -287,8 +306,18 @@ public class BookmarkExporter {
 	}
 
 	private FirefoxBookmarks parseBookmarkFile() {
+		if (inputFile.getName().endsWith(JSON)) {
+			return parseJSON();
+		}
+		if (inputFile.getName().endsWith(JSONLZ4)) {
+			throw new UnsupportedOperationException("Cannot parse compressed JSON: "+inputFile);
+		}
+		throw new IllegalArgumentException("Unexpected file type: " + inputFile);
+	}
+
+	private FirefoxBookmarks parseJSON() {
 		Reader reader = null;
-        try {
+		try {
 			FileInputStream fis = new FileInputStream(inputFile);
 			InputStreamReader isr = new InputStreamReader(fis, ENCODING_JSON);
 			reader = new BufferedReader(isr);
