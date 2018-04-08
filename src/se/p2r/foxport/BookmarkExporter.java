@@ -153,6 +153,9 @@ public class BookmarkExporter {
 				mostRecent = file;
 			}
 		};
+		if (mostRecent==null) {
+			throw new FileNotFoundException("No file found in "+profileDirectory);
+		}
 		return mostRecent;
 	}
 
