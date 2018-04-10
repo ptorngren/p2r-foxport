@@ -35,6 +35,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
+ * <p>
+ * Main entry for reading Firefox bookmarks.
+ * </p>
+ * <p>
+ * <b>NOTE:</b>Cannot read the 'new' compressed format (LZ4).<br>
+ * User must manually export bookmarks to JSON format and place it in the
+ * Firefox backup folder, typically something like
+ * <code>%USERPROFILE%/AppData/Roaming/Mozilla/Firefox/Profiles/l0sic08k.default/bookmarkbackups</code>
+ * </p>
+ * 
  * @author peer
  * 
  */
@@ -58,8 +68,7 @@ public class BookmarkExporter {
 
 	private static final FileFilter JSON_FILTER = new FileFilter() {
 		public boolean accept(File pathname) {
-			String name = pathname.getName().toLowerCase();
-			return name.endsWith(JSON) || name.endsWith(JSONLZ4);
+			return endsWith(pathname, JSON); // || endsWith(pathname, JSONLZ4);  // Cannot read LZ4 files
 		}
 
 		@Override
@@ -71,6 +80,7 @@ public class BookmarkExporter {
 
 	private static final String ENCODING_JSON = System.getProperty("file.encoding"); // UTF-8? input, defined by your Firefox?
 	private static final String ENCODING_HTML = "utf-8";  // output, defined by you to suite browsers 
+	private static final String[] ROOT_NAMES = {"Bookmarks Menu", "Bokmärkesmenyn"}; // TODO read from environment or config file (name depends on language)
 
 	private final File inputFile;
 	private final File targetFolder;
@@ -228,7 +238,7 @@ public class BookmarkExporter {
 	private void processBookmarks(Properties config) {
 		FirefoxBookmarks bookmarks = parseBookmarkFile();
 		List<FirefoxBookmark> rootContainers = bookmarks.getChildren();
-		List<FirefoxBookmark> theToolbar = select(rootContainers, Arrays.asList("Bookmarks Menu")); // "Bookmarks Toolbar"
+		List<FirefoxBookmark> theToolbar = select(rootContainers, ROOT_NAMES); // "Bookmarks Toolbar"
 		assert theToolbar.size() == 1 : "Unexpected number of roots: " + theToolbar;
 		
 		List<FirefoxBookmark> rootFolders = theToolbar.get(0).getChildren();
@@ -284,16 +294,20 @@ public class BookmarkExporter {
 		return new File(targetFolder, root.getTitle()+".htm");
 	}
 
-	private List<FirefoxBookmark> select(List<FirefoxBookmark> children, Collection<String> names) {
-		if (names.isEmpty()) {
-			return children;
+	private List<FirefoxBookmark> select(List<FirefoxBookmark> prospects, String... wanted) {
+		return select(prospects, Arrays.asList(wanted));
+	}
+	
+	private List<FirefoxBookmark> select(List<FirefoxBookmark> prospects, Collection<String> wanted) {
+		if (wanted.isEmpty()) {
+			return prospects;
 		}
 		
 		Collection<String> ignored = new ArrayList();
 		List<FirefoxBookmark> result = new ArrayList();
-		for (FirefoxBookmark prospect : children) {
+		for (FirefoxBookmark prospect : prospects) {
 			ignored.add(prospect.getTitle());
-			for (String name : names) {
+			for (String name : wanted) {
 				if (name.equalsIgnoreCase(prospect.getTitle())) {
 					result.add(prospect);
 					ignored.remove(name);
@@ -306,10 +320,10 @@ public class BookmarkExporter {
 	}
 
 	private FirefoxBookmarks parseBookmarkFile() {
-		if (inputFile.getName().endsWith(JSON)) {
+		if (endsWith(inputFile, JSON)) {
 			return parseJSON();
 		}
-		if (inputFile.getName().endsWith(JSONLZ4)) {
+		if (endsWith(inputFile, JSONLZ4)) {
 			throw new UnsupportedOperationException("Cannot parse compressed JSON: "+inputFile);
 		}
 		throw new IllegalArgumentException("Unexpected file type: " + inputFile);
@@ -349,6 +363,10 @@ public class BookmarkExporter {
 		if (System.getProperties().containsKey("DEBUG")) {
 			System.err.println(string);
 		}
+	}
+
+	private static boolean endsWith(File file, String wantedEnding) {
+		return file.getName().toLowerCase().endsWith(wantedEnding);
 	}
 
 	public static void main(String[] args) throws IOException {
