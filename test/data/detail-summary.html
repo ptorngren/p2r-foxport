@@ -3,74 +3,104 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Testing collapsible layout</title>
+<style type="text/css">
+html {
+	font-family: Arial, Helvetica, sans-serif
+}
+
+div {
+	margin-left: 1em
+}
+
+details {
+	color: DarkSlateGrey;
+	font-size: small
+}
+
+summary {
+	color: black;
+	font-size: medium
+}
+
+a {
+	color: DodgerBlue;
+	font-size: medium
+}
+</style>
+
 </head>
 <body>
 
 	<h1>A summary/detail list:</h1>
 	<details>
 		<summary>
-			<b>Hot List</b>
+			<strong>Hot List</strong>
 		</summary>
-		<div style="margin-left: 1em">A list of hot beverages, by type.
-			(&lt;div&gt;)</div>
+		<div>A list of hot beverages, by type.</div>
 		<details style="margin-left: 1em">
-			<summary>
-				<b>Coffee List</b>
-			</summary>
-			<div style="margin-left: 1em">Some coffee drinks</div>
-			<div style="margin-left: 1em">&#9659; <a href="coffee.com#1">coffee 1</a>
+			<summary><em>Coffee List</em></summary>
+			<div>Some coffee drinks</div>
+			<div>
+				&#9659;<a href="coffee.com#1">coffee 1</a>
 			</div>
-			<div style="margin-left: 1em">&#9659; <a href="coffee.com#2">coffee 2</a></div>
+			<div>
+				&#9659;<a href="coffee.com#2">coffee 2</a>
+			</div>
 		</details>
 		<details style="margin-left: 1em">
-			<summary>
-				<b>Tea List</b>
-			</summary>
-			<div style="margin-left: 1em">tea 1</div>
-			<div style="margin-left: 1em">tea 2</div>
+			<summary><em>Tea List</em></summary>
+			<div>
+				&#9659;<a href="tea.com#2">tea 1</a>
+			</div>
+			<div>
+				&#9659;<a href="tea.com#2">tea 2</a>
+			</div>
 		</details>
 	</details>
 	<details>
 		<summary>
-			<b>Cold List</b>
+			<strong>Cold List</strong>
 		</summary>
-		<p style="margin-left: 1em">A list of cold beverages, by type.
-			(&lt;p&gt;)</p>
+		<div>A list of cold beverages, by type.</div>
 		<details style="margin-left: 1em">
-			<summary>
-				<b>Water List</b>
-			</summary>
-			<ul>
-				<li style="">water 1</li>
-				<li style="">water 2</li>
-			</ul>
+			<summary><em>Water List</em></summary>
+			<div>
+				&#9659;<a href="water.com#1">water 1</a>
+			</div>
+			<div>
+				&#9659;<a href="water.com#2">water 2</a>
+			</div>
 		</details>
 		<details style="margin-left: 1em">
-			<summary>
-				<b>Beer List</b>
-			</summary>
-			<ul>
-				<li style="">beer 1</li>
-				<li style="">beer 2</li>
-			</ul>
+			<summary><em>Beer List</em></summary>
+			<div>Some beers</div>
+			<div>
+				&#9659;<a href="beer.com#1">beer 1</a>
+			</div>
+			<div>
+				&#9659;<a href="beer.com#2">beer 2</a>
+			</div>
 		</details>
 		<details style="margin-left: 1em">
-			<summary>
-				<b>Wine List</b>
-			</summary>
+			<summary><em>Wine List</em></summary>
 			<details style="margin-left: 1em">
 				<summary>Red Wine List</summary>
-				<ul>
-					<li style="">red wine 1</li>
-					<li style="">red wine 2</li>
-				</ul>
+				<div>Some red wines</div>
+				<div>
+					&#9659;<a href="red.wine.com#1">red wine 1</a>
+				</div>
+				<div>
+					&#9659;<a href="red.wine.com#2">red wine 2</a>
+				</div>
 			</details>
 			<details style="margin-left: 1em">
 				<summary>White Wine List</summary>
-				<ul>
-					<li style="">red wine 1</li>
-					<li style="">red wine 2</li>
-				</ul>
+				<div>
+					&#9659;<a href="white.wine.com#1">white wine 1</a>
+				</div>
+				<div>
+					&#9659;<a href="white.wine.com#2">white wine 2</a>
+				</div>
 			</details>
 		</details>
 	</details>
