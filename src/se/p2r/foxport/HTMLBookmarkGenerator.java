@@ -89,7 +89,7 @@ public class HTMLBookmarkGenerator {
         body.appendChild(p);
         
         Dl dl = new Dl();
-//        appendDescription(dl, root);  // Doesn't work? No description saved in JSON?
+        appendDescription(dl, root);  // Doesn't work? No description saved in JSON?
         body.appendChild(dl);
         
         return dl;
