@@ -31,6 +31,8 @@ import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
 import com.hp.gagawa.java.elements.Ul;
 
+import sun.print.SunMinMaxPage;
+
 public class HTMLListGenerator {
 
 	private final FirefoxBookmark root;

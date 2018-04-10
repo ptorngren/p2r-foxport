@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Testing collapsible layout</title>
+</head>
+<body>
+
+	<h1>A summary/detail list:</h1>
+	<details>
+		<summary>
+			<b>Hot List</b>
+		</summary>
+		<div style="margin-left: 2em">A list of hot beverages, by type.
+			(&lt;div&gt;)</div>
+		<details style="margin-left: 2em">
+			<summary>
+				<b>Coffee List</b>
+			</summary>
+			<ul style="list-style-type:none">
+				<li style="margin-left: 2em"><a href="coffee.com">coffee 1</a></li>
+				<li style="margin-left: 2em">coffee 2</li>
+			</ul>
+			</details>
+			<details style="margin-left: 2em">
+				<summary>
+					<b>Tea List</b>
+				</summary>
+				<ul>
+					<li style="margin-left: 2em">tea 1</li>
+					<li style="margin-left: 2em">tea 2</li>
+				</ul>
+		</details>
+	</details>
+	<details>
+		<summary>
+			<b>Cold List</b>
+		</summary>
+		<p style="margin-left: 2em">A list of cold beverages, by type.
+			(&lt;p&gt;)</p>
+		<details style="margin-left: 2em">
+			<summary>
+				<b>Water List</b>
+			</summary>
+			<ul>
+				<li style="">water 1</li>
+				<li style="">water 2</li>
+			</ul>
+			</details>
+			<details style="margin-left: 2em">
+				<summary>
+					<b>Beer List</b>
+				</summary>
+				<ul>
+					<li style="">beer 1</li>
+					<li style="">beer 2</li>
+				</ul>
+			</details>
+			<details style="margin-left: 2em">
+				<summary><b>Wine List</b></summary>
+				<details style="margin-left: 2em">
+					<summary>Red Wine List</summary>
+					<ul>
+						<li style="">red wine 1</li>
+						<li style="">red wine 2</li>
+					</ul>
+				</details>
+				<details style="margin-left: 2em">
+					<summary>White Wine List</summary>
+					<ul>
+						<li style="">red wine 1</li>
+						<li style="">red wine 2</li>
+					</ul>
+				</details>
+		</details>
+	</details>
+</body>
+</html>
+
