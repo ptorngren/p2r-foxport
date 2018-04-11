@@ -50,6 +50,7 @@ import com.google.gson.GsonBuilder;
  */
 public class BookmarkExporter {
 
+	private static final String HTML = ".html";
 	private static final String JSON = ".json";
 	private static final String JSONLZ4 = ".jsonlz4";
 
@@ -294,7 +295,7 @@ public class BookmarkExporter {
 	}
 
 	private File outputFile(File targetFolder, FirefoxBookmark root) {
-		return new File(targetFolder, root.getTitle()+".htm");
+		return new File(targetFolder, root.getTitle()+HTML);
 	}
 
 	private List<FirefoxBookmark> select(List<FirefoxBookmark> prospects, String... wanted) {
