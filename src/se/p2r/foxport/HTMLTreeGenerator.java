@@ -130,11 +130,13 @@ public class HTMLTreeGenerator {
 	}
 
 	private ContainerTag newLink(FirefoxBookmark bm) {
+		uriConter++;
 		ContainerTag link = a(bm.getTitle()).attr("href", bm.getUri());
 		return div(LINKBULLET).with(link);
 	}
 
 	private DomContent newContainer(FirefoxBookmark bm) {
+		containerCounter++;
 		containerDepth++;
 		DomContent summary = containerDepth<2 ? summary(strong(bm.getTitle())) : summary(bm.getTitle());
 		ContainerTag result = details().with(summary);
