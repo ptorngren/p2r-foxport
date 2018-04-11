@@ -5,26 +5,27 @@
 <title>Testing collapsible layout</title>
 <style type="text/css">
 html {
-	font-family: Arial, Helvetica, sans-serif
+	font-family: Arial, Helvetica, sans-serif;
 }
 
 div {
-	margin-left: 1em
+	margin-left: 1em;
 }
 
 details {
 	color: DarkSlateGrey;
-	font-size: small
+	font-size: small;
+	margin-left: 1em;
 }
 
 summary {
 	color: black;
-	font-size: medium
+	font-size: medium;
 }
 
 a {
 	color: DodgerBlue;
-	font-size: medium
+	font-size: medium;
 }
 </style>
 
@@ -37,7 +38,7 @@ a {
 			<strong>Hot List</strong>
 		</summary>
 		<div>A list of hot beverages, by type.</div>
-		<details style="margin-left: 1em">
+		<details>
 			<summary>Coffee List</summary>
 			<div>Some coffee drinks</div>
 			<div>
@@ -47,7 +48,7 @@ a {
 				&#9659;<a href="coffee.com#2">coffee 2</a>
 			</div>
 		</details>
-		<details style="margin-left: 1em">
+		<details>
 			<summary>Tea List</summary>
 			<div>
 				&#9659;<a href="tea.com#2">tea 1</a>
@@ -62,7 +63,7 @@ a {
 			<strong>Cold List</strong>
 		</summary>
 		<div>A list of cold beverages, by type.</div>
-		<details style="margin-left: 1em">
+		<details>
 			<summary>Water List</summary>
 			<div>
 				&#9659;<a href="water.com#1">water 1</a>
@@ -71,7 +72,7 @@ a {
 				&#9659;<a href="water.com#2">water 2</a>
 			</div>
 		</details>
-		<details style="margin-left: 1em">
+		<details>
 			<summary>Beer List</summary>
 			<div>Some beers</div>
 			<div>
@@ -81,9 +82,9 @@ a {
 				&#9659;<a href="beer.com#2">beer 2</a>
 			</div>
 		</details>
-		<details style="margin-left: 1em">
+		<details>
 			<summary>Wine List</summary>
-			<details style="margin-left: 1em">
+			<details>
 				<summary>
 					<em>Red Wine List</em>
 				</summary>
@@ -95,7 +96,7 @@ a {
 					&#9659;<a href="red.wine.com#2">red wine 2</a>
 				</div>
 			</details>
-			<details style="margin-left: 1em">
+			<details>
 				<summary>
 					<em>White Wine List</em>
 				</summary>

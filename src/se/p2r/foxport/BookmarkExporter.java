@@ -81,6 +81,7 @@ public class BookmarkExporter {
 	private static final String ENCODING_JSON = System.getProperty("file.encoding"); // UTF-8? input, defined by your Firefox?
 	private static final String ENCODING_HTML = "utf-8";  // output, defined by you to suite browsers 
 	private static final String[] ROOT_NAMES = {"Bookmarks Menu", "Bokmärkesmenyn"}; // TODO read from environment or config file (name depends on language)
+	private static final boolean GENERATE_TREE = true;
 
 	private final File inputFile;
 	private final File targetFolder;
@@ -263,7 +264,9 @@ public class BookmarkExporter {
 			name = nameAndDescription[0];
 			description = nameAndDescription[1];
 		}
-		String html = new HTMLBookmarkGenerator(root, name, description, ENCODING_HTML).run();
+		String html = GENERATE_TREE 
+				? new HTMLTreeGenerator(root, name, description, ENCODING_HTML).run() 
+				: new HTMLListGenerator(root, name, description, ENCODING_HTML).run();
 		writeFile(html, outputFile(targetFolder, root));
 	}
 

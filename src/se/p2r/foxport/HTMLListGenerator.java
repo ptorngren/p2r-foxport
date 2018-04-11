@@ -15,22 +15,30 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport;
 
-import static se.p2r.foxport.BookmarkExporter.debug;
-import static se.p2r.foxport.BookmarkExporter.log;
-
 import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.Body;
+import com.hp.gagawa.java.elements.Dl;
+import com.hp.gagawa.java.elements.Dt;
 import com.hp.gagawa.java.elements.H1;
 import com.hp.gagawa.java.elements.H3;
 import com.hp.gagawa.java.elements.Head;
 import com.hp.gagawa.java.elements.Html;
-import com.hp.gagawa.java.elements.Li;
 import com.hp.gagawa.java.elements.Meta;
 import com.hp.gagawa.java.elements.P;
 import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
-import com.hp.gagawa.java.elements.Ul;
 
+import static se.p2r.foxport.BookmarkExporter.debug;
+import static se.p2r.foxport.BookmarkExporter.log;
+
+/**
+ * First version of generator, generates a plain list (no folding). 
+ * Uses the <a href=https://github.com/dutoitns/gagawa>gagawa</a> HTML Generator.
+ * 
+ * @author peer
+ * @see HTMLTreeGenerator
+ *
+ */
 public class HTMLListGenerator {
 
 	private final FirefoxBookmark root;
@@ -53,15 +61,15 @@ public class HTMLListGenerator {
 	public String run() {
 		assert root.hasChildren() : root.getTitle() + ": no children; should have been checked by caller!";
 		Html html = new Html();
-		Ul ul = begin(html, root);
+		Dl dl = begin(html, root);
 		for (FirefoxBookmark child : root.getChildren()) {
-			append(ul, child);
+			append(dl, child);
 		}
 		log("Generated " + uriConter + " links in " + containerCounter + " containers");
 		return html.write();
 	}
 
-	private Ul begin(Html html, FirefoxBookmark root) {
+	private Dl begin(Html html, FirefoxBookmark root) {
 //		<html><head>
 //		<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>Peer's Off Duty Links</title>
 //		</head><body><h1>Peer's Off Duty Links</h1>
@@ -88,23 +96,23 @@ public class HTMLListGenerator {
         p.appendText(description);
         body.appendChild(p);
         
-        Ul ul = new Ul();
-//        appendDescription(dl, root);  // Doesn't work? No description saved in JSON?
-        body.appendChild(ul);
+        Dl dl = new Dl();
+        appendDescription(dl, root);  // Doesn't work? No description saved in JSON?
+        body.appendChild(dl);
         
-        return ul;
+        return dl;
 	}
 
-	private void append(Ul ul, FirefoxBookmark bm) {
+	private void append(Dl dl, FirefoxBookmark bm) {
 		if (bm.isLink()) {
-			appendLink(ul, bm);
+			appendLink(dl, bm);
 		} else if (bm.isContainer()) {
 			if (bm.hasChildren()) {
 				containerDepth++;
 				containerCounter++;
-				appendContainer(ul, bm);
+				appendContainer(dl, bm);
 				for (FirefoxBookmark child : bm.getChildren()) {
-					append(ul, child);
+					append(dl, child);
 				}
 				containerDepth--;
 			} else {
@@ -115,49 +123,51 @@ public class HTMLListGenerator {
 		}
 	}
 
-	private void appendDescription(Li li, FirefoxBookmark bm) {
+	private void appendDescription(Dl dl, FirefoxBookmark bm) {
 		String description = bm.getDescription();
 		if (description!=null && description.trim().length()>0) {
-			li.appendText(description);
-			debug(li.write());
+			P p = new P();
+			p.appendText(description);
+			dl.appendChild(p);
+			debug(p.write());
 		}
 	}
 
-	private void appendLink(Ul ul, FirefoxBookmark bm) {
+	private void appendLink(Dl dl, FirefoxBookmark bm) {
 //		<dt><a href="http://www.p2r.se/links">(p2r links)</a></dt>
 		uriConter++;
-		Li li = new Li();
+		Dt dt = new Dt();
 		A a = new A();
 		
 		a.appendText(bm.getTitle());
 		a.setHref(bm.getUri());
 		
-		li.appendChild(a);
-		ul.appendChild(li);
-		appendDescription(li, bm);
-		debug(li.write());
+		dt.appendChild(a);
+		dl.appendChild(dt);
+		appendDescription(dl, bm);
+		debug(dt.write());
 	}
 
-	private Ul appendContainer(Ul ulIn, FirefoxBookmark bm) {
+	private Dl appendContainer(Dl dlIn, FirefoxBookmark bm) {
 //		<dt><h3 folded="">Household (economy, home improvement, etc)</h3></dt>
 		Text title = new Text(bm.getTitle());
 
-		Ul ulOut = new Ul();
-		Li li = new Li();
+		Dt dt = new Dt();
 		H3 h3 = new H3();
 		debug(bm.getTitle()+", depth="+containerDepth);
 //		h3.setAttribute("folded", "");
         
 		h3.appendChild(title);
-		li.appendChild(h3);
-		ulOut.appendChild(li);
-        ulIn.appendChild(ulOut);
+		dt.appendChild(h3);
+        dlIn.appendChild(dt);
         
-		appendDescription(li, bm);
+		appendDescription(dlIn, bm);
 
-		debug(ulOut.write());
+		debug(dt.write());
 		
-		return ulOut;
+		Dl dlOut = new Dl();
+		dlIn.appendChild(dlOut);
+		return dlOut;
 	}
 
 	public FirefoxBookmark getRoot() {
