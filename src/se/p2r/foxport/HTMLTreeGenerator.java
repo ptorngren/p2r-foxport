@@ -38,7 +38,7 @@ import j2html.tags.Text;
  */
 public class HTMLTreeGenerator {
 
-	private static final String LINKBULLET = "▻"; // HTML "&#9659;"
+	private static final String LINKBULLET = "▻ "; // HTML "&#9659;"
 	private final FirefoxBookmark root;
 	private final String characterEncoding;
 
