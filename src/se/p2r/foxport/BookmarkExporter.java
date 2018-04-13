@@ -267,7 +267,7 @@ public class BookmarkExporter {
 		// first select root containers mentioned in config (avoid trash, tmp, private, etc)
 		// then recursively collect folders in these roots
 		List<FirefoxBookmark> rootContainers = select(bookmarksRoot.getChildren(), mappings);
-		ListValuedMap<String, Bookmark> selectedContainers = new DeepBookmarkSelector(mappings).select(rootContainers);
+		ListValuedMap<String, Bookmark> selectedContainers = new DeepBookmarkSelector(mappings.keySet()).select(rootContainers);
 		
 		// process each selected folder
 		for (String folderName: selectedContainers.keySet()) {
