@@ -21,9 +21,9 @@ public final class Utils {
 
 	public static final String HTML = ".html";
 	public static final String JSON = ".json";
-	public static final String JSONLZ4 = ".jsonlz4";
-	public static final String ENCODING_JSON = System.getProperty("file.encoding"); // UTF-8? input, defined by your Firefox?
-	public static final String ENCODING_HTML = "utf-8";  // output, defined by you to suite browsers 
+	public static final String JSONLZ4 = ".jsonlz4";  // firefox "new" format
+	public static final String ENCODING_JSON = System.getProperty("file.encoding"); // UTF-8? input, defined by your browser?
+	public static final String ENCODING_HTML = "utf-8";  // output, defined by you to suite your browsers 
 
 
 	public static void log(String string) {
@@ -55,6 +55,5 @@ public final class Utils {
 		InputStreamReader isr = new InputStreamReader(in);
 		return isr;
 	}
-
 
 }

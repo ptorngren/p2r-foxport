@@ -15,7 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.html;
 
-import static se.p2r.foxport.util.Utils.*;
+import static se.p2r.foxport.util.Utils.debug;
+import static se.p2r.foxport.util.Utils.log;
 
 import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.Body;
@@ -31,6 +32,7 @@ import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
 
 import se.p2r.foxport.Bookmark;
+import se.p2r.foxport.util.Utils;
 
 /**
  * First version of generator, generates a plain list (no folding). 
@@ -43,7 +45,6 @@ import se.p2r.foxport.Bookmark;
 public class HTMLListGenerator {
 
 	private final Bookmark root;
-	private final String characterEncoding;
 
 	private int uriConter = 0;
 	private int containerCounter = 0;
@@ -52,9 +53,8 @@ public class HTMLListGenerator {
 	private int containerDepth = 0;
 
 
-	public HTMLListGenerator(Bookmark root2, String name, String description, String characterEncoding) {
+	public HTMLListGenerator(Bookmark root2, String name, String description) {
 		this.root = root2;
-		this.characterEncoding = characterEncoding;
 		this.name = name;
 		this.description = description;
 	}
@@ -79,7 +79,8 @@ public class HTMLListGenerator {
         Meta meta = new Meta("text/html"); // mandatory to pass in constructor?
 //      meta.setContent("text/html"); // 
         meta.setHttpEquiv("content-type");
-        meta.setAttribute("charset", characterEncoding);
+        meta.setAttribute("charset", Utils.ENCODING_HTML);
+
         head.appendChild(meta);
         html.appendChild(head);
        

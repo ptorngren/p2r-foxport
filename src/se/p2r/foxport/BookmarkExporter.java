@@ -15,7 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport;
 
-import static se.p2r.foxport.util.Utils.ENCODING_HTML;
 import static se.p2r.foxport.util.Utils.log;
 
 import java.io.File;
@@ -179,8 +178,8 @@ public class BookmarkExporter {
 			description = nameAndDescription.length>1 ? nameAndDescription[1] : "";
 		}
 		String html = GENERATE_TREE 
-				? new HTMLTreeGenerator(root, name, description, ENCODING_HTML).run() 
-				: new HTMLListGenerator(root, name, description, ENCODING_HTML).run();
+				? new HTMLTreeGenerator(root, name, description).run() 
+				: new HTMLListGenerator(root, name, description).run();
 		new HTMLFileWriter(targetFolder, id).writeFile(html, root);
 	}
 

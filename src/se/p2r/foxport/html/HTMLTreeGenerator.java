@@ -34,6 +34,7 @@ import j2html.tags.Tag;
 import j2html.tags.Text;
 import se.p2r.foxport.Bookmark;
 import se.p2r.foxport.util.BookmarkSorter;
+import se.p2r.foxport.util.Utils;
 
 /**
  * Newer version of HTML generator. Uses the <a
@@ -48,7 +49,6 @@ public class HTMLTreeGenerator {
 
 	private static final String LINKBULLET = "▻ "; // HTML "&#9659;"
 	private final Bookmark root;
-	private final String characterEncoding;
 
 	private int uriConter = 0;
 	private int containerCounter = 0;
@@ -57,9 +57,8 @@ public class HTMLTreeGenerator {
 	private String description;
 
 
-	public HTMLTreeGenerator(Bookmark root, String name, String description, String characterEncoding) {
+	public HTMLTreeGenerator(Bookmark root, String name, String description) {
 		this.root = root;
-		this.characterEncoding = characterEncoding;
 		this.name = name;
 		this.description = description;
 	}
@@ -73,7 +72,7 @@ public class HTMLTreeGenerator {
 
 	private ContainerTag newHead() {
 		Tag meta = meta(); 
-        meta.attr(CHARSET, characterEncoding);
+        meta.attr(CHARSET, Utils.ENCODING_HTML);
         Tag title = title(name);
         Tag style = style(
         		newStyleElement("html", "font-family: Arial, Helvetica, sans-serif"),
