@@ -39,13 +39,7 @@ import se.p2r.foxport.util.MutableBookmarkContainer;
 
 /**
  * <p>
- * Main entry for reading Firefox bookmarks.
- * </p>
- * <p>
- * <b>NOTE:</b>Cannot read the 'new' compressed format (LZ4).<br>
- * User must manually export bookmarks to JSON format and place it in the
- * Firefox backup folder, typically something like
- * <code>%USERPROFILE%/AppData/Roaming/Mozilla/Firefox/Profiles/l0sic08k.default/bookmarkbackups</code>
+ * Main entry for processing bookmarks. Depends on a reader to read bookmarks and a writer to write HTML.
  * </p>
  * 
  * @author peer

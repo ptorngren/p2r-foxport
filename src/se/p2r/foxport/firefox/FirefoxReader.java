@@ -23,6 +23,16 @@ import com.google.gson.GsonBuilder;
 import se.p2r.foxport.util.Utils;
 
 /**
+ * <p>
+ * Reads firefox bookmarks.
+ * </p>
+ * <p>
+ * <b>NOTE:</b>Cannot read the 'new' compressed format (LZ4).<br>
+ * User must manually export bookmarks to JSON format and place it in the
+ * Firefox backup folder, typically something like
+ * <code>%USERPROFILE%/AppData/Roaming/Mozilla/Firefox/Profiles/l0sic08k.default/bookmarkbackups</code>
+ * </p>
+ * 
  * @author peer
  *
  */

@@ -20,27 +20,16 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
 
+import se.p2r.foxport.firefox.FirefoxReader;
 import se.p2r.foxport.util.Utils;
 
 /**
- * <p>
- * Main entry for reading Firefox bookmarks.
- * </p>
- * <p>
- * <b>NOTE:</b>Cannot read the 'new' compressed format (LZ4).<br>
- * User must manually export bookmarks to JSON format and place it in the
- * Firefox backup folder, typically something like
- * <code>%USERPROFILE%/AppData/Roaming/Mozilla/Firefox/Profiles/l0sic08k.default/bookmarkbackups</code>
- * </p>
+ * Main entry for reading and exporting bookmarks.
  * 
  * @author peer
  *
- * <p>TODO redesign the way to identify subfolders, use comments from browser instead. BUT: Firefox does not export descriptions.
- * Current design is very brittle to do name matching + we cannot handle names with spaces + we want a simple file name (not matching the folder name)
- * Also, we want to read Chrome bookmarks anyway.
- * </p>  
- * @see #mapNames(Properties)
- * @see #getDescription(Properties, String)
+ *@see FirefoxReader
+ *
  */
 public class BookmarkExporter {
 
