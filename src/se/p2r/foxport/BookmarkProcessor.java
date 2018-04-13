@@ -34,6 +34,7 @@ import se.p2r.foxport.firefox.FirefoxReader;
 import se.p2r.foxport.html.HTMLFileWriter;
 import se.p2r.foxport.html.HTMLListGenerator;
 import se.p2r.foxport.html.HTMLTreeGenerator;
+import se.p2r.foxport.internal.ConfigurationException;
 import se.p2r.foxport.util.DeepBookmarkSelector;
 import se.p2r.foxport.util.MutableBookmarkContainer;
 

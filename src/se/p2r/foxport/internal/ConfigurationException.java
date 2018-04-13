@@ -1,11 +1,11 @@
-package se.p2r.foxport;
+package se.p2r.foxport.internal;
 
 /**
  * Indicate problems when reading configuration or parameters.
  * @author peer
  *
  */
-class ConfigurationException extends Exception {
+public class ConfigurationException extends Exception {
 	private static final long serialVersionUID = 8929701975216314212L;
 
 	public ConfigurationException(String message, Throwable cause) {

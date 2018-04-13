@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Properties;
 
 import se.p2r.foxport.firefox.FirefoxReader;
+import se.p2r.foxport.internal.ConfigurationException;
 import se.p2r.foxport.util.Utils;
 
 /**
