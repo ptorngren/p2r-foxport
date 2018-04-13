@@ -6,7 +6,6 @@ package se.p2r.foxport.util;
 import static se.p2r.foxport.util.Utils.debug;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.ListValuedMap;

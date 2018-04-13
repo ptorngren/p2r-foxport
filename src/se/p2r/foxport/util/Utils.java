@@ -3,7 +3,11 @@
  */
 package se.p2r.foxport.util;
 
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -44,6 +48,12 @@ public final class Utils {
 			result.add(each.toLowerCase());
 		}
 		return result;
+	}
+
+	public static InputStreamReader getInputStreamReader(File file) throws FileNotFoundException {
+		DataInputStream in = new DataInputStream(new FileInputStream(file));
+		InputStreamReader isr = new InputStreamReader(in);
+		return isr;
 	}
 
 
