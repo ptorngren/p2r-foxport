@@ -35,7 +35,11 @@ public class MutableBookmarkContainer implements Bookmark {
 
 	@Override
 	public boolean hasChildren() {
-		return !childFoldersByTitle.isEmpty();
+		return !empty();
+	}
+
+	private boolean empty() {
+		return childLinks.isEmpty() && childFoldersByTitle.isEmpty();
 	}
 
 	@Override
