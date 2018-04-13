@@ -13,25 +13,51 @@ Redistribution and use in source and binary forms, with or without modification,
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-package se.p2r.foxport;
+package se.p2r.foxport.firefox;
 
-public class FirefoxAnnotation {
+import java.util.List;
 
-	private String name; // "foxmarks/locationMap", "bookmarkProperties/description"
-	private int flags; // 0
-	private int expires; // 4
-	private String value; // description: "MP3 etc. Free or commercial.", locationMap: ???
+public class FirefoxBookmarks {
 	
-	public String getName() {
-		return name;
+	private String title;
+	public String getTitle() {
+		return title;
 	}
-	public int getFlags() {
-		return flags;
+
+	public int getId() {
+		return id;
 	}
-	public int getExpires() {
-		return expires;
+
+	public long getDateAdded() {
+		return dateAdded;
 	}
-	public String getValue() {
-		return value;
+
+	public long getLastModified() {
+		return lastModified;
 	}
+
+	public String getType() {
+		return type;
+	}
+
+	public String getRoot() {
+		return root;
+	}
+
+	public List<FirefoxBookmark> getChildren() {
+		return children;
+	}
+
+	private int id;
+	private long dateAdded;
+	private long lastModified;
+	private String type;
+	private String root;
+	private List<FirefoxBookmark> children;
+	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " [title=" + title + ", id=" + id + ", dateAdded=" + dateAdded + ", lastModified=" + lastModified + ", type=" + type + ", root=" + root + ", children=" + children.size() + "]";
+	}
+
 }

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package se.p2r.foxport;
+package se.p2r.foxport.util;
 
 import java.io.File;
 import java.util.ArrayList;

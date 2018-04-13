@@ -1,11 +1,14 @@
 /**
  * 
  */
-package se.p2r.foxport;
+package se.p2r.foxport.html;
 
-import static se.p2r.foxport.Utils.*;
+import static se.p2r.foxport.util.Utils.*;
+
 import java.io.File;
 import java.io.PrintWriter;
+
+import se.p2r.foxport.Bookmark;
 
 /**
  * @author peer

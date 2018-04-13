@@ -15,13 +15,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport;
 
-import static se.p2r.foxport.Utils.ENCODING_HTML;
-import static se.p2r.foxport.Utils.ENCODING_JSON;
-import static se.p2r.foxport.Utils.JSON;
-import static se.p2r.foxport.Utils.JSONLZ4;
-import static se.p2r.foxport.Utils.debug;
-import static se.p2r.foxport.Utils.endsWith;
-import static se.p2r.foxport.Utils.log;
+import static se.p2r.foxport.util.Utils.ENCODING_HTML;
+import static se.p2r.foxport.util.Utils.ENCODING_JSON;
+import static se.p2r.foxport.util.Utils.JSON;
+import static se.p2r.foxport.util.Utils.JSONLZ4;
+import static se.p2r.foxport.util.Utils.debug;
+import static se.p2r.foxport.util.Utils.endsWith;
+import static se.p2r.foxport.util.Utils.log;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -46,6 +46,15 @@ import org.apache.commons.collections4.ListValuedMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import se.p2r.foxport.firefox.FirefoxBookmark;
+import se.p2r.foxport.firefox.FirefoxBookmarks;
+import se.p2r.foxport.html.HTMLFileWriter;
+import se.p2r.foxport.html.HTMLListGenerator;
+import se.p2r.foxport.html.HTMLTreeGenerator;
+import se.p2r.foxport.util.DeepBookmarkSelector;
+import se.p2r.foxport.util.MutableBookmarkContainer;
+import se.p2r.foxport.util.Utils;
 
 /**
  * <p>
@@ -258,13 +267,13 @@ public class BookmarkExporter {
 		// first select root containers mentioned in config (avoid trash, tmp, private, etc)
 		// then recursively collect folders in these roots
 		List<FirefoxBookmark> rootContainers = select(bookmarksRoot.getChildren(), mappings);
-		ListValuedMap<String, FirefoxBookmark> selectedContainers = new DeepBookmarkSelector(mappings).select(rootContainers);
+		ListValuedMap<String, Bookmark> selectedContainers = new DeepBookmarkSelector(mappings).select(rootContainers);
 		
 		// process each selected folder
 		for (String folderName: selectedContainers.keySet()) {
 			String id = mappings.get(folderName);
 			String[] description = config.getProperty(id, "").split(";");
-			List<FirefoxBookmark> containers = selectedContainers.get(folderName);
+			List<Bookmark> containers = selectedContainers.get(folderName);
 			assert !containers.isEmpty() : "No containers for title: "+folderName; 
 			Bookmark root = containers.size()==1 ? containers.iterator().next() : merge(folderName, containers);
 			processContainer(id, root, description);
@@ -290,9 +299,9 @@ public class BookmarkExporter {
 		return result;
 	}
 
-	private Bookmark merge(String folderName, List<FirefoxBookmark> containers) {
+	private Bookmark merge(String folderName, List<Bookmark> containers) {
 		MutableBookmarkContainer result = new MutableBookmarkContainer(folderName);
-		for (FirefoxBookmark c : containers) {
+		for (Bookmark c : containers) {
 			assert c.getTitle().equalsIgnoreCase(folderName) : "Not the same title: "+result+", "+c; 
 			result.merge(c);
 		}

@@ -1,15 +1,17 @@
 /**
  * 
  */
-package se.p2r.foxport;
+package se.p2r.foxport.util;
 
-import static se.p2r.foxport.Utils.debug;
+import static se.p2r.foxport.util.Utils.debug;
 
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.ListValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import se.p2r.foxport.Bookmark;
 
 /**
  * Recursively select bookmarks from filter criteria (name matching).
@@ -25,9 +27,9 @@ public class DeepBookmarkSelector {
 		this.wantedNames = mappings;
 	}
 
-	public ListValuedMap<String, FirefoxBookmark> select(List<FirefoxBookmark> bookmarks) {
-		ListValuedMap<String, FirefoxBookmark> result = new ArrayListValuedHashMap();
-		for (FirefoxBookmark each : bookmarks) {
+	public ListValuedMap<String, Bookmark> select(List<? extends Bookmark> bookmarks) {
+		ListValuedMap<String, Bookmark> result = new ArrayListValuedHashMap();
+		for (Bookmark each : bookmarks) {
 			if (accept(each)) {
 				result.put(each.getTitle().toLowerCase(), each);
 			}
@@ -38,7 +40,7 @@ public class DeepBookmarkSelector {
 		return result;
 	}
 
-	private boolean accept(FirefoxBookmark prospect) {
+	private boolean accept(Bookmark prospect) {
 		boolean result = prospect.isContainer() && wantedNames.containsKey(prospect.getTitle().toLowerCase());
 		debug(prospect+": "+result);
 		return result;

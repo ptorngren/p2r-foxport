@@ -1,4 +1,4 @@
-package se.p2r.foxport;
+package se.p2r.foxport.util;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.collections4.comparators.BooleanComparator;
+
+import se.p2r.foxport.Bookmark;
 
 public class BookmarkSorter implements Comparator<Bookmark> {
 

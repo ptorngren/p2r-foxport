@@ -1,9 +1,11 @@
-package se.p2r.foxport;
+package se.p2r.foxport.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import se.p2r.foxport.Bookmark;
 
 public class MutableBookmarkContainer implements Bookmark {
 
