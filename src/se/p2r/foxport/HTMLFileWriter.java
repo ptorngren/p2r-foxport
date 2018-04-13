@@ -13,14 +13,14 @@ import java.io.PrintWriter;
  */
 public class HTMLFileWriter {
 
-	private final File targetFolder;
+	private final File outputFile;
 
-	public HTMLFileWriter(File targetFolder) {
-		this.targetFolder = targetFolder;
+	public HTMLFileWriter(File targetFolder, String id) {
+		String fileName = id+HTML.toLowerCase();
+		this.outputFile = new File(targetFolder, fileName);
 	}
 
 	public void writeFile(String html, Bookmark root) {
-		File outputFile = new File(targetFolder, root.getTitle()+HTML);
 		writeFile(html, outputFile);
 		
 	}

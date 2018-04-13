@@ -35,9 +35,11 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListValuedMap;
@@ -59,7 +61,7 @@ import com.google.gson.GsonBuilder;
  * @author peer
  *
  * TODO redesign the way to identify subfolders. Very brittle to do name matching + we cannot handle names with spaces + we want as imple file name (not matching the folder name)  
- * @see #stripNames(Properties)
+ * @see #mapNames(Properties)
  * @see #getDescription(Properties, String)
  */
 public class BookmarkExporter {
@@ -248,37 +250,41 @@ public class BookmarkExporter {
 	private void processBookmarks(Properties config) {
 		FirefoxBookmarks fileRoots = parseBookmarkFile();
 		FirefoxBookmark bookmarksRoot = find(fileRoots.getChildren(), ROOT_NAMES); // find the "Bookmarks" folder
-		Set<String> wantedFolderNames = stripNames(config);
+		Map<String, String> mappings = mapNames(config);
 		
 		// first select root containers mentioned in config (avoid trash, tmp, private, etc)
 		// then recursively collect folders in these roots
-		List<FirefoxBookmark> rootContainers = select(bookmarksRoot.getChildren(), wantedFolderNames);
-		ListValuedMap<String, FirefoxBookmark> selectedContainers = new DeepBookmarkSelector(wantedFolderNames).select(rootContainers);
+		List<FirefoxBookmark> rootContainers = select(bookmarksRoot.getChildren(), mappings);
+		ListValuedMap<String, FirefoxBookmark> selectedContainers = new DeepBookmarkSelector(mappings).select(rootContainers);
 		
 		// process each selected folder
 		for (String folderName: selectedContainers.keySet()) {
-			String[] description = getDescription(config, folderName);
+			String id = mappings.get(folderName);
+			String[] description = config.getProperty(id, "").split(";");
 			List<FirefoxBookmark> containers = selectedContainers.get(folderName);
 			assert !containers.isEmpty() : "No containers for title: "+folderName; 
 			Bookmark root = containers.size()==1 ? containers.iterator().next() : merge(folderName, containers);
-			processContainer(folderName, root, description);
+			processContainer(id, root, description);
 		}
 	}
 
 	// TODO kludge - rethink a better way to handle names
-	private String[] getDescription(Properties config, String folderName) {
-		String restoredFolderName = folderName.replace(' ', '.');
-		return config.getProperty(restoredFolderName, "").split(";");
-	}
-
-	// TODO kludge - rethink a better way to handle names
-	private Set<String> stripNames(Properties config) {
-		return config
-				.stringPropertyNames()
-				.stream()
-				.map(e->e.toLowerCase())
-				.map(e->e.replace('.', ' '))
-				.collect(Collectors.toSet());
+	// map names to folders bidirectional. If not mapped, entry has same key and value.
+	private Map<String, String> mapNames(Properties config) {
+		Map<String, String> result = new HashMap();
+		for (Entry<Object, Object> each: config.entrySet()) {
+			String key=(String) each.getKey();
+			boolean map = key.startsWith("map.");
+			if (map) {
+				String id = key.substring(4).toLowerCase();
+				String folder = ((String) each.getValue()).toLowerCase();
+				result.put(id, folder);
+				result.put(folder, id);
+			} else {
+				result.put(key, key);
+			}
+		}
+		return result;
 	}
 
 	private Bookmark merge(String folderName, List<FirefoxBookmark> containers) {
@@ -290,7 +296,7 @@ public class BookmarkExporter {
 		return result;
 	}
 
-	private void processContainer(String title, Bookmark root, String... nameAndDescription) {
+	private void processContainer(String id, Bookmark root, String... nameAndDescription) {
 		fileCounter++;
 		log("Processing root folder #" + fileCounter + ":" + root.getTitle());
 		
@@ -303,7 +309,7 @@ public class BookmarkExporter {
 		String html = GENERATE_TREE 
 				? new HTMLTreeGenerator(root, name, description, ENCODING_HTML).run() 
 				: new HTMLListGenerator(root, name, description, ENCODING_HTML).run();
-		new HTMLFileWriter(targetFolder).writeFile(html, root);
+		new HTMLFileWriter(targetFolder, id).writeFile(html, root);
 	}
 
 	private FirefoxBookmark find(List<FirefoxBookmark> prospects, String[] wanted) {
@@ -314,10 +320,10 @@ public class BookmarkExporter {
 				.get();
 	}
 	
-	private List<FirefoxBookmark> select(List<FirefoxBookmark> prospects, Collection<String> wanted) {
-		Collection<String> lowerWanted = wanted.stream().map(s->s.toLowerCase()).collect(Collectors.toList());
+	private List<FirefoxBookmark> select(List<FirefoxBookmark> prospects, Map<String, String> mappings) {
+		Collection<String> folderNames = mappings.values();
 		return prospects.stream()
-				.filter(p->lowerWanted.contains(p.getTitle().toLowerCase()))
+				.filter(p->folderNames.contains(p.getTitle().toLowerCase()))
 				.collect(Collectors.toList());
 	}
 	private FirefoxBookmarks parseBookmarkFile() {
