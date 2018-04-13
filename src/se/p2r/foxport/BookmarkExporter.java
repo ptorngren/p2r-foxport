@@ -15,6 +15,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport;
 
+import static se.p2r.foxport.Utils.ENCODING_HTML;
+import static se.p2r.foxport.Utils.ENCODING_JSON;
+import static se.p2r.foxport.Utils.JSON;
+import static se.p2r.foxport.Utils.JSONLZ4;
+import static se.p2r.foxport.Utils.debug;
+import static se.p2r.foxport.Utils.endsWith;
+import static se.p2r.foxport.Utils.log;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -23,13 +31,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.ListValuedMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -46,13 +57,12 @@ import com.google.gson.GsonBuilder;
  * </p>
  * 
  * @author peer
- * 
+ *
+ * TODO redesign the way to identify subfolders. Very brittle to do name matching + we cannot handle names with spaces + we want as imple file name (not matching the folder name)  
+ * @see #stripNames(Properties)
+ * @see #getDescription(Properties, String)
  */
 public class BookmarkExporter {
-
-	private static final String HTML = ".html";
-	private static final String JSON = ".json";
-	private static final String JSONLZ4 = ".jsonlz4";
 
 	public class ConfigurationException extends Exception {
 		private static final long serialVersionUID = 8929701975216314212L;
@@ -79,8 +89,6 @@ public class BookmarkExporter {
 		
 	};
 
-	private static final String ENCODING_JSON = System.getProperty("file.encoding"); // UTF-8? input, defined by your Firefox?
-	private static final String ENCODING_HTML = "utf-8";  // output, defined by you to suite browsers 
 	private static final String[] ROOT_NAMES = {"Bookmarks Menu", "Bokmärkesmenyn"}; // TODO read from environment or config file (name depends on language)
 	private static final boolean GENERATE_TREE = true;
 
@@ -238,91 +246,80 @@ public class BookmarkExporter {
 	}
 
 	private void processBookmarks(Properties config) {
-		FirefoxBookmarks bookmarks = parseBookmarkFile();
-		List<FirefoxBookmark> rootContainers = bookmarks.getChildren();
-		List<FirefoxBookmark> theToolbar = select(rootContainers, ROOT_NAMES); // "Bookmarks Toolbar"
-		assert theToolbar.size() == 1 : "Unexpected number of roots: " + theToolbar;
+		FirefoxBookmarks fileRoots = parseBookmarkFile();
+		FirefoxBookmark bookmarksRoot = find(fileRoots.getChildren(), ROOT_NAMES); // find the "Bookmarks" folder
+		Set<String> wantedFolderNames = stripNames(config);
 		
-		List<FirefoxBookmark> rootFolders = theToolbar.get(0).getChildren();
-		List<FirefoxBookmark> selected = select(rootFolders, config.stringPropertyNames());
+		// first select root containers mentioned in config (avoid trash, tmp, private, etc)
+		// then recursively collect folders in these roots
+		List<FirefoxBookmark> rootContainers = select(bookmarksRoot.getChildren(), wantedFolderNames);
+		ListValuedMap<String, FirefoxBookmark> selectedContainers = new DeepBookmarkSelector(wantedFolderNames).select(rootContainers);
 		
-		for (FirefoxBookmark root : selected) {
-			if (root.getChildren()!=null) {
-				processRoot(root, config.getProperty(root.getTitle(), ""));
-			} else {
-				log("Skipping empty root folder: "+root.getTitle());
-			}
+		// process each selected folder
+		for (String folderName: selectedContainers.keySet()) {
+			String[] description = getDescription(config, folderName);
+			List<FirefoxBookmark> containers = selectedContainers.get(folderName);
+			assert !containers.isEmpty() : "No containers for title: "+folderName; 
+			Bookmark root = containers.size()==1 ? containers.iterator().next() : merge(folderName, containers);
+			processContainer(folderName, root, description);
 		}
 	}
 
-	private void processRoot(FirefoxBookmark root, String configurationInfo) {
+	// TODO kludge - rethink a better way to handle names
+	private String[] getDescription(Properties config, String folderName) {
+		String restoredFolderName = folderName.replace(' ', '.');
+		return config.getProperty(restoredFolderName, "").split(";");
+	}
+
+	// TODO kludge - rethink a better way to handle names
+	private Set<String> stripNames(Properties config) {
+		return config
+				.stringPropertyNames()
+				.stream()
+				.map(e->e.toLowerCase())
+				.map(e->e.replace('.', ' '))
+				.collect(Collectors.toSet());
+	}
+
+	private Bookmark merge(String folderName, List<FirefoxBookmark> containers) {
+		MutableBookmarkContainer result = new MutableBookmarkContainer(folderName);
+		for (FirefoxBookmark c : containers) {
+			assert c.getTitle().equalsIgnoreCase(folderName) : "Not the same title: "+result+", "+c; 
+			result.merge(c);
+		}
+		return result;
+	}
+
+	private void processContainer(String title, Bookmark root, String... nameAndDescription) {
 		fileCounter++;
 		log("Processing root folder #" + fileCounter + ":" + root.getTitle());
+		
 		String name = root.getTitle();
 		String description = "";
-		if (configurationInfo.length()>0) {
-			String[] nameAndDescription = configurationInfo.split(";");
+		if (nameAndDescription.length>0) {
 			name = nameAndDescription[0];
-			description = nameAndDescription[1];
+			description = nameAndDescription.length>1 ? nameAndDescription[1] : "";
 		}
 		String html = GENERATE_TREE 
 				? new HTMLTreeGenerator(root, name, description, ENCODING_HTML).run() 
 				: new HTMLListGenerator(root, name, description, ENCODING_HTML).run();
-		writeFile(html, outputFile(targetFolder, root));
+		new HTMLFileWriter(targetFolder).writeFile(html, root);
 	}
 
-	private void writeFile(String html, File outputFile) {
-		log("Writing html to "+outputFile+" ("+html.length()+" characters)" );
-		PrintWriter writer = null;
-		try {
-			if (outputFile.isFile()) {
-				debug("File found, replacing " + outputFile);
-			} else {
-				outputFile.getParentFile().mkdirs();
-				outputFile.createNewFile();
-			}
-			writer = new PrintWriter(outputFile, ENCODING_HTML);
-			writer.println(html);
-			log("OK: Wrote "+outputFile);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("Failed to write file: "+outputFile, e);
-		} finally {
-			if (writer !=null) {
-				writer.close();
-			}
-		}
-	}
-
-	private File outputFile(File targetFolder, FirefoxBookmark root) {
-		return new File(targetFolder, root.getTitle()+HTML);
-	}
-
-	private List<FirefoxBookmark> select(List<FirefoxBookmark> prospects, String... wanted) {
-		return select(prospects, Arrays.asList(wanted));
+	private FirefoxBookmark find(List<FirefoxBookmark> prospects, String[] wanted) {
+		Collection<String> lowerWanted = Utils.toLowerCase(wanted);
+		return prospects.stream()
+				.filter(p->lowerWanted.contains(p.getTitle().toLowerCase()))
+				.findFirst()
+				.get();
 	}
 	
 	private List<FirefoxBookmark> select(List<FirefoxBookmark> prospects, Collection<String> wanted) {
-		if (wanted.isEmpty()) {
-			return prospects;
-		}
-		
-		Collection<String> ignored = new ArrayList();
-		List<FirefoxBookmark> result = new ArrayList();
-		for (FirefoxBookmark prospect : prospects) {
-			ignored.add(prospect.getTitle());
-			for (String name : wanted) {
-				if (name.equalsIgnoreCase(prospect.getTitle())) {
-					result.add(prospect);
-					ignored.remove(name);
-				}
-			}
-		}
-		
-		log("Ignored folders: " + ignored);
-		return result;
+		Collection<String> lowerWanted = wanted.stream().map(s->s.toLowerCase()).collect(Collectors.toList());
+		return prospects.stream()
+				.filter(p->lowerWanted.contains(p.getTitle().toLowerCase()))
+				.collect(Collectors.toList());
 	}
-
 	private FirefoxBookmarks parseBookmarkFile() {
 		if (endsWith(inputFile, JSON)) {
 			return parseJSON();
@@ -355,22 +352,6 @@ public class BookmarkExporter {
 				}
 			}
 		}
-	}
-
-	public static void log(String string) {
-		// TODO proper logging? Or is it overkill?
-		System.out.println(string);
-	}
-
-	public static void debug(String string) {
-		// TODO proper logging?  Or is it overkill?
-		if (System.getProperties().containsKey("DEBUG")) {
-			System.err.println(string);
-		}
-	}
-
-	private static boolean endsWith(File file, String wantedEnding) {
-		return file.getName().toLowerCase().endsWith(wantedEnding);
 	}
 
 	public static void main(String[] args) throws IOException {

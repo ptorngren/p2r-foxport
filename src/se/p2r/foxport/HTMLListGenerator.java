@@ -28,8 +28,7 @@ import com.hp.gagawa.java.elements.P;
 import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
 
-import static se.p2r.foxport.BookmarkExporter.debug;
-import static se.p2r.foxport.BookmarkExporter.log;
+import static se.p2r.foxport.Utils.*;
 
 /**
  * First version of generator, generates a plain list (no folding). 
@@ -41,7 +40,7 @@ import static se.p2r.foxport.BookmarkExporter.log;
  */
 public class HTMLListGenerator {
 
-	private final FirefoxBookmark root;
+	private final Bookmark root;
 	private final String characterEncoding;
 
 	private int uriConter = 0;
@@ -51,8 +50,8 @@ public class HTMLListGenerator {
 	private int containerDepth = 0;
 
 
-	public HTMLListGenerator(FirefoxBookmark root, String name, String description, String characterEncoding) {
-		this.root = root;
+	public HTMLListGenerator(Bookmark root2, String name, String description, String characterEncoding) {
+		this.root = root2;
 		this.characterEncoding = characterEncoding;
 		this.name = name;
 		this.description = description;
@@ -62,14 +61,14 @@ public class HTMLListGenerator {
 		assert root.hasChildren() : root.getTitle() + ": no children; should have been checked by caller!";
 		Html html = new Html();
 		Dl dl = begin(html, root);
-		for (FirefoxBookmark child : root.getChildren()) {
+		for (Bookmark child : root.getChildren()) {
 			append(dl, child);
 		}
 		log("Generated " + uriConter + " links in " + containerCounter + " containers");
 		return html.write();
 	}
 
-	private Dl begin(Html html, FirefoxBookmark root) {
+	private Dl begin(Html html, Bookmark root2) {
 //		<html><head>
 //		<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>Peer's Off Duty Links</title>
 //		</head><body><h1>Peer's Off Duty Links</h1>
@@ -97,13 +96,13 @@ public class HTMLListGenerator {
         body.appendChild(p);
         
         Dl dl = new Dl();
-        appendDescription(dl, root);  // Doesn't work? No description saved in JSON?
+        appendDescription(dl, root2);  // Doesn't work? No description saved in JSON?
         body.appendChild(dl);
         
         return dl;
 	}
 
-	private void append(Dl dl, FirefoxBookmark bm) {
+	private void append(Dl dl, Bookmark bm) {
 		if (bm.isLink()) {
 			appendLink(dl, bm);
 		} else if (bm.isContainer()) {
@@ -111,7 +110,7 @@ public class HTMLListGenerator {
 				containerDepth++;
 				containerCounter++;
 				appendContainer(dl, bm);
-				for (FirefoxBookmark child : bm.getChildren()) {
+				for (Bookmark child : bm.getChildren()) {
 					append(dl, child);
 				}
 				containerDepth--;
@@ -119,11 +118,11 @@ public class HTMLListGenerator {
 				log("Skipping empty folder: " + bm.getTitle());
 			}
 		} else {
-			throw new IllegalArgumentException("Unexpected type: " + bm.getType());
+			throw new IllegalArgumentException("Unexpected type: " + bm);
 		}
 	}
 
-	private void appendDescription(Dl dl, FirefoxBookmark bm) {
+	private void appendDescription(Dl dl, Bookmark bm) {
 		String description = bm.getDescription();
 		if (description!=null && description.trim().length()>0) {
 			P p = new P();
@@ -133,7 +132,7 @@ public class HTMLListGenerator {
 		}
 	}
 
-	private void appendLink(Dl dl, FirefoxBookmark bm) {
+	private void appendLink(Dl dl, Bookmark bm) {
 //		<dt><a href="http://www.p2r.se/links">(p2r links)</a></dt>
 		uriConter++;
 		Dt dt = new Dt();
@@ -148,7 +147,7 @@ public class HTMLListGenerator {
 		debug(dt.write());
 	}
 
-	private Dl appendContainer(Dl dlIn, FirefoxBookmark bm) {
+	private Dl appendContainer(Dl dlIn, Bookmark bm) {
 //		<dt><h3 folded="">Household (economy, home improvement, etc)</h3></dt>
 		Text title = new Text(bm.getTitle());
 
@@ -170,7 +169,7 @@ public class HTMLListGenerator {
 		return dlOut;
 	}
 
-	public FirefoxBookmark getRoot() {
+	public Bookmark getRoot() {
 		return root;
 	}
 

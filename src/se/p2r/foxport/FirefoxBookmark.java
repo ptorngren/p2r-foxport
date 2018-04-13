@@ -15,9 +15,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport;
 
+import java.util.Collections;
 import java.util.List;
 
-public class FirefoxBookmark {
+public class FirefoxBookmark implements Bookmark {
 	private String title; // "Jul"
 	private int id;  // 51
 	private int parent; // 16
@@ -36,7 +37,7 @@ public class FirefoxBookmark {
 		return getType().toLowerCase().equals("text/x-moz-place");
 	}
 	public boolean hasChildren() {
-		return getChildren()!=null && !getChildren().isEmpty();
+		return !getChildren().isEmpty();
 	}
 
 	public String getDescription() {
@@ -81,7 +82,7 @@ public class FirefoxBookmark {
 		return root;
 	}
 	public List<FirefoxBookmark> getChildren() {
-		return children;
+		return children==null ? Collections.emptyList() : children;
 	}
 	public String getUri() {
 		return uri;
@@ -89,8 +90,7 @@ public class FirefoxBookmark {
 
 	@Override
 	public String toString() {
-		String childinfo = children==null ? ", (no children)" : ", children=" + children.size();
-		return getClass().getSimpleName() + " [title=" + title + ", id=" + id + ", parent=" + parent + ", dateAdded=" + dateAdded + ", lastModified=" + lastModified + ", type=" + type + ", root=" + root + childinfo + childinfo + ", uri=" + uri + "]";
+		return "FirefoxBookmark [title=" + title + ", hasChildren()=" + hasChildren() + "]";
 	}
 
 }
