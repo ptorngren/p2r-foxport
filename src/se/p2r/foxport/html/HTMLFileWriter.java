@@ -23,9 +23,9 @@ public class HTMLFileWriter {
 		this.outputFile = new File(targetFolder, fileName);
 	}
 
-	public void writeFile(String html, Bookmark root) {
+	public File writeFile(String html, Bookmark root) {
 		writeFile(html, outputFile);
-		
+		return outputFile;
 	}
 
 	private void writeFile(String html, File outputFile) {
