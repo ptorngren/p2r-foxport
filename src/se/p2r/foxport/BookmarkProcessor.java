@@ -79,8 +79,7 @@ public class BookmarkProcessor {
 		Bookmark bookmarksRoot = new FirefoxReader().load();
 		Map<String, String> mappings = mapNames(config);
 
-		// first select root containers mentioned in config (avoid trash, tmp, private,
-		// etc)
+		// first select root containers mentioned in config (avoid trash, tmp, private, etc)
 		// then recursively collect folders in these roots
 		List<Bookmark> rootContainers = select(bookmarksRoot.getChildren(), mappings);
 		ListValuedMap<String, Bookmark> selectedContainers = new DeepBookmarkSelector(mappings.keySet()).select(rootContainers);
@@ -111,8 +110,7 @@ public class BookmarkProcessor {
 	}
 
 	// TODO kludge - rethink a better way to handle names
-	// map names to folders bidirectional. If not mapped, entry has same key and
-	// value.
+	// map names to folders bidirectional. If not mapped, entry has same key and value.
 	private Map<String, String> mapNames(Properties config) {
 		Map<String, String> result = new HashMap();
 		for (Entry<Object, Object> each : config.entrySet()) {
