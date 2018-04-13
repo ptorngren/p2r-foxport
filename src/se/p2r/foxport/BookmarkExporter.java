@@ -15,28 +15,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport;
 
-import static se.p2r.foxport.util.Utils.log;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.ListValuedMap;
-
-import se.p2r.foxport.firefox.FirefoxReader;
-import se.p2r.foxport.html.HTMLFileWriter;
-import se.p2r.foxport.html.HTMLListGenerator;
-import se.p2r.foxport.html.HTMLTreeGenerator;
-import se.p2r.foxport.util.DeepBookmarkSelector;
-import se.p2r.foxport.util.MutableBookmarkContainer;
 import se.p2r.foxport.util.Utils;
 
 /**
@@ -61,54 +44,25 @@ import se.p2r.foxport.util.Utils;
  */
 public class BookmarkExporter {
 
-	public class ConfigurationException extends Exception {
-		private static final long serialVersionUID = 8929701975216314212L;
-
-		public ConfigurationException(String message, Throwable cause) {
-			super(message, cause);
-		}
-
-		public ConfigurationException(Throwable cause) {
-			super(cause);
-		}
-
-	}
-
-	private static final boolean GENERATE_TREE = true;
-
-	private final File targetFolder;
-
-	private int fileCounter;
-
-	
-	public BookmarkExporter(File targetFolder) throws IOException, ConfigurationException {
-		this.targetFolder = targetFolder;
-		if (!targetFolder.isDirectory()) {
-			throw new ConfigurationException(new FileNotFoundException("Output folder does not exist: " + targetFolder));
-		}
-	}
-
-	private void run(File cfgFile) throws ConfigurationException, IOException {
-//		log("<RUN>" + inputFile + " => " + targetFolder + " configured by file " + cfgFile.getAbsolutePath());
-		fileCounter = 0;
+	private static void run(File targetFolder, File cfgFile) throws ConfigurationException, IOException {
 		Properties config = readProperties(cfgFile);
-		processBookmarks(config); 
-		log("</RUN> Wrote " + fileCounter + " files");
+		
+		Utils.log("<RUN> " + targetFolder + ", configured by file " + cfgFile.getAbsolutePath());
+		new BookmarkProcessor(targetFolder).process(config); 
 	}
 
-	public void run(String... foldersWithNameAndDescription) throws IOException {
-//		log("<RUN>" + inputFile + " => " + targetFolder + " configured by " + foldersWithNameAndDescription.length + " command line arguments");
-		fileCounter = 0;
+	private static void run(File targetFolder, String... foldersWithNameAndDescription) throws ConfigurationException, IOException {
 		Properties config = new Properties();
 		for (String entry : foldersWithNameAndDescription) {
 			String[] elements = entry.split("[=;]");
 			config.put(elements[0], elements[1]+";"+elements[2]);
 		}
-		processBookmarks(config);
-		log("</RUN> Wrote " + fileCounter + " files");
+		
+		Utils.log("<RUN>" + targetFolder + ", configured by arguments: " + config.stringPropertyNames());
+		new BookmarkProcessor(targetFolder).process(config); 
 	}
 
-	private Properties readProperties(File cfgFile) throws ConfigurationException {
+	private static Properties readProperties(File cfgFile) throws ConfigurationException {
 		Properties cfg = new Properties();
 		try {
 			cfg.load(Utils.getInputStreamReader(cfgFile));
@@ -118,77 +72,6 @@ public class BookmarkExporter {
 		}
 	}
 
-	private void processBookmarks(Properties config) throws IOException {
-		// TODO load reader based on config (Firefox or Chrome)
-		Bookmark bookmarksRoot = new FirefoxReader().load();
-		Map<String, String> mappings = mapNames(config);
-		
-		// first select root containers mentioned in config (avoid trash, tmp, private, etc)
-		// then recursively collect folders in these roots
-		List<Bookmark> rootContainers = select(bookmarksRoot.getChildren(), mappings);
-		ListValuedMap<String, Bookmark> selectedContainers = new DeepBookmarkSelector(mappings.keySet()).select(rootContainers);
-		
-		// process each selected folder
-		for (String folderName: selectedContainers.keySet()) {
-			String id = mappings.get(folderName);
-			String[] description = config.getProperty(id, "").split(";");
-			List<Bookmark> containers = selectedContainers.get(folderName);
-			assert !containers.isEmpty() : "No containers for title: "+folderName; 
-			Bookmark root = containers.size()==1 ? containers.iterator().next() : merge(folderName, containers);
-			processContainer(id, root, description);
-		}
-	}
-
-	// TODO kludge - rethink a better way to handle names
-	// map names to folders bidirectional. If not mapped, entry has same key and value.
-	private Map<String, String> mapNames(Properties config) {
-		Map<String, String> result = new HashMap();
-		for (Entry<Object, Object> each: config.entrySet()) {
-			String key=(String) each.getKey();
-			boolean map = key.startsWith("map.");
-			if (map) {
-				String id = key.substring(4).toLowerCase();
-				String folder = ((String) each.getValue()).toLowerCase();
-				result.put(id, folder);
-				result.put(folder, id);
-			} else {
-				result.put(key, key);
-			}
-		}
-		return result;
-	}
-
-	private Bookmark merge(String folderName, List<Bookmark> containers) {
-		MutableBookmarkContainer result = new MutableBookmarkContainer(folderName);
-		for (Bookmark c : containers) {
-			assert c.getTitle().equalsIgnoreCase(folderName) : "Not the same title: "+result+", "+c; 
-			result.merge(c);
-		}
-		return result;
-	}
-
-	private void processContainer(String id, Bookmark root, String... nameAndDescription) {
-		fileCounter++;
-		log("Processing root folder #" + fileCounter + ":" + root.getTitle());
-		
-		String name = root.getTitle();
-		String description = "";
-		if (nameAndDescription.length>0) {
-			name = nameAndDescription[0];
-			description = nameAndDescription.length>1 ? nameAndDescription[1] : "";
-		}
-		String html = GENERATE_TREE 
-				? new HTMLTreeGenerator(root, name, description).run() 
-				: new HTMLListGenerator(root, name, description).run();
-		new HTMLFileWriter(targetFolder, id).writeFile(html, root);
-	}
-
-	private List<Bookmark> select(List<? extends Bookmark> prospects, Map<String, String> mappings) {
-		Collection<String> folderNames = mappings.values();
-		return prospects.stream()
-				.filter(p->folderNames.contains(p.getTitle().toLowerCase()))
-				.collect(Collectors.toList());
-	}
 	
 	private static void handleConfigurationError(ConfigurationException e) {
 		System.err.println("Bad setup: " + e.getMessage());
@@ -244,7 +127,9 @@ public class BookmarkExporter {
 
 		case 2: {
 			try {
-				new BookmarkExporter(new File(args[0])).run(new File(args[1]));
+				File targetFolder = new File(args[0]);
+				File cfgFile = new File(args[1]);
+				run(targetFolder, cfgFile);
 			} catch (ConfigurationException e) {
 				handleConfigurationError(e);
 			}
@@ -252,11 +137,12 @@ public class BookmarkExporter {
 		}
 		default:
 			try {
-				new BookmarkExporter(new File(args[0])).run(Arrays.copyOfRange(args, 1, args.length));
+				File targetFolder = new File(args[0]);
+				run(targetFolder, Arrays.copyOfRange(args, 1, args.length));
+			break;
 			} catch (ConfigurationException e) {
 				handleConfigurationError(e);
 			}
-			break;
 		}
 	}
 
