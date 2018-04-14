@@ -62,8 +62,6 @@ public class BookmarkProcessor {
 
 	private final File targetFolder;
 
-	private int fileCounter;
-
 	private BrowserType browserType;
 
 	public BookmarkProcessor(BrowserType browserType, File targetFolder) throws IOException, ConfigurationException {
@@ -75,10 +73,8 @@ public class BookmarkProcessor {
 	}
 
 	public void process(Properties config) throws IOException {
-		fileCounter = 0;
-
-		// TODO load reader based on config (Firefox or Chrome)
-		Bookmark bookmarksRoot = ReaderFactory.findReader(browserType).load();
+		BookmarkReader reader = BookmarkReader.Factory.makeReader(browserType);
+		Bookmark bookmarksRoot = reader.load();
 		Map<String, String> mappings = mapNames(config);
 
 		// first select root containers mentioned in config (avoid trash, tmp, private, etc)
@@ -107,12 +103,12 @@ public class BookmarkProcessor {
 			files.add(processContainer(id, root, description));
 		}
 
-		log("</RUN> Wrote " + fileCounter + " files");
+		log("</RUN> Wrote " + files.size() + " files");
 		return files;
 	}
 
-	// TODO kludge - rethink a better way to handle names
 	// map names to folders bidirectional. If not mapped, entry has same key and value.
+	// TODO kludge - rethink, need a better way to handle names
 	private Map<String, String> mapNames(Properties config) {
 		Map<String, String> result = new HashMap();
 		for (Entry<Object, Object> each : config.entrySet()) {
@@ -140,8 +136,7 @@ public class BookmarkProcessor {
 	}
 
 	private File processContainer(String id, Bookmark root, String... nameAndDescription) {
-		fileCounter++;
-		log("Processing root folder #" + fileCounter + ":" + root.getTitle());
+		log("Processing root folder: " + root.getTitle());
 
 		String name = root.getTitle();
 		String description = "";

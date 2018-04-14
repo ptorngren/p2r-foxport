@@ -16,6 +16,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 package se.p2r.foxport;
 
+import java.io.IOException;
+
+import se.p2r.foxport.chrome.ChromeReader;
+import se.p2r.foxport.firefox.FirefoxReader;
+import se.p2r.foxport.util.Utils.BrowserType;
+
 /**
  * @author peer
  *
@@ -30,5 +36,25 @@ public interface BookmarkReader {
 	 * @return {@link Bookmark} (never <code>null</code>)
 	 */
 	Bookmark load();
+
+	public final class Factory {
+
+		private Factory() {
+		}
+
+		public static BookmarkReader makeReader(BrowserType browserType) throws IOException {
+			switch (browserType) {
+			case FIREFOX:
+				return new FirefoxReader();
+
+			case CHROME:
+				return new ChromeReader();
+
+			default:
+				throw new IllegalArgumentException("Unexpected browsertype: "+browserType);
+			}
+		}
+
+	}
 
 }
