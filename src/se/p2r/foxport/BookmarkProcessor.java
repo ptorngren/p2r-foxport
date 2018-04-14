@@ -31,13 +31,13 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListValuedMap;
 
-import se.p2r.foxport.firefox.FirefoxReader;
 import se.p2r.foxport.html.HTMLFileWriter;
 import se.p2r.foxport.html.HTMLListGenerator;
 import se.p2r.foxport.html.HTMLTreeGenerator;
 import se.p2r.foxport.internal.ConfigurationException;
 import se.p2r.foxport.util.DeepBookmarkSelector;
 import se.p2r.foxport.util.MutableBookmarkContainer;
+import se.p2r.foxport.util.Utils.BrowserType;
 
 /**
  * <p>
@@ -64,11 +64,13 @@ public class BookmarkProcessor {
 
 	private int fileCounter;
 
-	public BookmarkProcessor(File targetFolder) throws IOException, ConfigurationException {
+	private BrowserType browserType;
+
+	public BookmarkProcessor(BrowserType browserType, File targetFolder) throws IOException, ConfigurationException {
+		this.browserType = browserType;
 		this.targetFolder = targetFolder;
 		if (!targetFolder.isDirectory()) {
-			throw new ConfigurationException(
-					new FileNotFoundException("Output folder does not exist: " + targetFolder));
+			throw new ConfigurationException(new FileNotFoundException("Output folder does not exist: " + targetFolder));
 		}
 	}
 
@@ -76,7 +78,7 @@ public class BookmarkProcessor {
 		fileCounter = 0;
 
 		// TODO load reader based on config (Firefox or Chrome)
-		Bookmark bookmarksRoot = new FirefoxReader().load();
+		Bookmark bookmarksRoot = ReaderFactory.findReader(browserType).load();
 		Map<String, String> mappings = mapNames(config);
 
 		// first select root containers mentioned in config (avoid trash, tmp, private, etc)

@@ -32,6 +32,7 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import se.p2r.foxport.BookmarkReader;
 import se.p2r.foxport.util.Utils;
 
 /**
@@ -48,7 +49,7 @@ import se.p2r.foxport.util.Utils;
  * @author peer
  *
  */
-public class FirefoxReader {
+public class FirefoxReader implements BookmarkReader {
 
 	private static final String[] ROOT_NAMES = {"Bookmarks Menu", "Bokmärkesmenyn"}; // TODO read from environment or config file (name depends on language)
 	

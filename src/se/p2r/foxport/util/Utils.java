@@ -29,6 +29,8 @@ import java.util.List;
  *
  */
 public final class Utils {
+	public static enum BrowserType {FIREFOX, CHROME}
+
 	private Utils() {} // static utility
 
 	public static final String HTML = ".html";
