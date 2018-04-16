@@ -18,6 +18,8 @@ package se.p2r.foxport.chrome;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.gson.annotations.SerializedName;
+
 import se.p2r.foxport.Bookmark;
 
 /**
@@ -31,21 +33,29 @@ import se.p2r.foxport.Bookmark;
 public class ChromeBookmark implements Bookmark {
 
 	private static class MetaInfo {
-		private long last_visited_desktop; // "13168342699619004",
+		@SerializedName("last_visited_desktop")		
+		private long lastVisitedDesktop; // "13168342699619004",
 		
-		// FIXME implement!
-		// private String stars.note; // "Detta är en länk till Handelsbanken",
-		// private String stars.version; // "crx.2.2016.128.11729"
+		 @SerializedName("stars.note")		
+		 private String note; // "Detta är en länk till Handelsbanken",
+		 @SerializedName("stars.version")		
+		 private String version; // "crx.2.2016.128.11729"
 	}
 
 	private long id; // "1"
-	private long date_added; // "13168342730424920"
-	private long date_modified; // "13168342699618897"
+	
+	@SerializedName("date_added")		
+	private long dateAdded; // "13168342730424920"
+
+	@SerializedName("date_modified")		
+	private long dateModified; // "13168342699618897"
 	private String name; // "Sparbanken Nord - Regionens egen bank"
 	private String type; // "url", "folder"
 	private String url; // "https://www.sparbankennord.se/"
 	private List<ChromeBookmark> children;
-	private MetaInfo meta_info;
+	
+	@SerializedName("meta_info")		
+	private MetaInfo metaInfo;
 
 	@Override
 	public List<? extends Bookmark> getChildren() {
@@ -82,18 +92,16 @@ public class ChromeBookmark implements Bookmark {
 	}
 
 	public long getDate_added() {
-		return date_added;
+		return dateAdded;
 	}
 
 	public long getDate_modified() {
-		return date_modified;
+		return dateModified;
 	}
 
 	@Override
 	public String getDescription() {
-		// FIXME implement!
-		return null;
-//		return meta_info.stars.note;
+		return metaInfo==null ? null : metaInfo.note;
 	}
 
 }

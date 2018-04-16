@@ -15,6 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.chrome;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Represents the Chrome bookmarks file.
  * 
@@ -24,7 +26,8 @@ package se.p2r.foxport.chrome;
 public class ChromeBookmarks {
 	
 	private static class Roots {
-		private ChromeBookmark bookmark_bar;  // the bar at the top of the browser
+		@SerializedName("bookmark_bar")		
+		private ChromeBookmark bookmarkBar;  // the bar at the top of the browser
 		private ChromeBookmark other;	// root folder for other bookmarks (in menu) 
 	}
 
@@ -43,7 +46,7 @@ public class ChromeBookmarks {
 	}
 
 	public ChromeBookmark getBookmarkBar() {
-		return roots==null ? null : roots.bookmark_bar;
+		return roots==null ? null : roots.bookmarkBar;
 	}
 
 	public ChromeBookmark getOther() {

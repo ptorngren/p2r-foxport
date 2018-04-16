@@ -22,6 +22,13 @@ import java.util.Map;
 
 import se.p2r.foxport.Bookmark;
 
+/**
+ * An abstraction of a bookmark folder, irrespective of browser type.
+ * Capable of merging with other containers with the same name.
+ * 
+ * @author peer
+ *
+ */
 public class MutableBookmarkContainer implements Bookmark {
 
 	private final String title;
@@ -31,6 +38,11 @@ public class MutableBookmarkContainer implements Bookmark {
 
 	public MutableBookmarkContainer(String title) {
 		this.title = title;
+	}
+	
+	public MutableBookmarkContainer(String title, String description) {
+		this.title = title;
+		this.description = description;
 	}
 
 	@Override
@@ -69,6 +81,16 @@ public class MutableBookmarkContainer implements Bookmark {
 		return description;
 	}
 
+	public void setDescription(String description) {
+		if (description != null) {
+			if (this.description == null) {
+				this.description = description;
+			} else {
+				this.description += "\n\n" + description;
+			}
+		}
+	}
+
 	@Override
 	public boolean isContainer() {
 		return true;
@@ -92,7 +114,7 @@ public class MutableBookmarkContainer implements Bookmark {
 				MutableBookmarkContainer targetChild = childFoldersByTitle.get(childTitle);
 				
 				if (targetChild==null) {
-					targetChild = new MutableBookmarkContainer(childTitle);
+					targetChild = new MutableBookmarkContainer(childTitle, sourceChild.getDescription());
 					childFoldersByTitle.put(childTitle, targetChild);
 				} 
 				targetChild.merge(sourceChild);

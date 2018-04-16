@@ -130,6 +130,7 @@ public class BookmarkProcessor {
 		MutableBookmarkContainer result = new MutableBookmarkContainer(folderName);
 		for (Bookmark c : containers) {
 			assert c.getTitle().equalsIgnoreCase(folderName) : "Not the same title: " + result + ", " + c;
+			result.setDescription(c.getDescription());
 			result.merge(c);
 		}
 		return result;
