@@ -25,7 +25,6 @@ import se.p2r.foxport.Bookmark;
 /**
  * A Chrome bookmark. 
  * 
- * TODO parse meta_info.stars.note
  * TODO convert date numbers to dates
  * @author peer
  *
