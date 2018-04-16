@@ -19,145 +19,54 @@ import static se.p2r.foxport.util.Utils.*;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import se.p2r.foxport.BookmarkReader;
-import se.p2r.foxport.util.Utils;
 
 /**
- * TODO STUB - WORK IN PROGRESS
- * 
- * <p>
- * Reads chrome bookmarks.
- * </p>
+ * Reads chrome bookmarks. Note: For editing comments in Chrome, you probably need to add the BookmarkManager:
+ * https://chrome.google.com/webstore/detail/bookmark-manager/gmlllbghnfkpflemihljekbapjopfjik
  * 
  * @author peer
  *
  */
 public class ChromeReader implements BookmarkReader {
 
-	private static final String[] ROOT_NAMES = {"Bookmarks Menu", "Bokmärkesmenyn"}; // TODO read from environment or config file (name depends on language)
-	
-	private static final FileFilter JSON_FILTER = new FileFilter() {
-		public boolean accept(File pathname) {
-			return endsWith(pathname, JSON); // || endsWith(pathname, JSONLZ4);  // Cannot read LZ4 files
-		}
-
-		@Override
-		public String toString() {
-			return "'*"+JSON+"'";
-		}
-		
-	};
-	
 	private final File inputFile;
 
 	public ChromeReader() throws IOException {
 		this.inputFile = findInputFile();
 	}
 
-	private File findInputFile() throws IOException {
-		File backupDirectory = findBookmarkDirectory();
-		File mostRecent = null;
-		for (File file : backupDirectory.listFiles(JSON_FILTER)) {
-			if (mostRecent==null || mostRecent.lastModified() < file.lastModified()) {
-				mostRecent = file;
-			}
-		};
-		if (mostRecent==null) {
-			String msg = "No files found in "+backupDirectory+" using filter " + JSON_FILTER;
-			throw new FileNotFoundException(msg);
-		}
-		return mostRecent;
-	}
-
-	private File findBookmarkDirectory() throws IOException {
-		File profile = findProfile();
-		File profileDirectory = findProfileDirectory(profile, null);
-		File backupDirectory = new File(profileDirectory, "bookmarkBackups");
+	private static File findInputFile() throws IOException {
+		String userHome = System.getProperty("user.home");
+		File backupDirectory = new File(userHome, "AppData/Local/Google/Chrome/User Data/Default");
 		if (!backupDirectory.isDirectory()) {
 			throw new FileNotFoundException("Backup directory not found: " + backupDirectory);
 		}
-		return backupDirectory;
+		File file = new File(backupDirectory, "Bookmarks");
+		return file;
 	}
-
-	private File findProfileDirectory(File profile, String profileName) throws IOException {
-		List<String> lines = readFile(profile);
-		boolean inProfile = false;
-		String header = "Name=" + (profileName == null ? "default" : profileName);
-
-		for (String string : lines) {
-			String[] pair = string.split("=");
-			if (inProfile) {
-				if (pair[0].equals("Path")) {
-					File file = new File(pair[1]);
-					return file.isAbsolute() ? file : new File(profile.getParentFile(), file.getPath());
-				}
-			} else {
-				inProfile = string.equalsIgnoreCase(header);
-			}
-		}
-		throw new IllegalArgumentException("No such profile: " + profileName + " (file: " + profile + ")");
-	}
-
-	private List<String> readFile(File profile) throws FileNotFoundException, IOException {
-		List<String> lines = new ArrayList();
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(Utils.getInputStreamReader(profile));
-			String strLine = null;
-			while ((strLine = br.readLine()) != null) {
-				lines.add(strLine);
-			}
-		} finally {
-			if (br != null) {
-				br.close();
-			}
-		}
-		return lines;
-	}
-
-	private File findProfile() {
-		String userHome = System.getProperty("user.home");
-		return new File(userHome, "AppData/Roaming/Mozilla/Firefox/profiles.ini");
-	}
-
 
 	public ChromeBookmark load() {
-		ChromeBookmarks allRoots = parseBookmarkFile();
-		return findBookmarksRoot(allRoots.getChildren(), ROOT_NAMES); // find the "Bookmarks" folder
+		ChromeBookmarks contents = parseBookmarksFile();
+		
+		assert contents!=null : "No bookmarks produced from file: "+inputFile;
+		assert contents.getRoots() !=null : "No roots produced from file: "+inputFile;
+		assert contents.getOther() !=null : "No bookmarks produced from file: "+inputFile;
+		debug("Parsed " + inputFile + ":" + contents);
+		
+		return contents.getOther();
 	}
 	
-	private ChromeBookmark findBookmarksRoot(List<ChromeBookmark> prospects, String[] wanted) {
-		Collection<String> lowerWanted = Utils.toLowerCase(wanted);
-		return prospects.stream()
-				.filter(p->lowerWanted.contains(p.getTitle().toLowerCase()))
-				.findFirst()
-				.get();
-	}
-	
-	private ChromeBookmarks parseBookmarkFile() {
-		if (endsWith(inputFile, JSON)) {
-			return parseJSON();
-		}
-		if (endsWith(inputFile, JSONLZ4)) {
-			throw new UnsupportedOperationException("Cannot parse compressed JSON: "+inputFile);
-		}
-		throw new IllegalArgumentException("Unexpected file type: " + inputFile);
-	}
-
-	private ChromeBookmarks parseJSON() {
+	private ChromeBookmarks parseBookmarksFile() {
 		Reader reader = null;
 		try {
 			FileInputStream fis = new FileInputStream(inputFile);
@@ -165,9 +74,8 @@ public class ChromeReader implements BookmarkReader {
 			reader = new BufferedReader(isr);
 			
 			Gson gson = new GsonBuilder().create();
-			ChromeBookmarks ffb = gson.fromJson(reader, ChromeBookmarks.class);
-			debug("Parsed " + inputFile + ":" + ffb);
-			return ffb;
+			ChromeBookmarks bookmarks = gson.fromJson(reader, ChromeBookmarks.class);
+			return bookmarks;
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to parse input file: " + inputFile, e);
 		} finally {

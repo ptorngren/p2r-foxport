@@ -26,78 +26,52 @@ import se.p2r.foxport.Bookmark;
  *
  */
 public class ChromeBookmark implements Bookmark {
-	private String title; // "Jul"
-	private int id;  // 51
-	private int parent; // 16
-	private long dateAdded; // 1236710299000000
-	private long lastModified; // 1236710299000000
-	private List<ChromeAnnotation> annos; // optional
-	private String type; // "text/x-moz-place-container", "text/x-moz-place"  // TODO separate subclasses
-	private String root; // "bookmarksMenuFolder" (only for x-moz-place-container?)
-	private List<ChromeBookmark> children; // only for x-moz-place-container?
-	private String uri; // "http://www.p2r.se/links" (only for x-moz-place)
-
-	public boolean isContainer() {
-		return getType().toLowerCase().equals("text/x-moz-place-container") ;
-	}
-	public boolean isLink() {
-		return getType().toLowerCase().equals("text/x-moz-place");
-	}
-	public boolean hasChildren() {
-		return !getChildren().isEmpty();
-	}
-
-	public String getDescription() {
-		if (annos==null || annos.isEmpty()) {
-			return null;
-		}
-		String description = null;
-		for (ChromeAnnotation prospect : annos) {
-			if ("bookmarkProperties/description".equalsIgnoreCase(prospect.getName())) {
-				if (description==null) {
-					description = prospect.getValue();
-				} else {
-					throw new IllegalStateException("Multiple descriptions found. Have: " + description+", found: " + prospect.getValue());
-				}
-			}
-		}
-		return description;
-	}
+	private long id; // "1"
+	private long date_added; // "13168342730424920"
+	private long date_modified;  // "13168342699618897"
+	private String name; // "Sparbanken Nord - Regionens egen bank"
+	private String type; // "url", "folder"
+	private String url; // "https://www.sparbankennord.se/"
+//	private List<ChromeBookmark> children; // "https://www.sparbankennord.se/"
 	
-	public String getTitle() {
-		return title;
-	}
-	public int getId() {
-		return id;
-	}
-	public int getParent() {
-		return parent;
-	}
-	public long getDateAdded() {
-		return dateAdded;
-	}
-	public long getLastModified() {
-		return lastModified;
-	}
-	public String getType() {
-		return type;
-	}
-	public List<ChromeAnnotation> getAnnotations() {
-		return annos;
-	}
-	public String getRoot() {
-		return root;
-	}
-	public List<ChromeBookmark> getChildren() {
-		return children==null ? Collections.emptyList() : children;
-	}
-	public String getUri() {
-		return uri;
-	}
+//	private Object meta_info;
+//    "meta_info": {
+//        "last_visited_desktop": "13168342699619004",
+//        "stars.note": "Detta är en länk till Handelsbanken",
+//        "stars.version": "crx.2.2016.128.11729"
+//     },
 
+	
 	@Override
-	public String toString() {
-		return "FirefoxBookmark [title=" + title + ", hasChildren()=" + hasChildren() + "]";
+	public List<? extends Bookmark> getChildren() {
+		return Collections.EMPTY_LIST; 
+		// return children==null ? Collections.emptyList() : children;
+	}
+	@Override
+	public String getTitle() {
+		return name;
+	}
+	@Override
+	public boolean isLink() {
+		return "url".equals(type);
+	}
+	@Override
+	public boolean isContainer() {
+		return "folder".equals(type);
+	}
+	@Override
+	public boolean hasChildren() {
+		return false;
+//		return ! (children==null || children.isEmpty());
+	}
+	@Override
+	public String getUri() {
+		return url;
+	}
+	@Override
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

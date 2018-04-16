@@ -1,0 +1,125 @@
+{
+   "checksum": "cc267be57bab38a09136ef0bd57d278d",
+   "roots": {
+      "bookmark_bar": {
+         "children": [ {
+            "date_added": "13168343904582550",
+            "id": "15",
+            "name": "Bookmarks",
+            "type": "url",
+            "url": "chrome://bookmarks/"
+         }, {
+            "date_added": "13168342635962506",
+            "id": "5",
+            "meta_info": {
+               "last_visited_desktop": "13168342635962622"
+            },
+            "name": "Google",
+            "type": "url",
+            "url": "https://www.google.se/"
+         }, {
+            "date_added": "13168342679650962",
+            "id": "6",
+            "meta_info": {
+               "last_visited_desktop": "13168342679651074"
+            },
+            "name": "Reseplanerare - SL",
+            "type": "url",
+            "url": "http://mini.sl.se/sv/travelplanner/"
+         } ],
+         "date_added": "13168342609790503",
+         "date_modified": "13168343904582550",
+         "id": "1",
+         "name": "Bokmärkesfältet",
+         "type": "folder"
+      },
+      "other": {
+         "children": [ {
+            "children": [ {
+               "date_added": "13168342699618897",
+               "id": "7",
+               "meta_info": {
+                  "last_visited_desktop": "13168342699619004",
+                  "stars.note": "Dett är en länk till Handelsbanken",
+                  "stars.version": "crx.2.2016.128.11729"
+               },
+               "name": "Personlig bankkontakt, lokala beslut - Handelsbanken",
+               "type": "url",
+               "url": "https://www.handelsbanken.se/sv/"
+            }, {
+               "date_added": "13168342730424920",
+               "id": "8",
+               "meta_info": {
+                  "last_visited_desktop": "13168342730425028"
+               },
+               "name": "Sparbanken Nord - Regionens egen bank",
+               "type": "url",
+               "url": "https://www.sparbankennord.se/"
+            } ],
+            "date_added": "13168342865939191",
+            "date_modified": "13168342872047824",
+            "id": "13",
+            "meta_info": {
+               "stars.description": "Företag som hanterar pengar",
+               "stars.version": "crx.2.2016.128.11729"
+            },
+            "name": "Banker",
+            "type": "folder"
+         }, {
+            "children": [ {
+               "date_added": "13168342762089230",
+               "id": "10",
+               "meta_info": {
+                  "last_visited_desktop": "13168342762089367"
+               },
+               "name": "Folksam Försäkringsbolag – Försäkringar och pension - Folksam",
+               "type": "url",
+               "url": "https://www.folksam.se/"
+            }, {
+               "date_added": "13168342744089140",
+               "id": "9",
+               "meta_info": {
+                  "last_visited_desktop": "13168342744089259",
+                  "stars.note": "Detta är en länk till Trygg-Hansa",
+                  "stars.version": "crx.2.2016.128.11729"
+               },
+               "name": "Logga in hos Trygg-Hansa",
+               "type": "url",
+               "url": "https://www.trygghansa.se/logga-in"
+            } ],
+            "date_added": "13168342783457061",
+            "date_modified": "13168342846228368",
+            "id": "11",
+            "meta_info": {
+               "stars.description": "Företag som hanterar skador.-",
+               "stars.version": "crx.2.2016.128.11729"
+            },
+            "name": "Försäkringsbolag",
+            "type": "folder"
+         }, {
+            "date_added": "13168342797192697",
+            "id": "12",
+            "meta_info": {
+               "last_visited_desktop": "13168342797192783"
+            },
+            "name": "Sollentuna Centrum utanför Stockholm | Sollentuna Centrum",
+            "type": "url",
+            "url": "http://www.sollentunacentrum.se/"
+         } ],
+         "date_added": "13168342609790512",
+         "date_modified": "13168342865939264",
+         "id": "2",
+         "name": "Övriga bokmärken",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [  ],
+         "date_added": "13168342609790515",
+         "date_modified": "0",
+         "id": "3",
+         "name": "Bokmärken i mobilen",
+         "type": "folder"
+      }
+   },
+   "version": 1
+}

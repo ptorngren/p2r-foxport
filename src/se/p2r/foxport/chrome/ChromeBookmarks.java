@@ -15,8 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.chrome;
 
-import java.util.List;
-
 /**
  * TODO STUB - WORK IN PROGRESS
  * @author peer
@@ -24,45 +22,30 @@ import java.util.List;
  */
 public class ChromeBookmarks {
 	
-	private String title;
-	public String getTitle() {
-		return title;
+	private static class Roots {
+		private ChromeBookmark bookmark_bar;  // the bar at the top of the browser
+		private ChromeBookmark other;	// root folder for other bookmarks (in menu) 
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public long getDateAdded() {
-		return dateAdded;
-	}
-
-	public long getLastModified() {
-		return lastModified;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public String getRoot() {
-		return root;
-	}
-
-	public List<ChromeBookmark> getChildren() {
-		return children;
-	}
-
-	private int id;
-	private long dateAdded;
-	private long lastModified;
-	private String type;
-	private String root;
-	private List<ChromeBookmark> children;
+	private String checksum;
+	private int version;
+	private Roots roots;
 	
-	@Override
-	public String toString() {
-		return getClass().getSimpleName() + " [title=" + title + ", id=" + id + ", dateAdded=" + dateAdded + ", lastModified=" + lastModified + ", type=" + type + ", root=" + root + ", children=" + children.size() + "]";
+	public String getChecksum() {
+		return checksum;
+	}
+	public int getVersion() {
+		return version;
+	}
+	public Roots getRoots() {
+		return roots;
 	}
 
+	public ChromeBookmark getBookmarkBar() {
+		return roots==null ? null : roots.bookmark_bar;
+	}
+
+	public ChromeBookmark getOther() {
+		return roots==null ? null : roots.other;
+	}
 }

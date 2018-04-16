@@ -20,6 +20,13 @@ import java.util.List;
 public class FirefoxBookmarks {
 	
 	private String title;
+	private int id;
+	private long dateAdded;
+	private long lastModified;
+	private String type;
+	private String root;
+	private List<FirefoxBookmark> children;
+	
 	public String getTitle() {
 		return title;
 	}
@@ -48,13 +55,6 @@ public class FirefoxBookmarks {
 		return children;
 	}
 
-	private int id;
-	private long dateAdded;
-	private long lastModified;
-	private String type;
-	private String root;
-	private List<FirefoxBookmark> children;
-	
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + " [title=" + title + ", id=" + id + ", dateAdded=" + dateAdded + ", lastModified=" + lastModified + ", type=" + type + ", root=" + root + ", children=" + children.size() + "]";
