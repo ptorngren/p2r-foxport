@@ -16,7 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 package se.p2r.foxport.chrome;
 
 /**
- * TODO STUB - WORK IN PROGRESS
+ * Represents the Chrome bookmarks file.
+ * 
  * @author peer
  *
  */
