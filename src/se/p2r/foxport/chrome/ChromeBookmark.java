@@ -22,56 +22,76 @@ import se.p2r.foxport.Bookmark;
 
 /**
  * TODO STUB - WORK IN PROGRESS
+ * 
  * @author peer
  *
  */
 public class ChromeBookmark implements Bookmark {
+
+	private static class MetaInfo {
+		private long last_visited_desktop; // "13168342699619004",
+		
+		// FIXME implement!
+		// private String stars.note; // "Detta är en länk till Handelsbanken",
+		// private String stars.version; // "crx.2.2016.128.11729"
+	}
+
 	private long id; // "1"
 	private long date_added; // "13168342730424920"
-	private long date_modified;  // "13168342699618897"
+	private long date_modified; // "13168342699618897"
 	private String name; // "Sparbanken Nord - Regionens egen bank"
 	private String type; // "url", "folder"
 	private String url; // "https://www.sparbankennord.se/"
-//	private List<ChromeBookmark> children; // "https://www.sparbankennord.se/"
-	
-//	private Object meta_info;
-//    "meta_info": {
-//        "last_visited_desktop": "13168342699619004",
-//        "stars.note": "Detta är en länk till Handelsbanken",
-//        "stars.version": "crx.2.2016.128.11729"
-//     },
+	private List<ChromeBookmark> children;
+	private MetaInfo meta_info;
 
-	
 	@Override
 	public List<? extends Bookmark> getChildren() {
-		return Collections.EMPTY_LIST; 
-		// return children==null ? Collections.emptyList() : children;
+		return children == null ? Collections.emptyList() : children;
 	}
+
 	@Override
 	public String getTitle() {
 		return name;
 	}
+
 	@Override
 	public boolean isLink() {
 		return "url".equals(type);
 	}
+
 	@Override
 	public boolean isContainer() {
 		return "folder".equals(type);
 	}
+
 	@Override
 	public boolean hasChildren() {
-		return false;
-//		return ! (children==null || children.isEmpty());
+		return !(children == null || children.isEmpty());
 	}
+
 	@Override
 	public String getUri() {
 		return url;
 	}
+
+	public long getId() {
+		return id;
+	}
+
+	public long getDate_added() {
+		return date_added;
+	}
+
+	public long getDate_modified() {
+		return date_modified;
+	}
+
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
+		// FIXME implement!
 		return null;
+//		return meta_info.stars.note;
 	}
 
 }
