@@ -20,9 +20,6 @@ import static j2html.attributes.Attr.CHARSET;
 import static j2html.attributes.Attr.TYPE;
 import static se.p2r.foxport.util.Utils.log;
 
-import java.sql.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -143,10 +140,7 @@ public class HTMLTreeGenerator {
 	}
 
 	private DomContent generatedBy() {
-		TimeZone tz = TimeZone.getTimeZone("UTC");
-		DateFormat df = new SimpleDateFormat(" yyyy-MM-dd HH:mm ");
-		df.setTimeZone(tz);
-		String today = df.format(new Date(System.currentTimeMillis()));
+		String today = Utils.formatTimeUTC(System.currentTimeMillis());
 		ContainerTag link = a("p2r-foxport").attr("href", "https://github.com/ptorngren/p2r-foxport");
 //		ContainerTag utc = sup(a("UTC").attr("href", "https://www.worldtimeserver.com/current_time_in_UTC.aspx"));
 		ContainerTag utc = sup("UTC");

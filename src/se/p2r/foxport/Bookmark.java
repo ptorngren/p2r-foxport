@@ -76,4 +76,16 @@ public interface Bookmark {
 	 */
 	String getDescription();
 
+	
+//	/**
+//	 * Return an ISO formatted String showing date and time when the bookmark was added (UTC timezone).
+//	 * @return String 
+//	 */
+//	String getDateAdded();
+//	
+//	/**
+//	 * Return an ISO formatted String showing date and time when the bookmark was most recently modified (UTC timezone).
+//	 * @return String 
+//	 */
+//	String getLastModified();
 }

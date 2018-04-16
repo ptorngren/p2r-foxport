@@ -22,70 +22,84 @@ import se.p2r.foxport.Bookmark;
 
 public class FirefoxBookmark implements Bookmark {
 	private String title; // "Jul"
-	private int id;  // 51
+	private int id; // 51
 	private int parent; // 16
-	private long dateAdded; // 1236710299000000
-	private long lastModified; // 1236710299000000
+//	private long dateAdded; // 1236710299000000
+//	private long lastModified; // 1236710299000000
 	private List<FirefoxAnnotation> annos; // optional
-	private String type; // "text/x-moz-place-container", "text/x-moz-place"  // TODO separate subclasses
+	private String type; // "text/x-moz-place-container", "text/x-moz-place" // TODO separate subclasses
 	private String root; // "bookmarksMenuFolder" (only for x-moz-place-container?)
 	private List<FirefoxBookmark> children; // only for x-moz-place-container?
 	private String uri; // "http://www.p2r.se/links" (only for x-moz-place)
 
 	public boolean isContainer() {
-		return getType().toLowerCase().equals("text/x-moz-place-container") ;
+		return type.toLowerCase().equals("text/x-moz-place-container");
 	}
+
 	public boolean isLink() {
-		return getType().toLowerCase().equals("text/x-moz-place");
+		return type.toLowerCase().equals("text/x-moz-place");
 	}
+
 	public boolean hasChildren() {
 		return !getChildren().isEmpty();
 	}
 
 	public String getDescription() {
-		if (annos==null || annos.isEmpty()) {
+		if (annos == null || annos.isEmpty()) {
 			return null;
 		}
 		String description = null;
 		for (FirefoxAnnotation prospect : annos) {
 			if ("bookmarkProperties/description".equalsIgnoreCase(prospect.getName())) {
-				if (description==null) {
+				if (description == null) {
 					description = prospect.getValue();
 				} else {
-					throw new IllegalStateException("Multiple descriptions found. Have: " + description+", found: " + prospect.getValue());
+					throw new IllegalStateException(
+							"Multiple descriptions found. Have: " + description + ", found: " + prospect.getValue());
 				}
 			}
 		}
 		return description;
 	}
-	
+
 	public String getTitle() {
 		return title;
 	}
+
 	public int getId() {
 		return id;
 	}
+
 	public int getParent() {
 		return parent;
 	}
-	public long getDateAdded() {
-		return dateAdded;
-	}
-	public long getLastModified() {
-		return lastModified;
-	}
-	public String getType() {
-		return type;
-	}
+
+//	@Override
+//	public String getDateAdded() {
+//		return Utils.toISO(dateAdded);
+//	}
+//
+//	@Override
+//	public String getLastModified() {
+//		return Utils.toISO(lastModified);
+//	}
+//
+//	public String getType() {
+//		return type;
+//	}
+//
 	public List<FirefoxAnnotation> getAnnotations() {
 		return annos;
 	}
+
 	public String getRoot() {
 		return root;
 	}
+
 	public List<FirefoxBookmark> getChildren() {
-		return children==null ? Collections.emptyList() : children;
+		return children == null ? Collections.emptyList() : children;
 	}
+
 	public String getUri() {
 		return uri;
 	}

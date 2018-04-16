@@ -43,11 +43,12 @@ public class ChromeBookmark implements Bookmark {
 
 	private long id; // "1"
 	
-	@SerializedName("date_added")		
-	private long dateAdded; // "13168342730424920"
+//	@SerializedName("date_added")		
+//	private long dateAdded; // "13168342730424920"
+//
+//	@SerializedName("date_modified")		
+//	private long dateModified; // "13168342699618897"
 
-	@SerializedName("date_modified")		
-	private long dateModified; // "13168342699618897"
 	private String name; // "Sparbanken Nord - Regionens egen bank"
 	private String type; // "url", "folder"
 	private String url; // "https://www.sparbankennord.se/"
@@ -90,17 +91,23 @@ public class ChromeBookmark implements Bookmark {
 		return id;
 	}
 
-	public long getDate_added() {
-		return dateAdded;
-	}
-
-	public long getDate_modified() {
-		return dateModified;
-	}
-
 	@Override
 	public String getDescription() {
 		return metaInfo==null ? null : metaInfo.note;
 	}
 
+	@Override
+	public String toString() {
+		return "ChromeBookmark [name=" + name + ", type=" + type + "]";
+	}
+
+//	@Override
+//	public String getDateAdded() {
+//		return Utils.toISO(dateAdded);
+//	}
+//
+//	@Override
+//	public String getLastModified() {
+//		return Utils.toISO(dateModified);
+//	}
 }

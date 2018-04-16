@@ -20,9 +20,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * @author peer
@@ -68,6 +72,36 @@ public final class Utils {
 		DataInputStream in = new DataInputStream(new FileInputStream(file));
 		InputStreamReader isr = new InputStreamReader(in);
 		return isr;
+	}
+
+	/**
+	 * Convert time in millis to ISO formatted string in default timezone.
+	 * @param ms
+	 * @param timeZone 
+	 * @return String formatted as ISO standard
+	 */
+	public static String formatTimeISO(long ms) {
+		DateFormat df = new SimpleDateFormat(" yyyy-MM-dd HH:mm ");
+		TimeZone tz = TimeZone.getDefault();
+		df.setTimeZone(tz);
+		
+		String today = df.format(new Date(ms));
+		return today;
+	}
+
+	/**
+	 * Convert time in millis to ISO formatted string in UTC timezone.
+	 * @param ms
+	 * @param timeZone 
+	 * @return String formatted as ISO standard
+	 */
+	public static String formatTimeUTC(long ms) {
+		DateFormat df = new SimpleDateFormat(" yyyy-MM-dd HH:mm ");
+		TimeZone tz = TimeZone.getTimeZone("UTC");
+		df.setTimeZone(tz);
+		
+		String today = df.format(new Date(ms));
+		return today;
 	}
 
 }
