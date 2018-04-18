@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import se.p2r.foxport.Bookmark;
+import se.p2r.foxport.util.Utils;
 
 public class FirefoxBookmark implements Bookmark {
 	private String title; // "Jul"
@@ -54,8 +55,7 @@ public class FirefoxBookmark implements Bookmark {
 				if (description == null) {
 					description = prospect.getValue();
 				} else {
-					throw new IllegalStateException(
-							"Multiple descriptions found. Have: " + description + ", found: " + prospect.getValue());
+					throw new IllegalStateException("Multiple descriptions found. Have: " + description + ", found: " + prospect.getValue());
 				}
 			}
 		}
@@ -107,6 +107,16 @@ public class FirefoxBookmark implements Bookmark {
 	@Override
 	public String toString() {
 		return "FirefoxBookmark [title=" + title + ", hasChildren()=" + hasChildren() + "]";
+	}
+
+	@Override
+	public boolean isTaggedForExport() {
+		return getExportId()!=null ;
+	}
+
+	@Override
+	public String getExportId() {
+		return Utils.extractExportId(getDescription());
 	}
 
 }

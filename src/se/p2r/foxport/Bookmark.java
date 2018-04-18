@@ -54,6 +54,23 @@ public interface Bookmark {
 	boolean isContainer();
 
 	/**
+	 * Is this bookmark tagged for export? If so, an external id should be available
+	 * 
+	 * @return boolean
+	 * @see #getExportId()
+	 */
+	boolean isTaggedForExport();
+
+	/**
+	 * If available, get the id for external export (this will be the name of the exported file).
+	 * If not tagged for export, method returns <code>null</code>.
+	 * 
+	 * @return String with valid filename (without path or suffix), or <code>null</code>
+	 * @see #isTaggedForExport()
+	 */
+	String getExportId();
+
+	/**
 	 * Typically returns <code>true</code> for a container (unless it is empty) and
 	 * always <code>false</code> for a link.
 	 * 
@@ -76,7 +93,6 @@ public interface Bookmark {
 	 */
 	String getDescription();
 
-	
 //	/**
 //	 * Return an ISO formatted String showing date and time when the bookmark was added (UTC timezone).
 //	 * @return String 

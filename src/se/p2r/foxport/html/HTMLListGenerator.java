@@ -53,8 +53,8 @@ public class HTMLListGenerator {
 	private int containerDepth = 0;
 
 
-	public HTMLListGenerator(Bookmark root2, String name, String description) {
-		this.root = root2;
+	public HTMLListGenerator(Bookmark root, String name, String description) {
+		this.root = root;
 		this.name = name;
 		this.description = description;
 	}

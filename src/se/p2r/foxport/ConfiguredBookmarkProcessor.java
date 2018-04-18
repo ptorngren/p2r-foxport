@@ -21,7 +21,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListValuedMap;
@@ -36,23 +41,26 @@ import se.p2r.foxport.util.Utils.BrowserType;
 
 /**
  * <p>
- * Main entry for processing bookmarks. Bookmarks to export is defined by bookmark description. Depends on a reader to read bookmarks
- * and a writer to write HTML.
+ * Main entry for processing bookmarks with properties defined in configuration file. 
+ * Depends on a reader to read bookmarks and a writer to write HTML.
  * </p>
+ * <p>Design note:<br>Firefox does not export descriptions. Alas, current design is very brittle to do name 
+ * matching + we cannot handle names with spaces + we want a simple file name (not matching the folder name).</p> 
+ *         
  * 
  * @author peer
  *
- * @see Bookmark#getDescription()
+ * @see #mapNames(Properties)
+ * @see #getDescription(Properties, String)
+ * TODO extend {@link BookmarkProcessor}
  */
-public class BookmarkProcessor {
+public class ConfiguredBookmarkProcessor {
 
 	private final File targetFolder;
-
 	private final BrowserType browserType;
-
 	private final boolean generateTree;
 
-	public BookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree) throws IOException, ConfigurationException {
+	public ConfiguredBookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree) throws IOException, ConfigurationException {
 		this.browserType = browserType;
 		this.targetFolder = targetFolder;
 		this.generateTree = isTree;
@@ -61,15 +69,17 @@ public class BookmarkProcessor {
 		}
 	}
 
-	public void process() throws IOException {
+	public void process(Properties config) throws IOException {
 		BookmarkReader reader = BookmarkReader.Factory.makeReader(browserType);
 		Bookmark bookmarksRoot = reader.load();
+		Map<String, String> mappings = mapNames(config);
 
-		// first select tagged root containers, then recursively collect tagged containers in these roots
-		List<Bookmark> rootContainers = select(bookmarksRoot.getChildren());
-		ListValuedMap<String, Bookmark> selectedContainers = new DeepBookmarkSelector().select(rootContainers);
+		// first select root containers mentioned in config (avoid trash, tmp, private, etc)
+		// then recursively collect folders in these roots
+		List<Bookmark> rootContainers = select(bookmarksRoot.getChildren(), mappings);
+		ListValuedMap<String, Bookmark> selectedContainers = new DeepBookmarkSelector(mappings.keySet()).select(rootContainers);
 
-		List<File> htmlFiles = export(selectedContainers);
+		List<File> htmlFiles = export(config, selectedContainers, mappings);
 		publish(htmlFiles);
 	}
 
@@ -78,28 +88,45 @@ public class BookmarkProcessor {
 //		log("</RUN> Published " + fileCounter + " files");
 	}
 
-	private List<File> export(ListValuedMap<String, Bookmark> selectedContainers) {
+	private List<File> export(Properties config, ListValuedMap<String, Bookmark> selectedContainers, Map<String, String> mappings) {
 		List<File> files = new ArrayList();
-
-		// process each selected folder by id
-		for (String id : selectedContainers.keySet()) {
-			List<Bookmark> containersWithSameID = selectedContainers.get(id);
-			assert !containersWithSameID.isEmpty() : "No containers for id: " + id;
-			
-			// process each id (multiple containers may exist)
-			Bookmark container = containersWithSameID.size() == 1 ? containersWithSameID.iterator().next() : merge(id, containersWithSameID);
-			File exportedFile = processContainer(container);
-			files.add(exportedFile);
+		// process each selected folder
+		for (String folderName : selectedContainers.keySet()) {
+			String id = mappings.get(folderName);
+			String[] description = config.getProperty(id, "").split(";");
+			List<Bookmark> containers = selectedContainers.get(folderName);
+			assert !containers.isEmpty() : "No containers for title: " + folderName;
+			Bookmark root = containers.size() == 1 ? containers.iterator().next() : merge(id, folderName, containers);
+			files.add(processContainer(id, root, description));
 		}
-	
+
 		log("</RUN> Wrote " + files.size() + " files");
 		return files;
 	}
 
-	private Bookmark merge(String id, List<Bookmark> containers) {
+	// map names to folders bidirectional. If not mapped, entry has same key and value.
+	// TODO kludge - rethink, need a better way to handle names
+	private Map<String, String> mapNames(Properties config) {
+		Map<String, String> result = new HashMap();
+		for (Entry<Object, Object> each : config.entrySet()) {
+			String key = (String) each.getKey();
+			boolean map = key.startsWith("map.");
+			if (map) {
+				String id = key.substring(4).toLowerCase();
+				String folder = ((String) each.getValue()).toLowerCase();
+				result.put(id, folder);
+				result.put(folder, id);
+			} else {
+				result.put(key, key);
+			}
+		}
+		return result;
+	}
+
+	private Bookmark merge(String id, String folderName, List<Bookmark> containers) {
 		MutableBookmarkContainer result = new MutableBookmarkContainer(id);
 		for (Bookmark c : containers) {
-			assert c.getExportId().equalsIgnoreCase(id) : "Not the same id: " + result + ", " + c;
+			assert c.getTitle().equalsIgnoreCase(folderName) : "Not the same title: " + result + ", " + c;
 			result.setTitle(c.getTitle());
 			result.setDescription(c.getDescription());
 			result.mergeChildren(c);
@@ -107,21 +134,25 @@ public class BookmarkProcessor {
 		return result;
 	}
 
-	private File processContainer(Bookmark root) {
+	private File processContainer(String id, Bookmark root, String... nameAndDescription) {
+		log("Processing root folder: " + root.getTitle());
+
 		String name = root.getTitle();
-		String description = root.getDescription();
-		String id = root.getExportId();
-		
-		log("Processing root folder: " + id);
+		String description = "";
+		if (nameAndDescription.length > 0) {
+			name = nameAndDescription[0];
+			description = nameAndDescription.length > 1 ? nameAndDescription[1] : "";
+		}
 		String html = generateTree 
 				? new HTMLTreeGenerator(root, name, description).run()
 				: new HTMLListGenerator(root, name, description).run();
-				
 		return new HTMLFileWriter(targetFolder, id).writeFile(html, root);
 	}
 
-	private List<Bookmark> select(List<? extends Bookmark> prospects) {
-		return prospects.stream().filter(p -> p.isTaggedForExport()).collect(Collectors.toList());
+	private List<Bookmark> select(List<? extends Bookmark> prospects, Map<String, String> mappings) {
+		Collection<String> folderNames = mappings.values();
+		return prospects.stream().filter(p -> folderNames.contains(p.getTitle().toLowerCase()))
+				.collect(Collectors.toList());
 	}
 
 }

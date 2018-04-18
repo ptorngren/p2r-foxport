@@ -21,6 +21,7 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
 import se.p2r.foxport.Bookmark;
+import se.p2r.foxport.util.ExportTagParser;
 
 /**
  * A Chrome bookmark. 
@@ -35,8 +36,8 @@ public class ChromeBookmark implements Bookmark {
 		@SerializedName("last_visited_desktop")		
 		private long lastVisitedDesktop; // "13168342699619004",
 		
-		 @SerializedName("stars.note")		
-		 private String note; // "Detta är en länk till Handelsbanken",
+		 @SerializedName("stars.description")		
+		 private String description; // "Detta är en länk till Handelsbanken",
 		 @SerializedName("stars.version")		
 		 private String version; // "crx.2.2016.128.11729"
 	}
@@ -57,6 +58,8 @@ public class ChromeBookmark implements Bookmark {
 	@SerializedName("meta_info")		
 	private MetaInfo metaInfo;
 
+	private ExportTagParser tagParser;
+
 	@Override
 	public List<? extends Bookmark> getChildren() {
 		return children == null ? Collections.emptyList() : children;
@@ -64,7 +67,8 @@ public class ChromeBookmark implements Bookmark {
 
 	@Override
 	public String getTitle() {
-		return name;
+		String title = getTagParser().getTitle();
+		return title==null ? name : title;
 	}
 
 	@Override
@@ -93,12 +97,25 @@ public class ChromeBookmark implements Bookmark {
 
 	@Override
 	public String getDescription() {
-		return metaInfo==null ? null : metaInfo.note;
+		return getTagParser().getDescription();
+	}
+
+	private ExportTagParser getTagParser() {
+		if (tagParser == null) {
+			String description = metaInfo==null ? null : metaInfo.description;
+			tagParser = new ExportTagParser(description);
+		}
+		return tagParser;
 	}
 
 	@Override
-	public String toString() {
-		return "ChromeBookmark [name=" + name + ", type=" + type + "]";
+	public boolean isTaggedForExport() {
+		return getExportId()!=null;
+	}
+
+	@Override
+	public String getExportId() {
+		return getTagParser().getExportId();
 	}
 
 //	@Override
@@ -110,4 +127,11 @@ public class ChromeBookmark implements Bookmark {
 //	public String getLastModified() {
 //		return Utils.toISO(dateModified);
 //	}
+
+	@Override
+	public String toString() {
+		return "ChromeBookmark [name=" + name + ", type=" + type + "]";
+	}
+
+
 }

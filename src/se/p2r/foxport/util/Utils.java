@@ -33,7 +33,25 @@ import java.util.TimeZone;
  *
  */
 public final class Utils {
-	public static enum BrowserType {FIREFOX, CHROME}
+	public static enum BrowserType {FIREFOX, CHROME;
+		
+		public static BrowserType from(String type) {
+			return type.length() == 1 ? fromShort(type.charAt(0)) : valueOf(type.toUpperCase());
+		}
+
+		private static BrowserType fromShort(char type) {
+			switch (type) {
+			case 'c':
+				return CHROME;
+
+			case 'f':
+				return FIREFOX;
+
+			default:
+				throw new IllegalArgumentException("Unexpexted id: " + type);
+			}
+		}
+	}
 
 	private Utils() {} // static utility
 
@@ -102,6 +120,34 @@ public final class Utils {
 		
 		String today = df.format(new Date(ms));
 		return today;
+	}
+
+	/**
+	 * Extract the id for external export (this will be the name of the exported file), if defined.
+	 * 
+	 * @return String with valid filename (without path or suffix), or <code>null</code>
+	 */
+	public static String extractExportId(String stringOrNull) {
+		return stringOrNull==null || stringOrNull.trim().isEmpty() ? null : stringOrNull.split(":")[0];
+	}
+
+	/**
+	 * Extract the description after stripping the id for external export (if present).
+	 * @param description
+	 * @return
+	 */
+	public static String extractDescription(String stringOrNull) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * Rerturn <code>null</code> if string is missing or empty.
+	 * @param s
+	 * @return trimmed String or <code>null</code>
+	 */
+	public static String nullIfEmpty(String s) {
+		return s==null || s.trim().isEmpty() ? null : s.trim();
 	}
 
 }

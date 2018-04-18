@@ -31,23 +31,43 @@ import se.p2r.foxport.Bookmark;
  */
 public class MutableBookmarkContainer implements Bookmark {
 
-	private final String title;
 	private final Map<String, MutableBookmarkContainer> childFoldersByTitle = new HashMap();
 	private final List<Bookmark> childLinks = new ArrayList();
-	private String description;
+	private final boolean isTaggedForExport = true;
+	private final String exportId;
 
-	public MutableBookmarkContainer(String title) {
-		this.title = title;
+	private String description;
+	private String title;
+
+	public MutableBookmarkContainer(String exportId) {
+		this.exportId = exportId;
 	}
 	
-	public MutableBookmarkContainer(String title, String description) {
-		this.title = title;
-		this.description = description;
+	public MutableBookmarkContainer(Bookmark source) {
+		this.title = source.getTitle();
+		this.description = source.getDescription();
+		this.exportId = source.getExportId();
+		assert validTitle();
+	}
+
+	private boolean validTitle() {
+		boolean empty = title == null || title.trim().isEmpty();
+		assert !empty : "No title";
+		return true;
 	}
 
 	@Override
 	public String getTitle() {
 		return title;
+	}
+
+	public void setTitle(String title) {
+		// concatenate if title already set
+		if (this.title==null) {
+			this.title = title;
+		} else if (!this.title.equalsIgnoreCase(title)) {
+			this.title = String.format("%s & %s", this.title, title);
+		}
 	}
 
 	@Override
@@ -85,7 +105,9 @@ public class MutableBookmarkContainer implements Bookmark {
 		if (description != null) {
 			if (this.description == null) {
 				this.description = description;
-			} else {
+			} else if (!this.description.contains(description)) {
+				// concatenate if description already set
+				// TODO proper line separator
 				this.description += "\n\n" + description;
 			}
 		}
@@ -102,9 +124,9 @@ public class MutableBookmarkContainer implements Bookmark {
 	 * 
 	 * @param source
 	 */
-	public void merge(Bookmark source) {
+	public void mergeChildren(Bookmark source) {
 		assert source.isContainer() : "Not a container: " + source;
-		assert source.getTitle().equalsIgnoreCase(title) : "Wrong title: " + source;
+		assert source.getTitle().equalsIgnoreCase(title) : "Wrong title. This: " + title + ", source to merge: " + source;
 
 		for (Bookmark sourceChild: source.getChildren()) {
 			if (sourceChild.isLink()) {
@@ -114,10 +136,10 @@ public class MutableBookmarkContainer implements Bookmark {
 				MutableBookmarkContainer targetChild = childFoldersByTitle.get(childTitle);
 				
 				if (targetChild==null) {
-					targetChild = new MutableBookmarkContainer(childTitle, sourceChild.getDescription());
+					targetChild = new MutableBookmarkContainer(sourceChild);
 					childFoldersByTitle.put(childTitle, targetChild);
 				} 
-				targetChild.merge(sourceChild);
+				targetChild.mergeChildren(sourceChild);
 			}
 		}
 	}
@@ -125,6 +147,16 @@ public class MutableBookmarkContainer implements Bookmark {
 	@Override
 	public String toString() {
 		return "MutableBookmarkContainer [title=" + title + ", hasChildren()=" + hasChildren() + "]";
+	}
+
+	@Override
+	public boolean isTaggedForExport() {
+		return isTaggedForExport;
+	}
+
+	@Override
+	public String getExportId() {
+		return exportId;
 	}
 
 }
