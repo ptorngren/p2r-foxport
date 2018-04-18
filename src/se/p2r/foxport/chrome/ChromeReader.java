@@ -31,8 +31,9 @@ import com.google.gson.GsonBuilder;
 import se.p2r.foxport.BookmarkReader;
 
 /**
- * Reads chrome bookmarks. Note: For editing comments in Chrome, you probably need to add the BookmarkManager:
- * https://chrome.google.com/webstore/detail/bookmark-manager/gmlllbghnfkpflemihljekbapjopfjik
+ * Reads chrome bookmarks. Note: For editing comments in Chrome, you probably
+ * need to add the <a
+ * href=https://chrome.google.com/webstore/detail/bookmark-manager/gmlllbghnfkpflemihljekbapjopfjik>Google Chrome BookmarkManager</a>
  * 
  * @author peer
  *
