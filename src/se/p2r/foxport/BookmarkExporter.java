@@ -17,8 +17,8 @@ package se.p2r.foxport;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.cli.MissingArgumentException;
@@ -45,15 +45,33 @@ import se.p2r.foxport.util.Utils.BrowserType;
  */
 public class BookmarkExporter {
 
-	private static List<File> run(BrowserType type, File targetFolder, boolean isTree) throws ConfigurationException, IOException {
-		Utils.log("<RUN> " + targetFolder);
-		return new BookmarkProcessor(type, targetFolder, isTree).process();
-	}
+	private static int run(CommandLineParser.ActiveOptions options) throws ConfigurationException, IOException, MissingArgumentException {
+		
+		// init
+		BrowserType browserType = options.getBrowserType();
+		File targetFolder = options.getTargetFolder();
+		boolean isTree = options.isTree();
+		Collection<File> files;
+		
+		// read and write 
+		if (options.isConfigurationFileSpecified()) {
+			File cfgFile = options.getConfigurationFile();
+			Properties config = readProperties(cfgFile);
+			Utils.log("<RUN> " + targetFolder + ", configured by file " + cfgFile.getAbsolutePath());
+			files = new ConfiguredBookmarkProcessor(browserType, targetFolder, isTree).process(config);
+		} else {
+			Utils.log("<RUN> " + targetFolder);
+			files = new BookmarkProcessor(browserType, targetFolder, isTree).process();
+		}
 
-	private static List<File> run(BrowserType type, File targetFolder, boolean isTree, File cfgFile) throws ConfigurationException, IOException {
-		Properties config = readProperties(cfgFile);
-		Utils.log("<RUN> " + targetFolder + ", configured by file " + cfgFile.getAbsolutePath());
-		return new ConfiguredBookmarkProcessor(type, targetFolder, isTree).process(config);
+		// upload
+		if (options.isUpload() && !files.isEmpty()) {
+			URL url = options.getUploadURL();
+			BookmarkPublisher publisher = new BookmarkPublisher(url);
+			publisher.publish(files);
+		}
+		
+		return 0;
 	}
 
 	private static Properties readProperties(File cfgFile) throws ConfigurationException {
@@ -64,22 +82,6 @@ public class BookmarkExporter {
 		} catch (Exception e) {
 			throw new ConfigurationException("Could not read configuration file: " + cfgFile, e);
 		}
-	}
-
-	private static int run(CommandLineParser.ActiveOptions commandLine) throws ConfigurationException, IOException, MissingArgumentException {
-		Collection<File> files;
-		if (commandLine.isConfigurationFileSpecified()) {
-			files = run(commandLine.getBrowserType(), commandLine.getTargetFolder(), commandLine.isTree(),
-					commandLine.getConfigurationFile());
-		} else {
-			files = run(commandLine.getBrowserType(), commandLine.getTargetFolder(), commandLine.isTree());
-		}
-
-		if (commandLine.isUpload() && !files.isEmpty()) {
-			new BookmarkPublisher(commandLine.getUploadURL()).publish(files);
-		}
-		
-		return 0;
 	}
 
 	/**
