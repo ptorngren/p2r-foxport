@@ -66,7 +66,7 @@ public class HTMLListGenerator {
 		for (Bookmark child : root.getChildren()) {
 			append(dl, child);
 		}
-		log("Generated " + uriConter + " links in " + containerCounter + " containers");
+		debug("Generated " + uriConter + " links in " + containerCounter + " containers");
 		return html.write();
 	}
 

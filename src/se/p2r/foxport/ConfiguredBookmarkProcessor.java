@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport;
 
-import static se.p2r.foxport.util.Utils.log;
+import static se.p2r.foxport.util.Utils.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -129,7 +129,7 @@ public class ConfiguredBookmarkProcessor {
 	}
 
 	private File processContainer(String id, Bookmark root, String... nameAndDescription) {
-		log("Processing root folder: " + root.getTitle());
+		debug("Processing root folder: " + root.getTitle());
 
 		String name = root.getTitle();
 		String description = "";

@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport;
 
-import static se.p2r.foxport.util.Utils.log;
+import static se.p2r.foxport.util.Utils.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -106,7 +106,7 @@ public class BookmarkProcessor {
 		String description = root.getDescription();
 		String id = root.getExportId();
 		
-		log("Processing root folder: " + id);
+		debug("Processing root folder: " + id);
 		String html = generateTree 
 				? new HTMLTreeGenerator(root, name, description).run()
 				: new HTMLListGenerator(root, name, description).run();

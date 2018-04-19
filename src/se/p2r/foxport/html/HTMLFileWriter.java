@@ -41,7 +41,7 @@ public class HTMLFileWriter {
 	}
 
 	private void writeFile(String html, File outputFile) {
-		log("Writing html to "+outputFile+" ("+html.length()+" characters)" );
+		debug("Writing html to "+outputFile+" ("+html.length()+" characters)" );
 		PrintWriter writer = null;
 		try {
 			if (outputFile.isFile()) {

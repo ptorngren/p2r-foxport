@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketException;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.Collection;
 
 import org.apache.commons.net.ftp.FTP;
@@ -52,11 +51,11 @@ public class BookmarkPublisher {
 
 	public void publish(Collection<File> localFiles) {
 		try {
-			Utils.log(String.format("<UPLOAD>Uploading %d files to %s ...", localFiles.size(), strippedURL));
+			Utils.log(String.format("<UPLOAD> Uploading %d files to %s ...", localFiles.size(), strippedURL));
 			
 			boolean ok = doPublish(localFiles);
 			if (ok) {
-				Utils.log(String.format("</UPLOAD>Uploaded %d files to %s", localFiles.size(), strippedURL));
+				Utils.log(String.format("</UPLOAD> Uploaded %d files to %s", localFiles.size(), strippedURL));
 			} else {
 				Utils.log("Failed to upload all files to "+strippedURL);
 			}
@@ -77,13 +76,16 @@ public class BookmarkPublisher {
 				String remoteName = file.getName();
 				boolean ok = upload(ftpClient, file, remoteName);
 				if (ok) {
-					Utils.log(String.format("Uploaded %s to %s%s/%s", file, url.getHost(), pwd, remoteName));
+					Utils.debug(String.format("Uploaded %s to %s%s/%s", file, url.getHost(), pwd, remoteName));
 				}
 			}
 		}
-//		return ftpClient.completePendingCommand();
+		
+		Utils.debug("Logging out ... ");
+//		ftpClient.completePendingCommand();  // hangs?
 		ftpClient.logout();
 	    ftpClient.disconnect();
+		Utils.debug("Disconnected");
 		return true;
 	}
 
@@ -99,30 +101,6 @@ public class BookmarkPublisher {
 		}
 	}
 
-//	private void upload2(FTPClient ftpClient, File localFile) throws IOException {
-//		String secondRemoteFile = localFile.getName();
-//
-//		FileInputStream inputStream = null;
-//		OutputStream outputStream = null;
-//		try {
-//			inputStream = new FileInputStream(localFile);
-//			outputStream = ftpClient.storeFileStream(secondRemoteFile);
-//			byte[] bytesIn = new byte[4096];
-//			int read = 0;
-//
-//			while ((read = inputStream.read(bytesIn)) != -1) {
-//				outputStream.write(bytesIn, 0, read);
-//			}
-//		} finally {
-//			if (inputStream != null) {
-//				inputStream.close();
-//			}
-//			if (outputStream != null) {
-//				outputStream.close();
-//			}
-//		}
-//	}
-//
 	private FTPClient createClient() throws SocketException, IOException {
 		String host = url.getHost();
 		Utils.log("Connecting to " + host + " ...");
@@ -143,6 +121,4 @@ public class BookmarkPublisher {
 		
 		return ftpClient;
 	}
-
-
 }

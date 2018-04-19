@@ -15,26 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.html;
 
-import static j2html.TagCreator.a;
-import static j2html.TagCreator.body;
-import static j2html.TagCreator.details;
-import static j2html.TagCreator.div;
-import static j2html.TagCreator.h1;
-import static j2html.TagCreator.head;
-import static j2html.TagCreator.hr;
-import static j2html.TagCreator.html;
-import static j2html.TagCreator.meta;
-import static j2html.TagCreator.p;
-import static j2html.TagCreator.rawHtml;
-import static j2html.TagCreator.small;
-import static j2html.TagCreator.strong;
-import static j2html.TagCreator.style;
-import static j2html.TagCreator.summary;
-import static j2html.TagCreator.sup;
-import static j2html.TagCreator.title;
-import static j2html.attributes.Attr.CHARSET;
-import static j2html.attributes.Attr.TYPE;
-import static se.p2r.foxport.util.Utils.log;
+import static j2html.TagCreator.*;
+import static j2html.attributes.Attr.*;
+import static se.p2r.foxport.util.Utils.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,7 +61,7 @@ public class HTMLTreeGenerator {
 	public String run() {
 		assert root.hasChildren() : root.getTitle() + ": no children; should have been checked by caller!";
 		ContainerTag html = html(newHead(), newBody(root.getChildren()));
-		log("Generated " + uriConter + " links in " + containerCounter + " containers");
+		debug("Generated " + uriConter + " links in " + containerCounter + " containers");
 		return html.render();
 	}
 
