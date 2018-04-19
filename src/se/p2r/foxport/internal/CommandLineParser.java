@@ -14,7 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 */
 
-package se.p2r.foxport;
+package se.p2r.foxport.internal;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -31,6 +31,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.UnrecognizedOptionException;
 
+import se.p2r.foxport.BookmarkExporter;
 import se.p2r.foxport.util.Utils.BrowserType;
 
 /**

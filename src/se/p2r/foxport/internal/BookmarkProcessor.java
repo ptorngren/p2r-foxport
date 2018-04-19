@@ -13,7 +13,7 @@ Redistribution and use in source and binary forms, with or without modification,
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-package se.p2r.foxport;
+package se.p2r.foxport.internal;
 
 import static se.p2r.foxport.util.Utils.*;
 
@@ -26,10 +26,12 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListValuedMap;
 
+import se.p2r.foxport.Bookmark;
+import se.p2r.foxport.BookmarkReader;
+import se.p2r.foxport.BookmarkReader.Factory;
 import se.p2r.foxport.html.HTMLFileWriter;
 import se.p2r.foxport.html.HTMLListGenerator;
 import se.p2r.foxport.html.HTMLTreeGenerator;
-import se.p2r.foxport.internal.ConfigurationException;
 import se.p2r.foxport.util.DeepBookmarkSelector;
 import se.p2r.foxport.util.MutableBookmarkContainer;
 import se.p2r.foxport.util.Utils.BrowserType;

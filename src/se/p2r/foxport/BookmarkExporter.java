@@ -26,7 +26,10 @@ import org.apache.commons.cli.ParseException;
 
 import se.p2r.foxport.chrome.ChromeReader;
 import se.p2r.foxport.firefox.FirefoxReader;
+import se.p2r.foxport.internal.BookmarkProcessor;
+import se.p2r.foxport.internal.CommandLineParser;
 import se.p2r.foxport.internal.ConfigurationException;
+import se.p2r.foxport.internal.ConfiguredBookmarkProcessor;
 import se.p2r.foxport.net.BookmarkPublisher;
 import se.p2r.foxport.util.Utils;
 import se.p2r.foxport.util.Utils.BrowserType;
