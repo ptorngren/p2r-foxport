@@ -21,9 +21,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.SocketException;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.Collection;
 
 import org.apache.commons.net.ftp.FTP;
@@ -69,22 +69,29 @@ public class BookmarkPublisher {
 
 	private boolean doPublish(Collection<File> files) throws SocketException, IOException {
 		FTPClient ftpClient = createClient();
-		for (File file : files) {
-			Utils.log(String.format("Uploading %s ...", file));
-			boolean ok = upload(ftpClient, file);
-			if (ok) {
-				Utils.log(String.format("Uploaded %s", file));
+		String remotePath = url.getPath();
+		if (ftpClient.changeWorkingDirectory(remotePath)) {
+			String pwd = ftpClient.printWorkingDirectory();
+			for (File file : files) {
+				Utils.log(String.format("Uploading %s ...", file));
+				String remoteName = file.getName();
+				boolean ok = upload(ftpClient, file, remoteName);
+				if (ok) {
+					Utils.log(String.format("Uploaded %s to %s%s/%s", file, url.getHost(), pwd, remoteName));
+				}
 			}
 		}
 //		return ftpClient.completePendingCommand();
+		ftpClient.logout();
+	    ftpClient.disconnect();
 		return true;
 	}
 
-	private boolean upload(FTPClient ftpClient, File localFile) throws FileNotFoundException, IOException {
+	private boolean upload(FTPClient ftpClient, File localFile, String remoteName) throws FileNotFoundException, IOException {
 		InputStream inputStream = null;
 		try {
 			inputStream = new FileInputStream(localFile);
-			return ftpClient.storeFile(localFile.getName(), inputStream);
+			return ftpClient.storeFile(remoteName, inputStream);
 		} finally {
 			if (inputStream != null) {
 				inputStream.close();
