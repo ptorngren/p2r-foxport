@@ -17,7 +17,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 package se.p2r.foxport.net;
 
 import java.io.File;
-import java.net.URI;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 
 import se.p2r.foxport.util.NotYetImplementedException;
@@ -32,19 +33,24 @@ import se.p2r.foxport.util.Utils;
  */
 public class BookmarkPublisher {
 
-	private final URI uri;
+	private final URL url;
 
-	public BookmarkPublisher(URI uri) {
-		this.uri = uri;
+	public BookmarkPublisher(URL url) {
+		this.url = url;
 	}
 
 	/**
 	 * @param files
 	 */
 	public void publish(Collection<File> files) {
-		Utils.log(String.format("<UPLOAD>Uploading %d files to %s ...", files.size(), uri));
-		throw new NotYetImplementedException();
-//		Utils.log(String.format("</UPLOAD>Uploaded %d files to %s", files.size(), uri));
+		try {
+			URL target = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getPath());
+			Utils.log(String.format("<UPLOAD>Uploading %d files to %s ...", files.size(), target));
+			throw new NotYetImplementedException();
+//			Utils.log(String.format("</UPLOAD>Uploaded %d files to %s", files.size(), uri));
+		} catch (MalformedURLException e) {
+			throw new IllegalStateException("Cannot create URL from URL. Should not happen.");
+		}
 	}
 
 }

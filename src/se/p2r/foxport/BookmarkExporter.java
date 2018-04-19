@@ -63,7 +63,7 @@ public class BookmarkExporter {
 		}
 	}
 
-	private static int run(CommandLineParser.CommandLine commandLine) throws ConfigurationException, IOException, MissingArgumentException {
+	private static int run(CommandLineParser.Arguments commandLine) throws ConfigurationException, IOException, MissingArgumentException {
 		Collection<File> files;
 		if (commandLine.isConfigurationFileSpecified()) {
 			files = run(commandLine.getBrowserType(), commandLine.getTargetFolder(), commandLine.isTree(),
@@ -73,7 +73,7 @@ public class BookmarkExporter {
 		}
 
 		if (commandLine.isUpload() && !files.isEmpty()) {
-			new BookmarkPublisher(commandLine.getUploadURI()).publish(files);
+			new BookmarkPublisher(commandLine.getUploadURL()).publish(files);
 		}
 		
 		return 0;
@@ -91,7 +91,7 @@ public class BookmarkExporter {
 	public static void main(String[] args) {
 			int result;
 			try {
-				CommandLineParser.CommandLine commandLine = new CommandLineParser().parse(args);
+				CommandLineParser.Arguments commandLine = new CommandLineParser().parse(args);
 				result = commandLine.isHelp() ? commandLine.printHelp() : run(commandLine);
 			} catch (Exception e) {
 				e.printStackTrace(System.err);;

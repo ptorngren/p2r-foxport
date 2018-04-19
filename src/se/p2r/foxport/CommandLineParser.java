@@ -17,7 +17,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 package se.p2r.foxport;
 
 import java.io.File;
-import java.net.URI;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 
 import org.apache.commons.cli.DefaultParser;
@@ -27,7 +28,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import se.p2r.foxport.util.NotYetImplementedException;
 import se.p2r.foxport.util.Utils.BrowserType;
 
 /**
@@ -37,41 +37,11 @@ import se.p2r.foxport.util.Utils.BrowserType;
  */
 public class CommandLineParser {
 
-	public final class CommandLine {
+	public final class Arguments {
 
 		private final org.apache.commons.cli.CommandLine commandLine;
-//		private final String name = BookmarkExporter.class.getSimpleName();
-//		private String launch = "java " + name;
-//		private String browserTypes = Arrays.asList(BrowserType.values()).toString();
-//		private String[] syntax = {
-//						name, 
-//						"", 
-//						String.format("Usage 1: %s -b=browsertype -t=targetFolder -c=configurationFile", launch),
-//						String.format("Usage 2: %s -b=browsertype -t=targetFolder folderStatement...", launch), 
-//						"",
-//						"where:",
-//						String.format("'browsertype' is one of %s,", browserTypes),
-//						"'targetFolder' is a writable folder,",
-//						"'configurationFile' is a file (absolute or relative) with one or more folderStatements (each on a separate line)",
-//						"'folderStatement' is on format format 'bookmarkFolder=name;description'.",
-//						"", 
-//						"Command Line Example:",
-//						String.format("  %s -b=FIREFOX -t=C:/temp \"Media=Media Links;Online news or entertainment\", \"Games=Games;Online games\"", launch),
-//						"", 
-//						"Configuration File Example:", 
-//						String.format("  %s -b=CHROME -t=C:/temp C:/myStuff/%s.properties", launch, name),
-//						"file contents:", 
-//						"  # mappings (map a plain file name to the more complex folder name)",
-//						"  map.media=Online Media Links",
-//						"  # Folders to export: ", 
-//						"  media=Shared Media Links;Online news or entertainment",
-//						"  Games=Shared Games;My online games", 
-//						"",
-//						"Note 1: if no folders are named, all folders are exported using the default metadata (if any).",
-//						"Note 2: launch with JVM arg '-DDEBUG' to get some basic debug info on stderr.",
-//						};
 				
-		public CommandLine(String... args) throws ParseException {
+		public Arguments(String... args) throws ParseException {
 			try {
 				this.commandLine = new DefaultParser().parse(options, args);
 			} catch (ParseException e) {
@@ -109,7 +79,6 @@ public class CommandLineParser {
 		private String getMandatoryArgument(char opt) throws MissingArgumentException {
 			String optionValue = commandLine.getOptionValue(opt);
 			if (optionValue==null) {
-//				printSyntax();
 				Option o = findOption(opt);
 				throw new MissingArgumentException(String.format("-%s (--%s)", o.getOpt(), o.getLongOpt()));
 			}
@@ -122,23 +91,28 @@ public class CommandLineParser {
 			return result; 
 		}
 
-//		private void printSyntax() {
-//			for (String line: syntax) {
-//				System.out.println(line);
-//			}
-//		}
-//
 		public boolean isUpload() {
 			return commandLine.hasOption("u");
 		}
 
-		public URI getUploadURI() {
-			 // FIXME implement
-//			if (isUpload()) {
-//				String[] optionValues = commandLine.getOptionValues("u");
-//				return null;
-//			}
-			throw new NotYetImplementedException();
+		/**
+		 * Create URL for FTP upload. Syntax is expected to follow
+		 * <a href="ftp://ftp.funet.fi/pub/doc/rfc/rfc1738.txt">RFC 1738</a>. Example:
+		 * <code>ftp://user:password@p2r.se:21/links</code>
+		 * 
+		 * @return
+		 * @see http://jkorpela.fi/ftpurl.html
+		 */
+		public URL getUploadURL() {
+			if (isUpload()) {
+				String url = commandLine.getOptionValue('u');
+				try {
+					return new URL(url);
+				} catch (MalformedURLException e) {
+					throw new IllegalArgumentException("Invalid upload address: "+url, e);
+				}
+			}
+			return null;
 		}
 
 		public boolean isHelp() {
@@ -152,8 +126,9 @@ public class CommandLineParser {
 		}
 
 	}
+	
 	private final Options options;
-	private CommandLine activeCommandLine;
+	private Arguments activeCommandLine;
 
 	public CommandLineParser() {
 		
@@ -164,12 +139,12 @@ public class CommandLineParser {
 				.addOption("t", "target", true, "Target folder for writing exported files (default is user's temp directory)")
 				.addOption("c", "config", true, "Configuration file (foobar.properties), mandatory if running Firefox")
 				.addOption("p", "plain", false, "Plain list output (default is tree)")
-				.addOption("u", "upload", true, "Upload destination (default is no upload)");
+				.addOption("u", "upload", true, "Upload to FTP destination (default is no upload). Format follows RFC 1738: 'user");
 		this.options.getOption("b").setRequired(true);
 	}
 
-	public CommandLine parse(String... args) throws ParseException {
-		activeCommandLine = new CommandLine(args);
+	public Arguments parse(String... args) throws ParseException {
+		activeCommandLine = new Arguments(args);
 		try {
 			return validate(activeCommandLine);
 		} catch (ParseException e) {
@@ -178,7 +153,7 @@ public class CommandLineParser {
 		}
 	}
 
-	private CommandLine validate(CommandLine cl) throws ParseException {
+	private Arguments validate(Arguments cl) throws ParseException {
 		// FIXME implement
 //		throw new ParseException("TEST");
 		return cl;
