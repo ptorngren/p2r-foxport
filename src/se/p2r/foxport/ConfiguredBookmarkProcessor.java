@@ -15,10 +15,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport;
 
-import static se.p2r.foxport.util.Utils.*;
+import static se.p2r.foxport.util.Utils.debug;
+import static se.p2r.foxport.util.Utils.log;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,21 +52,12 @@ import se.p2r.foxport.util.Utils.BrowserType;
  *
  * @see #mapNames(Properties)
  * @see #getDescription(Properties, String)
- * TODO extend {@link BookmarkProcessor}
+ * TODO refactor and make more use of {@link BookmarkProcessor}
  */
-public class ConfiguredBookmarkProcessor {
-
-	private final File targetFolder;
-	private final BrowserType browserType;
-	private final boolean generateTree;
+public class ConfiguredBookmarkProcessor extends BookmarkProcessor {
 
 	public ConfiguredBookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree) throws IOException, ConfigurationException {
-		this.browserType = browserType;
-		this.targetFolder = targetFolder;
-		this.generateTree = isTree;
-		if (!targetFolder.isDirectory()) {
-			throw new ConfigurationException(new FileNotFoundException("Output folder does not exist: " + targetFolder));
-		}
+		super(browserType, targetFolder, isTree);
 	}
 
 	public List<File> process(Properties config) throws IOException {

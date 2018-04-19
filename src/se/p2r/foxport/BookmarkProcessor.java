@@ -46,11 +46,9 @@ import se.p2r.foxport.util.Utils.BrowserType;
  */
 public class BookmarkProcessor {
 
-	private final File targetFolder;
-
-	private final BrowserType browserType;
-
-	private final boolean generateTree;
+	protected final File targetFolder;
+	protected final BrowserType browserType;
+	protected final boolean generateTree;
 
 	public BookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree) throws IOException, ConfigurationException {
 		this.browserType = browserType;
