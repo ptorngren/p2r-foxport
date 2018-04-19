@@ -15,7 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.internal;
 
-import static se.p2r.foxport.util.Utils.*;
+import static se.p2r.foxport.util.Utils.debug;
+import static se.p2r.foxport.util.Utils.log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,7 +29,6 @@ import org.apache.commons.collections4.ListValuedMap;
 
 import se.p2r.foxport.Bookmark;
 import se.p2r.foxport.BookmarkReader;
-import se.p2r.foxport.BookmarkReader.Factory;
 import se.p2r.foxport.html.HTMLFileWriter;
 import se.p2r.foxport.html.HTMLListGenerator;
 import se.p2r.foxport.html.HTMLTreeGenerator;
@@ -47,7 +47,7 @@ import se.p2r.foxport.util.Utils.BrowserType;
  * @see Bookmark#getDescription()
  */
 public class BookmarkProcessor {
-
+	
 	protected final File targetFolder;
 	protected final BrowserType browserType;
 	protected final boolean generateTree;

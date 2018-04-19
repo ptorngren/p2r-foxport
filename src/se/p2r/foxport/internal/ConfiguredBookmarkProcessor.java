@@ -33,7 +33,6 @@ import org.apache.commons.collections4.ListValuedMap;
 
 import se.p2r.foxport.Bookmark;
 import se.p2r.foxport.BookmarkReader;
-import se.p2r.foxport.BookmarkReader.Factory;
 import se.p2r.foxport.html.HTMLFileWriter;
 import se.p2r.foxport.html.HTMLListGenerator;
 import se.p2r.foxport.html.HTMLTreeGenerator;
