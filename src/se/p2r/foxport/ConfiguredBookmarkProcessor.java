@@ -69,7 +69,7 @@ public class ConfiguredBookmarkProcessor {
 		}
 	}
 
-	public void process(Properties config) throws IOException {
+	public List<File> process(Properties config) throws IOException {
 		BookmarkReader reader = BookmarkReader.Factory.makeReader(browserType);
 		Bookmark bookmarksRoot = reader.load();
 		Map<String, String> mappings = mapNames(config);
@@ -79,13 +79,7 @@ public class ConfiguredBookmarkProcessor {
 		List<Bookmark> rootContainers = select(bookmarksRoot.getChildren(), mappings);
 		ListValuedMap<String, Bookmark> selectedContainers = new DeepBookmarkSelector(mappings.keySet()).select(rootContainers);
 
-		List<File> htmlFiles = export(config, selectedContainers, mappings);
-		publish(htmlFiles);
-	}
-
-	// FIXME http://www.codejava.net/java-se/networking/ftp/java-ftp-file-upload-tutorial-and-example
-	private void publish(List<File> htmlFiles) {
-//		log("</RUN> Published " + fileCounter + " files");
+		return export(config, selectedContainers, mappings);
 	}
 
 	private List<File> export(Properties config, ListValuedMap<String, Bookmark> selectedContainers, Map<String, String> mappings) {

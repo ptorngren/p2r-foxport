@@ -17,13 +17,17 @@ package se.p2r.foxport;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.ParseException;
 
 import se.p2r.foxport.chrome.ChromeReader;
 import se.p2r.foxport.firefox.FirefoxReader;
 import se.p2r.foxport.internal.ConfigurationException;
+import se.p2r.foxport.net.BookmarkPublisher;
 import se.p2r.foxport.util.Utils;
 import se.p2r.foxport.util.Utils.BrowserType;
 
@@ -38,15 +42,15 @@ import se.p2r.foxport.util.Utils.BrowserType;
  */
 public class BookmarkExporter {
 
-	private static void run(BrowserType type, File targetFolder, boolean isTree) throws ConfigurationException, IOException {
+	private static List<File> run(BrowserType type, File targetFolder, boolean isTree) throws ConfigurationException, IOException {
 		Utils.log("<RUN> " + targetFolder);
-		new BookmarkProcessor(type, targetFolder, isTree).process();
+		return new BookmarkProcessor(type, targetFolder, isTree).process();
 	}
 
-	private static void run(BrowserType type, File targetFolder, boolean isTree, File cfgFile) throws ConfigurationException, IOException {
+	private static List<File> run(BrowserType type, File targetFolder, boolean isTree, File cfgFile) throws ConfigurationException, IOException {
 		Properties config = readProperties(cfgFile);
 		Utils.log("<RUN> " + targetFolder + ", configured by file " + cfgFile.getAbsolutePath());
-		new ConfiguredBookmarkProcessor(type, targetFolder, isTree).process(config);
+		return new ConfiguredBookmarkProcessor(type, targetFolder, isTree).process(config);
 	}
 
 	private static Properties readProperties(File cfgFile) throws ConfigurationException {
@@ -59,6 +63,22 @@ public class BookmarkExporter {
 		}
 	}
 
+	private static int run(CommandLineParser.CommandLine commandLine) throws ConfigurationException, IOException, MissingArgumentException {
+		Collection<File> files;
+		if (commandLine.isConfigurationFileSpecified()) {
+			files = run(commandLine.getBrowserType(), commandLine.getTargetFolder(), commandLine.isTree(),
+					commandLine.getConfigurationFile());
+		} else {
+			files = run(commandLine.getBrowserType(), commandLine.getTargetFolder(), commandLine.isTree());
+		}
+
+		if (commandLine.isUpload() && !files.isEmpty()) {
+			new BookmarkPublisher(commandLine.getUploadURI()).publish(files);
+		}
+		
+		return 0;
+	}
+
 	/**
 	 * MAIN ENTRY. Specify desired actions and settings in arguments, as specified
 	 * by {@link CommandLineParser}.
@@ -69,19 +89,15 @@ public class BookmarkExporter {
 	 * @throws ConfigurationException 
 	 */
 	public static void main(String[] args) {
-		try {
-			CommandLineParser.CommandLine commandLine = new CommandLineParser().parse(args);
-			if (commandLine.isConfigurationFileSpecified()) {
-				run(commandLine.getBrowserType(), commandLine.getTargetFolder(), commandLine.isTree(), commandLine.getConfigurationFile());
-			} else {
-				run(commandLine.getBrowserType(), commandLine.getTargetFolder(), commandLine.isTree());
+			int result;
+			try {
+				CommandLineParser.CommandLine commandLine = new CommandLineParser().parse(args);
+				result = commandLine.isHelp() ? commandLine.printHelp() : run(commandLine);
+			} catch (Exception e) {
+				e.printStackTrace(System.err);;
+				result = 1;
 			}
-		} catch (IllegalArgumentException | ParseException | ConfigurationException | IOException e) {
-			System.err.println();
-			System.err.println(e);
-			System.exit(1);
+			System.exit(result);
 		}
-
-	}
 
 }
