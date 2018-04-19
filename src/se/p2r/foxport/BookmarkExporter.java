@@ -63,7 +63,7 @@ public class BookmarkExporter {
 		}
 	}
 
-	private static int run(CommandLineParser.Arguments commandLine) throws ConfigurationException, IOException, MissingArgumentException {
+	private static int run(CommandLineParser.ActiveOptions commandLine) throws ConfigurationException, IOException, MissingArgumentException {
 		Collection<File> files;
 		if (commandLine.isConfigurationFileSpecified()) {
 			files = run(commandLine.getBrowserType(), commandLine.getTargetFolder(), commandLine.isTree(),
@@ -89,16 +89,21 @@ public class BookmarkExporter {
 	 * @throws ConfigurationException 
 	 */
 	public static void main(String[] args) {
-			int result;
-			try {
-				CommandLineParser.Arguments commandLine = new CommandLineParser().parse(args);
-				result = commandLine.isHelp() ? commandLine.printHelp() : run(commandLine);
-				Utils.log(BookmarkExporter.class.getSimpleName()+": Done!");
-			} catch (Exception e) {
-				e.printStackTrace(System.err);
-				result = 1;
-			}
-			System.exit(result);
+		int result = 0;
+		try {
+			CommandLineParser.ActiveOptions commandLine = new CommandLineParser().parse(args);
+			result = commandLine.isHelp() ? commandLine.printHelp() : run(commandLine);
+			Utils.log(BookmarkExporter.class.getSimpleName() + ": Done!");
+		} catch (MissingArgumentException e) {
+			System.err.println("Missing mandatory option: " + e.getMessage());
+			result = 1;
+		} catch (ParseException | IOException | ConfigurationException e) {
+			System.err.println(e.getMessage());
+			result = 1;
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+			result = 1;
 		}
-
+		System.exit(result);
+	}
 }

@@ -20,13 +20,16 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.UnrecognizedOptionException;
 
 import se.p2r.foxport.util.Utils.BrowserType;
 
@@ -37,17 +40,25 @@ import se.p2r.foxport.util.Utils.BrowserType;
  */
 public class CommandLineParser {
 
-	public final class Arguments {
+	public final class ActiveOptions {
 
-		private final org.apache.commons.cli.CommandLine commandLine;
+		private final CommandLine commandLine;
 				
-		public Arguments(String... args) throws ParseException {
+		public ActiveOptions(String... args) throws ParseException {
 			try {
-				this.commandLine = new DefaultParser().parse(options, args);
+				this.commandLine = new DefaultParser().parse(validOptions, args);
+				List<String> excessive = this.commandLine.getArgList();
+				if (!excessive.isEmpty()) {
+					throw new UnrecognizedOptionException("Unrecognized option(s): "+excessive.toString());
+				}
 			} catch (ParseException e) {
 				printHelp();
 				throw e;
 			}
+		}
+
+		public boolean hasOption(Option o) {
+			return commandLine.hasOption(o.getOpt());
 		}
 
 		public BrowserType getBrowserType() throws MissingArgumentException {
@@ -80,13 +91,13 @@ public class CommandLineParser {
 			String optionValue = commandLine.getOptionValue(opt);
 			if (optionValue==null) {
 				Option o = findOption(opt);
-				throw new MissingArgumentException(String.format("-%s (--%s)", o.getOpt(), o.getLongOpt()));
+				throw newMissingArgumentException(o);
 			}
 			return optionValue;
 		}
 
 		private Option findOption(char opt) {
-			Option result = options.getOption(String.valueOf(opt));
+			Option result = validOptions.getOption(String.valueOf(opt));
 			assert result!=null : "No such option: "+opt;
 			return result; 
 		}
@@ -121,42 +132,50 @@ public class CommandLineParser {
 
 		public int printHelp() {
 			String name = "java " + BookmarkExporter.class.getSimpleName();
-			new HelpFormatter().printHelp(name, options, true);
+			new HelpFormatter().printHelp(name, validOptions, true);
 			return 0; // system exit code: ok
 		}
 
 	}
 	
-	private final Options options;
-	private Arguments activeCommandLine;
+	private final Options validOptions;
+	private ActiveOptions activeOptions;
 
 	public CommandLineParser() {
 		
 		// TODO group options
-		this.options = new Options()
+		this.validOptions = new Options()
 				.addOption("h", "help", false, "Show this help text")
 				.addOption("b", "browser", true, "Browser type: "+Arrays.asList(BrowserType.values()).toString())
 				.addOption("t", "target", true, "Target folder for writing exported files (default is user's temp directory)")
 				.addOption("c", "config", true, "Configuration file (foobar.properties), mandatory if running Firefox")
 				.addOption("p", "plain", false, "Plain list output (default is tree)")
-				.addOption("u", "upload", true, "Upload to FTP destination (default is no upload). Format follows RFC 1738: 'user");
-		this.options.getOption("b").setRequired(true);
+				.addOption("u", "upload", true, "Upload to FTP destination (default is no upload). Format follows RFC 1738: 'ftp://<user>:<password>@<host>:<port>/<path>'");
+		this.validOptions.getOption("b").setRequired(true);
 	}
 
-	public Arguments parse(String... args) throws ParseException {
-		activeCommandLine = new Arguments(args);
+	public ActiveOptions parse(String... args) throws ParseException {
+		activeOptions = new ActiveOptions(args);
 		try {
-			return validate(activeCommandLine);
+			return validate(activeOptions);
 		} catch (ParseException e) {
-			activeCommandLine.printHelp();
+			activeOptions.printHelp();
 			throw e;
 		}
 	}
 
-	private Arguments validate(Arguments cl) throws ParseException {
-		// FIXME implement
-//		throw new ParseException("TEST");
+	private ActiveOptions validate(ActiveOptions cl) throws ParseException {
+		for (Option o: validOptions.getOptions()) {
+			if (o.isRequired() && !cl.hasOption(o)) {
+				throw newMissingArgumentException(o);
+			}
+		}
 		return cl;
+			
+	}
+
+	private static MissingArgumentException newMissingArgumentException(Option o) throws MissingArgumentException {
+		return new MissingArgumentException(String.format("-%s (--%s)", o.getOpt(), o.getLongOpt()));
 	}
 
 }
