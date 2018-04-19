@@ -58,8 +58,8 @@ import se.p2r.foxport.util.Utils.BrowserType;
  */
 public class ConfiguredBookmarkProcessor extends BookmarkProcessor {
 
-	public ConfiguredBookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree) throws IOException, ConfigurationException {
-		super(browserType, targetFolder, isTree);
+	public ConfiguredBookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree, boolean isForceExport) throws IOException, ConfigurationException {
+		super(browserType, targetFolder, isTree, isForceExport);
 	}
 
 	public List<File> process(Properties config) throws IOException {

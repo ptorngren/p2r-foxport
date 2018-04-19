@@ -84,6 +84,10 @@ public class CommandLineParser {
 			return commandLine.hasOption('p');
 		}
 
+		public boolean isForceExport() {
+			return commandLine.hasOption('f');
+		}
+
 		public boolean isTree() {
 			return !isPlainList();
 		}
@@ -148,10 +152,11 @@ public class CommandLineParser {
 		this.validOptions = new Options()
 				.addOption("h", "help", false, "Show this help text")
 				.addOption("b", "browser", true, "Browser type: "+Arrays.asList(BrowserType.values()).toString())
-				.addOption("t", "target", true, "Target folder for writing exported files (default is user's temp directory)")
 				.addOption("c", "config", true, "Configuration file (foobar.properties), mandatory if running Firefox")
 				.addOption("p", "plain", false, "Plain list output (default is tree)")
-				.addOption("u", "upload", true, "Upload to FTP destination (default is no upload). Format follows RFC 1738: 'ftp://<user>:<password>@<host>:<port>/<path>'");
+				.addOption("t", "target", true, "Target folder for writing exported files (default is user's temp directory)")
+				.addOption("u", "upload", true, "Upload to FTP destination (default is no upload). Format follows RFC 1738: 'ftp://<user>:<password>@<host>:<port>/<path>'")
+				.addOption("f", "force", false, "Force export (ignore timestamps)");
 		this.validOptions.getOption("b").setRequired(true);
 	}
 

@@ -51,6 +51,7 @@ public class BookmarkExporter {
 		BrowserType browserType = options.getBrowserType();
 		File targetFolder = options.getTargetFolder();
 		boolean isTree = options.isTree();
+		boolean isForceExport = options.isForceExport();
 		Collection<File> files;
 		
 		// read and write 
@@ -58,10 +59,10 @@ public class BookmarkExporter {
 			File cfgFile = options.getConfigurationFile();
 			Properties config = readProperties(cfgFile);
 			Utils.log("<RUN> " + targetFolder + ", configured by file " + cfgFile.getAbsolutePath());
-			files = new ConfiguredBookmarkProcessor(browserType, targetFolder, isTree).process(config);
+			files = new ConfiguredBookmarkProcessor(browserType, targetFolder, isTree, isForceExport).process(config);
 		} else {
 			Utils.log("<RUN> " + targetFolder);
-			files = new BookmarkProcessor(browserType, targetFolder, isTree).process();
+			files = new BookmarkProcessor(browserType, targetFolder, isTree, isForceExport).process();
 		}
 		if (!files.isEmpty()) {
 			

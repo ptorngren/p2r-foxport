@@ -54,14 +54,16 @@ public class BookmarkProcessor {
 	protected final BrowserType browserType;
 	protected final boolean generateTree;
 	protected final File timestampFile;
-	protected final long timestamp;
+	private final long timestamp;
+	private final boolean isForceExport;
 
-	public BookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree) throws IOException, ConfigurationException {
+	public BookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree, boolean isForceExport) throws IOException, ConfigurationException {
 		this.browserType = browserType;
 		this.targetFolder = targetFolder;
 		this.generateTree = isTree;
 		this.timestampFile = new File(targetFolder, getClass().getName()+".timestamp");
 		this.timestamp = timestampFile==null ? 0 : timestampFile.lastModified();
+		this.isForceExport = isForceExport;
 		if (!targetFolder.isDirectory()) {
 			throw new ConfigurationException(new FileNotFoundException("Output folder does not exist: " + targetFolder));
 		}
@@ -83,12 +85,11 @@ public class BookmarkProcessor {
 	}
 
 	protected boolean needsUpdate(BookmarkReader reader) {
-		long bookmarkTimestamp = reader.getTimestamp();
-		boolean uptodate = timestamp>bookmarkTimestamp;
-		if (uptodate) {
-			log("Skipping export - bookmarks have not changed since last run: "+new SimpleDateFormat().format(timestamp));
+		if (isForceExport || reader.getTimestamp()>timestamp) {
+			return true;
 		}
-		return !uptodate;
+		log("Skipping export - bookmarks have not changed since last run: "+new SimpleDateFormat().format(timestamp));
+		return false;
 	}
 
 	protected void timestamp() throws IOException {
