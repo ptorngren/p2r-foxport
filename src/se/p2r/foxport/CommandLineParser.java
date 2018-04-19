@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.Arrays;
 
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -70,13 +71,13 @@ public class CommandLineParser {
 			this.commandLine = cl;
 		}
 		
-		public BrowserType getBrowserType() {
+		public BrowserType getBrowserType() throws MissingArgumentException {
 			String type = getMandatoryArgument("b");
 			return BrowserType.from(type);
 		}
 
-		public File getTargetFolder() {
-			return new File(commandLine.getOptionValue("t"));
+		public File getTargetFolder() throws MissingArgumentException {
+			return new File(getMandatoryArgument("t"));
 		}
 		
 		public File getConfigurationFile() {
@@ -95,10 +96,11 @@ public class CommandLineParser {
 			return !isPlainList();
 		}
 
-		private String getMandatoryArgument(String opt) {
+		private String getMandatoryArgument(String opt) throws MissingArgumentException {
 			String optionValue = commandLine.getOptionValue(opt);
 			if (optionValue==null) {
 				printSyntax();
+				throw new MissingArgumentException(opt);
 			}
 			return optionValue;
 		}
@@ -107,7 +109,6 @@ public class CommandLineParser {
 			for (String line: syntax) {
 				System.out.println(line);
 			}
-			throw new IllegalArgumentException();
 		}
 		
 	}

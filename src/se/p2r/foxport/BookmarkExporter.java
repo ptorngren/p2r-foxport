@@ -61,22 +61,24 @@ public class BookmarkExporter {
 
 	/**
 	 * MAIN ENTRY. Specify desired actions and settings in arguments, as specified
-	 * by {@link #printSyntax()}.
+	 * by {@link CommandLineParser}.
 	 * 
 	 * @param args
 	 * @throws IOException
 	 * @throws ParseException 
 	 * @throws ConfigurationException 
 	 */
-	public static void main(String[] args) throws IOException, ParseException, ConfigurationException {
-		CommandLineParser.CommandLine commandLine = new CommandLineParser().parse(args);
+	public static void main(String[] args) {
 		try {
+			CommandLineParser.CommandLine commandLine = new CommandLineParser().parse(args);
 			if (commandLine.isConfigurationFileSpecified()) {
 				run(commandLine.getBrowserType(), commandLine.getTargetFolder(), commandLine.isTree(), commandLine.getConfigurationFile());
 			} else {
 				run(commandLine.getBrowserType(), commandLine.getTargetFolder(), commandLine.isTree());
 			}
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException | ParseException | ConfigurationException | IOException e) {
+			System.err.println();
+			System.err.println(e);
 			System.exit(1);
 		}
 
