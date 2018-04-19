@@ -93,8 +93,9 @@ public class BookmarkExporter {
 			try {
 				CommandLineParser.Arguments commandLine = new CommandLineParser().parse(args);
 				result = commandLine.isHelp() ? commandLine.printHelp() : run(commandLine);
+				Utils.log(BookmarkExporter.class.getSimpleName()+": Done!");
 			} catch (Exception e) {
-				e.printStackTrace(System.err);;
+				e.printStackTrace(System.err);
 				result = 1;
 			}
 			System.exit(result);

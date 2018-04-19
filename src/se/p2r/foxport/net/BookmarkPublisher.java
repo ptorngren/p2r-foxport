@@ -17,40 +17,125 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 package se.p2r.foxport.net;
 
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.SocketException;
 import java.net.URL;
 import java.util.Collection;
 
-import se.p2r.foxport.util.NotYetImplementedException;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+
 import se.p2r.foxport.util.Utils;
 
 /**
- * Upload files to a specified FTP location. FIXME
- * http://www.codejava.net/java-se/networking/ftp/java-ftp-file-upload-tutorial-and-example
+ * Upload files to a specified FTP location.
+ * 
  * 
  * @author peer
- *
+ * @see http://www.codejava.net/java-se/networking/ftp/java-ftp-file-upload-tutorial-and-example
  */
 public class BookmarkPublisher {
 
 	private final URL url;
+	private final String strippedURL;
 
 	public BookmarkPublisher(URL url) {
 		this.url = url;
+		String externalForm = url.toExternalForm();
+		String userInfo = url.getUserInfo();
+		this.strippedURL = externalForm.replaceAll(userInfo, "(user:password)");
 	}
 
-	/**
-	 * @param files
-	 */
-	public void publish(Collection<File> files) {
+	public void publish(Collection<File> localFiles) {
 		try {
-			URL target = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getPath());
-			Utils.log(String.format("<UPLOAD>Uploading %d files to %s ...", files.size(), target));
-			throw new NotYetImplementedException();
-//			Utils.log(String.format("</UPLOAD>Uploaded %d files to %s", files.size(), uri));
-		} catch (MalformedURLException e) {
-			throw new IllegalStateException("Cannot create URL from URL. Should not happen.");
+			Utils.log(String.format("<UPLOAD>Uploading %d files to %s ...", localFiles.size(), strippedURL));
+			
+			boolean ok = doPublish(localFiles);
+			if (ok) {
+				Utils.log(String.format("</UPLOAD>Uploaded %d files to %s", localFiles.size(), strippedURL));
+			} else {
+				Utils.log("Failed to upload all files to "+strippedURL);
+			}
+			
+		} catch (IOException e) {
+			Utils.log("Failed to upload all files to "+strippedURL);
+			e.printStackTrace();
 		}
 	}
+
+	private boolean doPublish(Collection<File> files) throws SocketException, IOException {
+		FTPClient ftpClient = createClient();
+		for (File file : files) {
+			Utils.log(String.format("Uploading %s ...", file));
+			boolean ok = upload(ftpClient, file);
+			if (ok) {
+				Utils.log(String.format("Uploaded %s", file));
+			}
+		}
+//		return ftpClient.completePendingCommand();
+		return true;
+	}
+
+	private boolean upload(FTPClient ftpClient, File localFile) throws FileNotFoundException, IOException {
+		InputStream inputStream = null;
+		try {
+			inputStream = new FileInputStream(localFile);
+			return ftpClient.storeFile(localFile.getName(), inputStream);
+		} finally {
+			if (inputStream != null) {
+				inputStream.close();
+			}
+		}
+	}
+
+//	private void upload2(FTPClient ftpClient, File localFile) throws IOException {
+//		String secondRemoteFile = localFile.getName();
+//
+//		FileInputStream inputStream = null;
+//		OutputStream outputStream = null;
+//		try {
+//			inputStream = new FileInputStream(localFile);
+//			outputStream = ftpClient.storeFileStream(secondRemoteFile);
+//			byte[] bytesIn = new byte[4096];
+//			int read = 0;
+//
+//			while ((read = inputStream.read(bytesIn)) != -1) {
+//				outputStream.write(bytesIn, 0, read);
+//			}
+//		} finally {
+//			if (inputStream != null) {
+//				inputStream.close();
+//			}
+//			if (outputStream != null) {
+//				outputStream.close();
+//			}
+//		}
+//	}
+//
+	private FTPClient createClient() throws SocketException, IOException {
+		String host = url.getHost();
+		Utils.log("Connecting to " + host + " ...");
+		
+		String[] userInfo = url.getUserInfo().split(":");
+		assert userInfo.length==2;
+		String user = userInfo[0];
+		String pw = userInfo[1];
+		int port = url.getPort();
+
+		FTPClient ftpClient = new FTPClient();
+		ftpClient.connect(host, port);
+		ftpClient.login(user, pw);
+		ftpClient.enterLocalPassiveMode();
+
+		ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+		Utils.log("Connected to " + host);
+		
+		return ftpClient;
+	}
+
 
 }
