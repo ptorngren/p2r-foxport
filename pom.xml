@@ -3,13 +3,16 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>se.p2r.foxport</groupId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<packaging>jar</packaging>
 	<name>p2r foxport</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    	<maven.build.timestamp.format>yyyy-MM-dd'T'HH.mm.ss'Z'</maven.build.timestamp.format>
 	</properties>
 	<build>
+  		<!-- finalName>${project.artifactId}-${project.version}-${maven.build.timestamp}</finalName>  -->
+  		<finalName>${project.artifactId}-${maven.build.timestamp}</finalName>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
