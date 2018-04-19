@@ -21,7 +21,9 @@ import static se.p2r.foxport.util.Utils.log;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,11 +53,15 @@ public class BookmarkProcessor {
 	protected final File targetFolder;
 	protected final BrowserType browserType;
 	protected final boolean generateTree;
+	protected final File timestampFile;
+	protected final long timestamp;
 
 	public BookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree) throws IOException, ConfigurationException {
 		this.browserType = browserType;
 		this.targetFolder = targetFolder;
 		this.generateTree = isTree;
+		this.timestampFile = new File(targetFolder, getClass().getName()+".timestamp");
+		this.timestamp = timestampFile==null ? 0 : timestampFile.lastModified();
 		if (!targetFolder.isDirectory()) {
 			throw new ConfigurationException(new FileNotFoundException("Output folder does not exist: " + targetFolder));
 		}
@@ -63,13 +69,31 @@ public class BookmarkProcessor {
 
 	public List<File> process() throws IOException {
 		BookmarkReader reader = BookmarkReader.Factory.makeReader(browserType);
-		Bookmark bookmarksRoot = reader.load();
+		if (needsUpdate(reader)) {
+			Bookmark bookmarksRoot = reader.load();
+	
+			// first select tagged root containers, then recursively collect tagged containers in these roots
+			List<Bookmark> rootContainers = select(bookmarksRoot.getChildren());
+			ListValuedMap<String, Bookmark> selectedContainers = new DeepBookmarkSelector().select(rootContainers);
+	
+			timestamp();
+			return export(selectedContainers);
+		}
+		return Collections.EMPTY_LIST;
+	}
 
-		// first select tagged root containers, then recursively collect tagged containers in these roots
-		List<Bookmark> rootContainers = select(bookmarksRoot.getChildren());
-		ListValuedMap<String, Bookmark> selectedContainers = new DeepBookmarkSelector().select(rootContainers);
+	protected boolean needsUpdate(BookmarkReader reader) {
+		long bookmarkTimestamp = reader.getTimestamp();
+		boolean uptodate = timestamp>bookmarkTimestamp;
+		if (uptodate) {
+			log("Skipping export - bookmarks have not changed since last run: "+new SimpleDateFormat().format(timestamp));
+		}
+		return !uptodate;
+	}
 
-		return export(selectedContainers);
+	protected void timestamp() throws IOException {
+		timestampFile.createNewFile();  // does nothing if file already exists
+		timestampFile.setLastModified(System.currentTimeMillis());
 	}
 
 	private List<File> export(ListValuedMap<String, Bookmark> selectedContainers) {

@@ -14,55 +14,34 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 */
 
-package se.p2r.foxport;
+package se.p2r.foxport.util;
+
+import static se.p2r.foxport.util.Utils.JSON;
+import static se.p2r.foxport.util.Utils.endsWith;
 
 import java.io.File;
-import java.io.IOException;
-
-import se.p2r.foxport.chrome.ChromeReader;
-import se.p2r.foxport.firefox.FirefoxReader;
-import se.p2r.foxport.util.Utils.BrowserType;
+import java.io.FileFilter;
 
 /**
+ * A file filter for selection JSON files.
+ * 
  * @author peer
  *
  */
-public interface BookmarkReader {
+public final class JsonFilter implements FileFilter {
 
-	/**
-	 * Load bookmarks file and return the root bookmark for the tree that should be
-	 * exported, typically the 'bookmarks' container, as opposed to the 'toolbar'
-	 * container.
-	 * 
-	 * @return {@link Bookmark} (never <code>null</code>)
-	 */
-	Bookmark load();
-
-	public final class Factory {
-
-		private Factory() {
-		}
-
-		public static BookmarkReader makeReader(BrowserType browserType) throws IOException {
-			switch (browserType) {
-			case FIREFOX:
-				return new FirefoxReader();
-
-			case CHROME:
-				return new ChromeReader();
-
-			default:
-				throw new IllegalArgumentException("Unexpected browsertype: "+browserType);
-			}
-		}
-
+	private static final FileFilter INSTANCE = new JsonFilter();
+	
+	public boolean accept(File pathname) {	
+		return endsWith(pathname, JSON);
 	}
 
-	/**
-	 * Get the last modified time of the bookmark file.
-	 * @return ms
-	 * @see File#lastModified()
-	 */
-	long getTimestamp();
+	@Override
+	public String toString() {
+		return "'*"+JSON+"'";
+	}
 
+	public static FileFilter instance() {
+		return INSTANCE;
+	}
 }

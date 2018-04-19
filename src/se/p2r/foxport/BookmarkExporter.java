@@ -63,7 +63,10 @@ public class BookmarkExporter {
 			Utils.log("<RUN> " + targetFolder);
 			files = new BookmarkProcessor(browserType, targetFolder, isTree).process();
 		}
-
+		if (!files.isEmpty()) {
+			
+		}
+		
 		// upload
 		if (options.isUpload() && !files.isEmpty()) {
 			URL url = options.getUploadURL();

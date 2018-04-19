@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,15 +64,21 @@ public class ConfiguredBookmarkProcessor extends BookmarkProcessor {
 
 	public List<File> process(Properties config) throws IOException {
 		BookmarkReader reader = BookmarkReader.Factory.makeReader(browserType);
-		Bookmark bookmarksRoot = reader.load();
-		Map<String, String> mappings = mapNames(config);
+		if (needsUpdate(reader)) {
+			Bookmark bookmarksRoot = reader.load();
+			Map<String, String> mappings = mapNames(config);
 
-		// first select root containers mentioned in config (avoid trash, tmp, private, etc)
-		// then recursively collect folders in these roots
-		List<Bookmark> rootContainers = select(bookmarksRoot.getChildren(), mappings);
-		ListValuedMap<String, Bookmark> selectedContainers = new DeepBookmarkSelector(mappings.keySet()).select(rootContainers);
+			// first select root containers mentioned in config (avoid trash, tmp, private,
+			// etc)
+			// then recursively collect folders in these roots
+			List<Bookmark> rootContainers = select(bookmarksRoot.getChildren(), mappings);
+			ListValuedMap<String, Bookmark> selectedContainers = new DeepBookmarkSelector(mappings.keySet()).select(rootContainers);
 
-		return export(config, selectedContainers, mappings);
+			timestamp();
+			return export(config, selectedContainers, mappings);
+		}
+
+		return Collections.EMPTY_LIST;
 	}
 
 	private List<File> export(Properties config, ListValuedMap<String, Bookmark> selectedContainers, Map<String, String> mappings) {

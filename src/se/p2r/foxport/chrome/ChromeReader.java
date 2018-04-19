@@ -90,5 +90,9 @@ public class ChromeReader implements BookmarkReader {
 		}
 	}
 
+	@Override
+	public long getTimestamp() {
+		return inputFile.lastModified();
+	}
 
 }

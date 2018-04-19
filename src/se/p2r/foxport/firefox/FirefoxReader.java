@@ -15,11 +15,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.firefox;
 
-import static se.p2r.foxport.util.Utils.*;
+import static se.p2r.foxport.util.Utils.ENCODING_JSON;
+import static se.p2r.foxport.util.Utils.JSON;
+import static se.p2r.foxport.util.Utils.JSONLZ4;
+import static se.p2r.foxport.util.Utils.debug;
+import static se.p2r.foxport.util.Utils.endsWith;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,6 +36,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import se.p2r.foxport.BookmarkReader;
+import se.p2r.foxport.util.JsonFilter;
 import se.p2r.foxport.util.Utils;
 
 /**
@@ -53,40 +57,28 @@ public class FirefoxReader implements BookmarkReader {
 
 	private static final String[] ROOT_NAMES = {"Bookmarks Menu", "Bokmärkesmenyn"}; // TODO read from environment or config file (name depends on language)
 	
-	private static final FileFilter JSON_FILTER = new FileFilter() {
-		public boolean accept(File pathname) {
-			return endsWith(pathname, JSON); // || endsWith(pathname, JSONLZ4);  // Cannot read LZ4 files
-		}
-
-		@Override
-		public String toString() {
-			return "'*"+JSON+"'";
-		}
-		
-	};
-	
 	private final File inputFile;
 
 	public FirefoxReader() throws IOException {
 		this.inputFile = findInputFile();
 	}
 
-	private File findInputFile() throws IOException {
+	private static File findInputFile() throws IOException {
 		File backupDirectory = findBookmarkDirectory();
 		File mostRecent = null;
-		for (File file : backupDirectory.listFiles(JSON_FILTER)) {
+		for (File file : backupDirectory.listFiles(JsonFilter.instance())) {
 			if (mostRecent==null || mostRecent.lastModified() < file.lastModified()) {
 				mostRecent = file;
 			}
 		};
 		if (mostRecent==null) {
-			String msg = "No files found in "+backupDirectory+" using filter " + JSON_FILTER;
+			String msg = "No files found in "+backupDirectory+" using filter " + JsonFilter.instance();
 			throw new FileNotFoundException(msg);
 		}
 		return mostRecent;
 	}
 
-	private File findBookmarkDirectory() throws IOException {
+	private static File findBookmarkDirectory() throws IOException {
 		File profile = findProfile();
 		File profileDirectory = findProfileDirectory(profile, null);
 		File backupDirectory = new File(profileDirectory, "bookmarkBackups");
@@ -96,7 +88,7 @@ public class FirefoxReader implements BookmarkReader {
 		return backupDirectory;
 	}
 
-	private File findProfileDirectory(File profile, String profileName) throws IOException {
+	private static File findProfileDirectory(File profile, String profileName) throws IOException {
 		List<String> lines = readFile(profile);
 		boolean inProfile = false;
 		String header = "Name=" + (profileName == null ? "default" : profileName);
@@ -115,7 +107,7 @@ public class FirefoxReader implements BookmarkReader {
 		throw new IllegalArgumentException("No such profile: " + profileName + " (file: " + profile + ")");
 	}
 
-	private List<String> readFile(File profile) throws FileNotFoundException, IOException {
+	private static List<String> readFile(File profile) throws FileNotFoundException, IOException {
 		List<String> lines = new ArrayList();
 		BufferedReader br = null;
 		try {
@@ -132,11 +124,16 @@ public class FirefoxReader implements BookmarkReader {
 		return lines;
 	}
 
-	private File findProfile() {
+	private static File findProfile() {
 		String userHome = System.getProperty("user.home");
 		return new File(userHome, "AppData/Roaming/Mozilla/Firefox/profiles.ini");
 	}
 
+
+	@Override
+	public long getTimestamp() {
+		return inputFile.lastModified();
+	}
 
 	public FirefoxBookmark load() {
 		FirefoxBookmarks allRoots = parseBookmarkFile();
