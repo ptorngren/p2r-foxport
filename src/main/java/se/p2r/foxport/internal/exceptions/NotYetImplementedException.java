@@ -13,22 +13,15 @@ Redistribution and use in source and binary forms, with or without modification,
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-package se.p2r.foxport.internal;
+
+package se.p2r.foxport.internal.exceptions;
 
 /**
- * Indicate problems when reading configuration or parameters.
  * @author peer
  *
  */
-public class ConfigurationException extends Exception {
-	private static final long serialVersionUID = 8929701975216314212L;
+public class NotYetImplementedException extends RuntimeException {
 
-	public ConfigurationException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public ConfigurationException(Throwable cause) {
-		super(cause);
-	}
+	private static final long serialVersionUID = -5108696433623542268L;
 
 }

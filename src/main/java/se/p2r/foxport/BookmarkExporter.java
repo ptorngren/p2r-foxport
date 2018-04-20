@@ -29,8 +29,8 @@ import se.p2r.foxport.firefox.FirefoxReader;
 import se.p2r.foxport.internal.ActiveOptions;
 import se.p2r.foxport.internal.BookmarkProcessor;
 import se.p2r.foxport.internal.CommandLineParser;
-import se.p2r.foxport.internal.ConfigurationException;
 import se.p2r.foxport.internal.ConfiguredBookmarkProcessor;
+import se.p2r.foxport.internal.exceptions.ConfigurationException;
 import se.p2r.foxport.net.FileUploader;
 import se.p2r.foxport.util.Log;
 import se.p2r.foxport.util.Utils;
@@ -99,7 +99,14 @@ public class BookmarkExporter {
 		int result = 0;
 		try {
 			ActiveOptions commandLine = new CommandLineParser().parse(args);
-			result = commandLine.isHelp() ? commandLine.printHelp() : run(commandLine);
+			if (commandLine.isHelp()) {
+				result = commandLine.printHelp() ;
+			} else if (commandLine.isVersion()) {
+				result = commandLine.printVersion();
+			} else {
+				result = run(commandLine);
+			}
+			
 		} catch (MissingArgumentException e) {
 			System.err.println("Missing mandatory option: " + e.getMessage());
 			result = 1;

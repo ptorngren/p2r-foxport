@@ -43,7 +43,8 @@ public class CommandLineParser {
 				.addOption("p", "plain", false, "Plain list output (default is tree)")
 				.addOption("t", "target", true, "Target folder for writing exported files (default is user's temp directory)")
 				.addOption("u", "upload", true, "Upload to FTP destination (default is no upload). Format follows RFC 1738: 'ftp://<user>:<password>@<host>:<port>/<path>'")
-				.addOption("f", "force", false, "Force export (ignore timestamps)");
+				.addOption("f", "force", false, "Force export (ignore timestamps)")
+				.addOption("v", "version", false, "show version info");
 	}
 
 	public ActiveOptions parse(String... args) throws ParseException {

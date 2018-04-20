@@ -8,12 +8,20 @@
 	<name>p2r foxport</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    	<maven.build.timestamp.format>yyyy-MM-dd'T'HH.mm.ss'Z'</maven.build.timestamp.format>
+		<maven.build.timestamp.format>yyyy-MM-dd HH.mm.ss '(UTC)'</maven.build.timestamp.format>
+		<!-- needed for exporting to version file: https://rterp.wordpress.com/2012/03/16/stamping-version-number-and-build-time-in-properties-file-with-maven/ -->
+		<pom.timestamp>${maven.build.timestamp}</pom.timestamp>
 	</properties>
 	<build>
-  		<!-- finalName>${project.artifactId}-${project.version}-${maven.build.timestamp}</finalName>  -->
-  		<finalName>${project.artifactId}-${maven.build.timestamp}</finalName>
+		<!-- finalName>${project.artifactId}-${project.version}-${maven.build.timestamp}</finalName> -->
+		<finalName>${project.artifactId}-${maven.build.timestamp}</finalName>
 		<sourceDirectory>src</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>

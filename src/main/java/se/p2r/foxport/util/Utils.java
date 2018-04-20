@@ -19,6 +19,8 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Date;
 import java.text.DateFormat;
@@ -27,7 +29,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 import java.util.TimeZone;
+
+import se.p2r.foxport.internal.exceptions.UnhandledException;
 
 /**
  * @author peer
@@ -132,6 +137,27 @@ public final class Utils {
 	 */
 	public static String nullIfEmpty(String s) {
 		return s==null || s.trim().isEmpty() ? null : s.trim();
+	}
+
+	public static Properties loadPropertyFile(String filename) {
+		Properties result = new Properties();
+		InputStream input = null;
+		try {
+			input = Utils.class.getClassLoader().getResourceAsStream(filename);;
+			result.load(input);
+		} catch (IOException e) {
+			Log.fatal(e);
+			System.out.println("<unknown>");
+		} finally {
+			if (input!=null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					throw new UnhandledException("Unable to close stream", e);
+				}
+			}
+		}
+		return result;
 	}
 
 }
