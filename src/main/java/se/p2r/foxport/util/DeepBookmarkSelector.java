@@ -15,7 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.util;
 
-import static se.p2r.foxport.util.Utils.debug;
 
 import java.util.Collections;
 import java.util.List;
@@ -65,7 +64,7 @@ public class DeepBookmarkSelector {
 
 	private boolean accept(Bookmark prospect) {
 		boolean result = prospect.isContainer() && (prospect.isTaggedForExport() || wantedNames.contains(prospect.getTitle().toLowerCase()));
-		debug(prospect+": "+result);
+		Log.debug(prospect+": "+result);
 		return result;
 	}
 

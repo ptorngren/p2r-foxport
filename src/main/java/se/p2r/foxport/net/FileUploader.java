@@ -28,7 +28,7 @@ import java.util.Collection;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
-import se.p2r.foxport.util.Utils;
+import se.p2r.foxport.util.Log;
 
 /**
  * Upload files to a specified FTP location.
@@ -51,26 +51,26 @@ public class FileUploader {
 
 	public void upload(Collection<File> localFiles) {
 		try {
-			Utils.log(String.format("<UPLOAD> Uploading %d files to %s ...", Integer.valueOf(localFiles.size()), strippedURL));
+			Log.log(String.format("<UPLOAD> Uploading %d files to %s ...", Integer.valueOf(localFiles.size()), strippedURL));
 			
 			FTPClient ftpClient = createClient();
 			boolean ok = uploadFiles(ftpClient, url, localFiles);
 			disconnect(ftpClient);
 			if (ok) {
-				Utils.log(String.format("</UPLOAD> Uploaded %d files to %s", Integer.valueOf(localFiles.size()), strippedURL));
+				Log.log(String.format("</UPLOAD> Uploaded %d files to %s", Integer.valueOf(localFiles.size()), strippedURL));
 			} else {
-				Utils.log("Failed to upload all files to "+strippedURL);
+				Log.log("Failed to upload all files to "+strippedURL);
 			}
 			
 		} catch (IOException e) {
-			Utils.log("Failed to upload all files to "+strippedURL);
+			Log.log("Failed to upload all files to "+strippedURL);
 			e.printStackTrace();
 		}
 	}
 
 	private FTPClient createClient() throws SocketException, IOException {
 		String host = url.getHost();
-		Utils.log("Connecting to " + host + " ...");
+		Log.log("Connecting to " + host + " ...");
 		
 		String[] userInfo = url.getUserInfo().split(":");
 		assert userInfo.length==2;
@@ -84,7 +84,7 @@ public class FileUploader {
 		ftpClient.enterLocalPassiveMode();
 
 		ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-		Utils.log("Connected to " + host);
+		Log.log("Connected to " + host);
 		
 		return ftpClient;
 	}
@@ -94,11 +94,11 @@ public class FileUploader {
 		if (ftpClient.changeWorkingDirectory(remotePath)) {
 			String pwd = ftpClient.printWorkingDirectory();
 			for (File file : files) {
-				Utils.log(String.format("Uploading %s ...", file));
+				Log.log(String.format("Uploading %s ...", file));
 				String remoteName = file.getName();
 				boolean ok = uploadFile(ftpClient, file, remoteName);
 				if (ok) {
-					Utils.debug(String.format("Uploaded %s to %s%s/%s", file, url.getHost(), pwd, remoteName));
+					Log.debug(String.format("Uploaded %s to %s%s/%s", file, url.getHost(), pwd, remoteName));
 				}
 			}
 		}
@@ -118,11 +118,11 @@ public class FileUploader {
 	}
 
 	private static void disconnect(FTPClient ftpClient) throws IOException {
-		Utils.debug("Logging out ... ");
+		Log.debug("Logging out ... ");
 //		ftpClient.completePendingCommand();  // hangs?
 		ftpClient.logout();
 	    ftpClient.disconnect();
-		Utils.debug("Disconnected");
+		Log.debug("Disconnected");
 	}
 
 }

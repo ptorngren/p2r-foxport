@@ -15,9 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.html;
 
-import static se.p2r.foxport.util.Utils.debug;
-import static se.p2r.foxport.util.Utils.log;
-
 import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.Body;
 import com.hp.gagawa.java.elements.Dl;
@@ -32,6 +29,7 @@ import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
 
 import se.p2r.foxport.Bookmark;
+import se.p2r.foxport.util.Log;
 import se.p2r.foxport.util.Utils;
 
 /**
@@ -66,7 +64,7 @@ public class HTMLListGenerator {
 		for (Bookmark child : root.getChildren()) {
 			append(dl, child);
 		}
-		debug("Generated " + uriConter + " links in " + containerCounter + " containers");
+		Log.debug("Generated " + uriConter + " links in " + containerCounter + " containers");
 		return html.write();
 	}
 
@@ -118,7 +116,7 @@ public class HTMLListGenerator {
 				}
 				containerDepth--;
 			} else {
-				log("Skipping empty folder: " + bm.getTitle());
+				Log.log("Skipping empty folder: " + bm.getTitle());
 			}
 		} else {
 			throw new IllegalArgumentException("Unexpected type: " + bm);
@@ -131,7 +129,7 @@ public class HTMLListGenerator {
 			P p = new P();
 			p.appendText(description);
 			dl.appendChild(p);
-			debug(p.write());
+			Log.debug(p.write());
 		}
 	}
 
@@ -147,7 +145,7 @@ public class HTMLListGenerator {
 		dt.appendChild(a);
 		dl.appendChild(dt);
 		appendDescription(dl, bm);
-		debug(dt.write());
+		Log.debug(dt.write());
 	}
 
 	private Dl appendContainer(Dl dlIn, Bookmark bm) {
@@ -156,7 +154,7 @@ public class HTMLListGenerator {
 
 		Dt dt = new Dt();
 		H3 h3 = new H3();
-		debug(bm.getTitle()+", depth="+containerDepth);
+		Log.debug(bm.getTitle()+", depth="+containerDepth);
 //		h3.setAttribute("folded", "");
         
 		h3.appendChild(title);
@@ -165,7 +163,7 @@ public class HTMLListGenerator {
         
 		appendDescription(dlIn, bm);
 
-		debug(dt.write());
+		Log.debug(dt.write());
 		
 		Dl dlOut = new Dl();
 		dlIn.appendChild(dlOut);

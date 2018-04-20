@@ -17,7 +17,6 @@ package se.p2r.foxport.html;
 
 import static j2html.TagCreator.*;
 import static j2html.attributes.Attr.*;
-import static se.p2r.foxport.util.Utils.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +28,7 @@ import j2html.tags.Tag;
 import j2html.tags.Text;
 import se.p2r.foxport.Bookmark;
 import se.p2r.foxport.util.BookmarkSorter;
+import se.p2r.foxport.util.Log;
 import se.p2r.foxport.util.Utils;
 
 /**
@@ -61,7 +61,7 @@ public class HTMLTreeGenerator {
 	public String run() {
 		assert root.hasChildren() : root.getTitle() + ": no children; should have been checked by caller!";
 		ContainerTag html = html(newHead(), newBody(root.getChildren()));
-		debug("Generated " + uriConter + " links in " + containerCounter + " containers");
+		Log.debug("Generated " + uriConter + " links in " + containerCounter + " containers");
 		return html.render();
 	}
 
@@ -111,7 +111,7 @@ public class HTMLTreeGenerator {
 			} else if (bm.hasChildren()) {
 				result.add(newContainer(bm));
 			} else {
-				log("Skipping empty folder: " + bm.getTitle());
+				Log.log("Skipping empty folder: " + bm.getTitle());
 			}
 		}
 		return result;

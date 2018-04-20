@@ -15,8 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.internal;
 
-import static se.p2r.foxport.util.Utils.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,6 +35,7 @@ import se.p2r.foxport.html.HTMLFileWriter;
 import se.p2r.foxport.html.HTMLListGenerator;
 import se.p2r.foxport.html.HTMLTreeGenerator;
 import se.p2r.foxport.util.DeepBookmarkSelector;
+import se.p2r.foxport.util.Log;
 import se.p2r.foxport.util.MutableBookmarkContainer;
 import se.p2r.foxport.util.Utils.BrowserType;
 
@@ -91,7 +90,6 @@ public class ConfiguredBookmarkProcessor extends BookmarkProcessor {
 			files.add(processContainer(id, root, description));
 		}
 
-		log("</RUN> Wrote " + files.size() + " files");
 		return files;
 	}
 
@@ -126,7 +124,7 @@ public class ConfiguredBookmarkProcessor extends BookmarkProcessor {
 	}
 
 	private File processContainer(String id, Bookmark root, String... nameAndDescription) {
-		debug("Processing root folder: " + root.getTitle());
+		Log.debug("Processing root folder: " + root.getTitle());
 
 		String name = root.getTitle();
 		String description = "";

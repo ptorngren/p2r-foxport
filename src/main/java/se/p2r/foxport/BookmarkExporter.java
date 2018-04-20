@@ -32,6 +32,7 @@ import se.p2r.foxport.internal.CommandLineParser;
 import se.p2r.foxport.internal.ConfigurationException;
 import se.p2r.foxport.internal.ConfiguredBookmarkProcessor;
 import se.p2r.foxport.net.FileUploader;
+import se.p2r.foxport.util.Log;
 import se.p2r.foxport.util.Utils;
 import se.p2r.foxport.util.Utils.BrowserType;
 
@@ -59,15 +60,13 @@ public class BookmarkExporter {
 		if (options.isConfigurationFileSpecified()) {
 			File cfgFile = options.getConfigurationFile();
 			Properties config = readProperties(cfgFile);
-			Utils.log("<RUN> " + targetFolder + ", configured by file " + cfgFile.getAbsolutePath());
+			Log.log(String.format("<EXPORT> to: %s | configured by: %s", targetFolder , cfgFile.getAbsolutePath()));
 			files = new ConfiguredBookmarkProcessor(browserType, targetFolder, isTree, isForceExport).process(config);
 		} else {
-			Utils.log("<RUN> " + targetFolder);
+			Log.log(String.format("<EXPORT> to: %s", targetFolder));
 			files = new BookmarkProcessor(browserType, targetFolder, isTree, isForceExport).process();
 		}
-		if (!files.isEmpty()) {
-			
-		}
+		Log.log("</EXPORT> Wrote " + files.size() + " files");
 		
 		// upload
 		if (options.isUpload() && !files.isEmpty()) {
@@ -76,7 +75,7 @@ public class BookmarkExporter {
 			publisher.upload(files);
 		}
 		
-		Utils.log(BookmarkExporter.class.getSimpleName() + ": Done!");
+		Log.log(BookmarkExporter.class.getSimpleName() + ": Done!");
 		return 0;
 	}
 

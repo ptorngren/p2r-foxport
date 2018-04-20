@@ -70,18 +70,6 @@ public final class Utils {
 	public static final String ENCODING_HTML = "utf-8";  // output, defined by you to suite your browsers 
 
 
-	public static void log(String string) {
-		// TODO proper logging? Or is it overkill?
-		System.out.println(string);
-	}
-
-	public static void debug(String string) {
-		// TODO proper logging?  Or is it overkill?
-		if (System.getProperties().containsKey("DEBUG")) {
-			System.err.println(string);
-		}
-	}
-
 	public static final boolean endsWith(File file, String wantedEnding) {
 		return file.getName().toLowerCase().endsWith(wantedEnding);
 	}

@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import se.p2r.foxport.BookmarkReader;
+import se.p2r.foxport.util.Log;
 
 /**
  * Reads chrome bookmarks. Note: For editing comments in Chrome, you probably
@@ -63,7 +64,7 @@ public class ChromeReader implements BookmarkReader {
 		assert contents!=null : "No bookmarks produced from file: "+inputFile;
 		assert contents.getRoots() !=null : "No roots produced from file: "+inputFile;
 		assert contents.getOther() !=null : "No bookmarks produced from file: "+inputFile;
-		debug("Parsed " + inputFile + ":" + contents);
+		Log.debug("Parsed " + inputFile + ":" + contents);
 		
 		return contents.getOther();
 	}

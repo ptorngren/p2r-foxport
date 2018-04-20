@@ -33,6 +33,7 @@ import com.google.gson.GsonBuilder;
 
 import se.p2r.foxport.BookmarkReader;
 import se.p2r.foxport.util.JsonFilter;
+import se.p2r.foxport.util.Log;
 import se.p2r.foxport.util.Utils;
 
 /**
@@ -164,7 +165,7 @@ public class FirefoxReader implements BookmarkReader {
 			
 			Gson gson = new GsonBuilder().create();
 			FirefoxBookmarks ffb = gson.fromJson(reader, FirefoxBookmarks.class);
-			debug("Parsed " + inputFile + ":" + ffb);
+			Log.debug("Parsed " + inputFile + ":" + ffb);
 			return ffb;
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to parse input file: " + inputFile, e);

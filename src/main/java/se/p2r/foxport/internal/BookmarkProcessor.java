@@ -15,8 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.internal;
 
-import static se.p2r.foxport.util.Utils.*;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,6 +32,7 @@ import se.p2r.foxport.html.HTMLFileWriter;
 import se.p2r.foxport.html.HTMLListGenerator;
 import se.p2r.foxport.html.HTMLTreeGenerator;
 import se.p2r.foxport.util.DeepBookmarkSelector;
+import se.p2r.foxport.util.Log;
 import se.p2r.foxport.util.MutableBookmarkContainer;
 import se.p2r.foxport.util.Utils.BrowserType;
 
@@ -87,7 +86,7 @@ public class BookmarkProcessor {
 		if (isForceExport || reader.getTimestamp()>timestamp) {
 			return true;
 		}
-		log("Skipping export - bookmarks have not changed since last run: "+new SimpleDateFormat().format(Long.valueOf(timestamp)));
+		Log.log("Skipping export - bookmarks have not changed since last run: "+new SimpleDateFormat().format(Long.valueOf(timestamp)));
 		return false;
 	}
 
@@ -110,7 +109,6 @@ public class BookmarkProcessor {
 			files.add(exportedFile);
 		}
 	
-		log("</RUN> Wrote " + files.size() + " files");
 		return files;
 	}
 
@@ -130,7 +128,7 @@ public class BookmarkProcessor {
 		String description = root.getDescription();
 		String id = root.getExportId();
 		
-		debug("Processing root folder: " + id);
+		Log.debug("Processing root folder: " + id);
 		String html = generateTree 
 				? new HTMLTreeGenerator(root, name, description).run()
 				: new HTMLListGenerator(root, name, description).run();
