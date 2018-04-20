@@ -14,7 +14,8 @@
 	</properties>
 	<build>
 		<!-- finalName>${project.artifactId}-${project.version}-${maven.build.timestamp}</finalName> -->
-		<finalName>${project.artifactId}-${maven.build.timestamp}</finalName>
+		<!-- finalName>${project.artifactId}-${maven.build.timestamp}</finalName> -->
+		<finalName>${project.artifactId}</finalName>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>
 			<resource>
