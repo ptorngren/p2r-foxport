@@ -19,7 +19,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -30,7 +29,6 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.UnrecognizedOptionException;
 
 import se.p2r.foxport.BookmarkExporter;
-import se.p2r.foxport.util.Utils;
 import se.p2r.foxport.util.Utils.BrowserType;
 
 public final class ActiveOptions {
@@ -40,6 +38,7 @@ public final class ActiveOptions {
 			
 	public ActiveOptions(Options validOptions, String... args) throws ParseException {
 		this.validOptions = validOptions;
+		
 		try {
 			this.commandLine = new DefaultParser().parse(validOptions, args);
 			List<String> excessive = this.commandLine.getArgList();
@@ -125,14 +124,10 @@ public final class ActiveOptions {
 	}
 
 	public int printVersion() {
-		Properties prop = Utils.loadPropertyFile("version.properties");
-		
-		String name = prop.getProperty("name");
-		String version = prop.getProperty("version");
-		String timestamp = prop.getProperty("timestamp");
-		String msg = String.format("%s | version: %s | timestamp: %s", name, version, timestamp);
+		String msg = new VersionInfo().getVersionString();
 		System.out.println(msg);
 		return 0;
 	}
+
 
 }
