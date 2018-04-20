@@ -35,7 +35,7 @@ import se.p2r.foxport.util.Utils;
  * 
  * 
  * @author peer
- * @see http://www.codejava.net/java-se/networking/ftp/java-ftp-file-upload-tutorial-and-example
+ * @see "http://www.codejava.net/java-se/networking/ftp/java-ftp-file-upload-tutorial-and-example"
  */
 public class BookmarkPublisher {
 
@@ -51,11 +51,11 @@ public class BookmarkPublisher {
 
 	public void publish(Collection<File> localFiles) {
 		try {
-			Utils.log(String.format("<UPLOAD> Uploading %d files to %s ...", localFiles.size(), strippedURL));
+			Utils.log(String.format("<UPLOAD> Uploading %d files to %s ...", Integer.valueOf(localFiles.size()), strippedURL));
 			
 			boolean ok = doPublish(localFiles);
 			if (ok) {
-				Utils.log(String.format("</UPLOAD> Uploaded %d files to %s", localFiles.size(), strippedURL));
+				Utils.log(String.format("</UPLOAD> Uploaded %d files to %s", Integer.valueOf(localFiles.size()), strippedURL));
 			} else {
 				Utils.log("Failed to upload all files to "+strippedURL);
 			}

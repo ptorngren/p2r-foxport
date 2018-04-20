@@ -95,7 +95,6 @@ public final class Utils {
 	/**
 	 * Convert time in millis to ISO formatted string in default timezone.
 	 * @param ms
-	 * @param timeZone 
 	 * @return String formatted as ISO standard
 	 */
 	public static String formatTimeISO(long ms) {
@@ -110,7 +109,6 @@ public final class Utils {
 	/**
 	 * Convert time in millis to ISO formatted string in UTC timezone.
 	 * @param ms
-	 * @param timeZone 
 	 * @return String formatted as ISO standard
 	 */
 	public static String formatTimeUTC(long ms) {
@@ -129,16 +127,6 @@ public final class Utils {
 	 */
 	public static String extractExportId(String stringOrNull) {
 		return stringOrNull==null || stringOrNull.trim().isEmpty() ? null : stringOrNull.split(":")[0];
-	}
-
-	/**
-	 * Extract the description after stripping the id for external export (if present).
-	 * @param description
-	 * @return
-	 */
-	public static String extractDescription(String stringOrNull) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	/**

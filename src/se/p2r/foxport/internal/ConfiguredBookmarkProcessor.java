@@ -15,8 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.internal;
 
-import static se.p2r.foxport.util.Utils.debug;
-import static se.p2r.foxport.util.Utils.log;
+import static se.p2r.foxport.util.Utils.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,12 +52,11 @@ import se.p2r.foxport.util.Utils.BrowserType;
  * @author peer
  *
  * @see #mapNames(Properties)
- * @see #getDescription(Properties, String)
  * TODO refactor and make more use of {@link BookmarkProcessor}
  */
 public class ConfiguredBookmarkProcessor extends BookmarkProcessor {
 
-	public ConfiguredBookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree, boolean isForceExport) throws IOException, ConfigurationException {
+	public ConfiguredBookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree, boolean isForceExport) throws ConfigurationException {
 		super(browserType, targetFolder, isTree, isForceExport);
 	}
 

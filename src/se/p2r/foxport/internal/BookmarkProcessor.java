@@ -15,8 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.internal;
 
-import static se.p2r.foxport.util.Utils.debug;
-import static se.p2r.foxport.util.Utils.log;
+import static se.p2r.foxport.util.Utils.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,7 +56,7 @@ public class BookmarkProcessor {
 	private final long timestamp;
 	private final boolean isForceExport;
 
-	public BookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree, boolean isForceExport) throws IOException, ConfigurationException {
+	public BookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree, boolean isForceExport) throws ConfigurationException {
 		this.browserType = browserType;
 		this.targetFolder = targetFolder;
 		this.generateTree = isTree;
@@ -88,7 +87,7 @@ public class BookmarkProcessor {
 		if (isForceExport || reader.getTimestamp()>timestamp) {
 			return true;
 		}
-		log("Skipping export - bookmarks have not changed since last run: "+new SimpleDateFormat().format(timestamp));
+		log("Skipping export - bookmarks have not changed since last run: "+new SimpleDateFormat().format(Long.valueOf(timestamp)));
 		return false;
 	}
 

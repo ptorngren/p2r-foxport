@@ -56,6 +56,7 @@ public class ChromeReader implements BookmarkReader {
 		return file;
 	}
 
+	@Override
 	public ChromeBookmark load() {
 		ChromeBookmarks contents = parseBookmarksFile();
 		

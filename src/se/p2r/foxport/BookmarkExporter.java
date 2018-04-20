@@ -93,9 +93,6 @@ public class BookmarkExporter {
 	 * by {@link CommandLineParser}.
 	 * 
 	 * @param args
-	 * @throws IOException
-	 * @throws ParseException 
-	 * @throws ConfigurationException 
 	 */
 	public static void main(String[] args) {
 		int result = 0;

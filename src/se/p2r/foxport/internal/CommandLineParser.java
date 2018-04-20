@@ -67,7 +67,7 @@ public class CommandLineParser {
 			return BrowserType.from(type);
 		}
 
-		public File getTargetFolder() throws MissingArgumentException {
+		public File getTargetFolder() {
 			String target = commandLine.hasOption('t') ? commandLine.getOptionValue('t') : System.getProperty("java.io.tmpdir");
 			return new File(target);
 		}
@@ -116,8 +116,8 @@ public class CommandLineParser {
 		 * <a href="ftp://ftp.funet.fi/pub/doc/rfc/rfc1738.txt">RFC 1738</a>. Example:
 		 * <code>ftp://user:password@p2r.se:21/links</code>
 		 * 
-		 * @return
-		 * @see http://jkorpela.fi/ftpurl.html
+		 * @see "http://jkorpela.fi/ftpurl.html"
+		 * @return url
 		 */
 		public URL getUploadURL() {
 			if (isUpload()) {
@@ -180,7 +180,7 @@ public class CommandLineParser {
 			
 	}
 
-	private static MissingArgumentException newMissingArgumentException(Option o) throws MissingArgumentException {
+	private static MissingArgumentException newMissingArgumentException(Option o) {
 		return new MissingArgumentException(String.format("-%s (--%s)", o.getOpt(), o.getLongOpt()));
 	}
 

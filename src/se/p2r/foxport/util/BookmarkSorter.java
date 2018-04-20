@@ -30,8 +30,12 @@ public class BookmarkSorter implements Comparator<Bookmark> {
 	
 	@Override
 	public int compare(Bookmark b1, Bookmark b2) {
-		int type = BooleanComparator.getTrueFirstComparator().compare(b1.isContainer(), b2.isContainer());
+		int type = BooleanComparator.getTrueFirstComparator().compare(isContainer(b1), isContainer(b2));
 		return type==0 ? compareTitles(b1, b2) : type; 
+	}
+
+	private static Boolean isContainer(Bookmark b1) {
+		return Boolean.valueOf(b1.isContainer());
 	}
 
 	private int compareTitles(Bookmark b1, Bookmark b2) {

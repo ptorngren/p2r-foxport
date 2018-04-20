@@ -33,18 +33,22 @@ public class FirefoxBookmark implements Bookmark {
 	private List<FirefoxBookmark> children; // only for x-moz-place-container?
 	private String uri; // "http://www.p2r.se/links" (only for x-moz-place)
 
+	@Override
 	public boolean isContainer() {
 		return type.toLowerCase().equals("text/x-moz-place-container");
 	}
 
+	@Override
 	public boolean isLink() {
 		return type.toLowerCase().equals("text/x-moz-place");
 	}
 
+	@Override
 	public boolean hasChildren() {
 		return !getChildren().isEmpty();
 	}
 
+	@Override
 	public String getDescription() {
 		if (annos == null || annos.isEmpty()) {
 			return null;
@@ -62,6 +66,7 @@ public class FirefoxBookmark implements Bookmark {
 		return description;
 	}
 
+	@Override
 	public String getTitle() {
 		return title;
 	}
@@ -96,10 +101,12 @@ public class FirefoxBookmark implements Bookmark {
 		return root;
 	}
 
+	@Override
 	public List<FirefoxBookmark> getChildren() {
 		return children == null ? Collections.emptyList() : children;
 	}
 
+	@Override
 	public String getUri() {
 		return uri;
 	}

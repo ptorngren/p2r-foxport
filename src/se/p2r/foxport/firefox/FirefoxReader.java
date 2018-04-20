@@ -15,11 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.firefox;
 
-import static se.p2r.foxport.util.Utils.ENCODING_JSON;
-import static se.p2r.foxport.util.Utils.JSON;
-import static se.p2r.foxport.util.Utils.JSONLZ4;
-import static se.p2r.foxport.util.Utils.debug;
-import static se.p2r.foxport.util.Utils.endsWith;
+import static se.p2r.foxport.util.Utils.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -135,6 +131,7 @@ public class FirefoxReader implements BookmarkReader {
 		return inputFile.lastModified();
 	}
 
+	@Override
 	public FirefoxBookmark load() {
 		FirefoxBookmarks allRoots = parseBookmarkFile();
 		return findBookmarksRoot(allRoots.getChildren(), ROOT_NAMES); // find the "Bookmarks" folder
@@ -181,6 +178,5 @@ public class FirefoxReader implements BookmarkReader {
 			}
 		}
 	}
-
 
 }

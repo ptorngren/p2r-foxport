@@ -16,8 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 package se.p2r.foxport.util;
 
-import static se.p2r.foxport.util.Utils.JSON;
-import static se.p2r.foxport.util.Utils.endsWith;
+import static se.p2r.foxport.util.Utils.*;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -32,6 +31,7 @@ public final class JsonFilter implements FileFilter {
 
 	private static final FileFilter INSTANCE = new JsonFilter();
 	
+	@Override
 	public boolean accept(File pathname) {	
 		return endsWith(pathname, JSON);
 	}
