@@ -26,6 +26,7 @@ import org.apache.commons.cli.ParseException;
 
 import se.p2r.foxport.chrome.ChromeReader;
 import se.p2r.foxport.firefox.FirefoxReader;
+import se.p2r.foxport.internal.ActiveOptions;
 import se.p2r.foxport.internal.BookmarkProcessor;
 import se.p2r.foxport.internal.CommandLineParser;
 import se.p2r.foxport.internal.ConfigurationException;
@@ -45,7 +46,7 @@ import se.p2r.foxport.util.Utils.BrowserType;
  */
 public class BookmarkExporter {
 
-	private static int run(CommandLineParser.ActiveOptions options) throws ConfigurationException, IOException, MissingArgumentException {
+	private static int run(ActiveOptions options) throws ConfigurationException, IOException {
 		
 		// init
 		BrowserType browserType = options.getBrowserType();
@@ -75,6 +76,7 @@ public class BookmarkExporter {
 			publisher.publish(files);
 		}
 		
+		Utils.log(BookmarkExporter.class.getSimpleName() + ": Done!");
 		return 0;
 	}
 
@@ -97,9 +99,8 @@ public class BookmarkExporter {
 	public static void main(String[] args) {
 		int result = 0;
 		try {
-			CommandLineParser.ActiveOptions commandLine = new CommandLineParser().parse(args);
+			ActiveOptions commandLine = new CommandLineParser().parse(args);
 			result = commandLine.isHelp() ? commandLine.printHelp() : run(commandLine);
-			Utils.log(BookmarkExporter.class.getSimpleName() + ": Done!");
 		} catch (MissingArgumentException e) {
 			System.err.println("Missing mandatory option: " + e.getMessage());
 			result = 1;

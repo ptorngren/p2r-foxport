@@ -24,6 +24,7 @@ import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.TimeZone;
@@ -50,6 +51,13 @@ public final class Utils {
 			default:
 				throw new IllegalArgumentException("Unexpexted id: " + type);
 			}
+		}
+
+		/**
+		 * @return human readable string of choices
+		 */
+		public static String names() {
+			return Arrays.asList(values()).toString();
 		}
 	}
 
