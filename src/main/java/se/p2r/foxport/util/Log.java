@@ -70,4 +70,8 @@ public class Log {
 		LOG.log(Level.SEVERE, "Fatal error, aborting", e);
 	}
 
+	public static void error(String msg) {
+		LOG.severe(msg);
+	}
+
 }
