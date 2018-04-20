@@ -137,7 +137,7 @@ public class CommandLineParser {
 
 		public int printHelp() {
 			String name = "java " + BookmarkExporter.class.getSimpleName();
-			new HelpFormatter().printHelp(name, validOptions, true);
+			new HelpFormatter().printHelp(160, name, null, validOptions, null, true);
 			return 0; // system exit code: ok
 		}
 
