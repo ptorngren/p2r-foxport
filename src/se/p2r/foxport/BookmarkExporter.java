@@ -31,7 +31,7 @@ import se.p2r.foxport.internal.BookmarkProcessor;
 import se.p2r.foxport.internal.CommandLineParser;
 import se.p2r.foxport.internal.ConfigurationException;
 import se.p2r.foxport.internal.ConfiguredBookmarkProcessor;
-import se.p2r.foxport.net.BookmarkPublisher;
+import se.p2r.foxport.net.FileUploader;
 import se.p2r.foxport.util.Utils;
 import se.p2r.foxport.util.Utils.BrowserType;
 
@@ -72,8 +72,8 @@ public class BookmarkExporter {
 		// upload
 		if (options.isUpload() && !files.isEmpty()) {
 			URL url = options.getUploadURL();
-			BookmarkPublisher publisher = new BookmarkPublisher(url);
-			publisher.publish(files);
+			FileUploader publisher = new FileUploader(url);
+			publisher.upload(files);
 		}
 		
 		Utils.log(BookmarkExporter.class.getSimpleName() + ": Done!");

@@ -37,23 +37,25 @@ import se.p2r.foxport.util.Utils;
  * @author peer
  * @see "http://www.codejava.net/java-se/networking/ftp/java-ftp-file-upload-tutorial-and-example"
  */
-public class BookmarkPublisher {
+public class FileUploader {
 
 	private final URL url;
 	private final String strippedURL;
 
-	public BookmarkPublisher(URL url) {
+	public FileUploader(URL url) {
 		this.url = url;
 		String externalForm = url.toExternalForm();
 		String userInfo = url.getUserInfo();
 		this.strippedURL = externalForm.replaceAll(userInfo, "(user:password)");
 	}
 
-	public void publish(Collection<File> localFiles) {
+	public void upload(Collection<File> localFiles) {
 		try {
 			Utils.log(String.format("<UPLOAD> Uploading %d files to %s ...", Integer.valueOf(localFiles.size()), strippedURL));
 			
-			boolean ok = doPublish(localFiles);
+			FTPClient ftpClient = createClient();
+			boolean ok = uploadFiles(ftpClient, url, localFiles);
+			disconnect(ftpClient);
 			if (ok) {
 				Utils.log(String.format("</UPLOAD> Uploaded %d files to %s", Integer.valueOf(localFiles.size()), strippedURL));
 			} else {
@@ -63,41 +65,6 @@ public class BookmarkPublisher {
 		} catch (IOException e) {
 			Utils.log("Failed to upload all files to "+strippedURL);
 			e.printStackTrace();
-		}
-	}
-
-	private boolean doPublish(Collection<File> files) throws SocketException, IOException {
-		FTPClient ftpClient = createClient();
-		String remotePath = url.getPath();
-		if (ftpClient.changeWorkingDirectory(remotePath)) {
-			String pwd = ftpClient.printWorkingDirectory();
-			for (File file : files) {
-				Utils.log(String.format("Uploading %s ...", file));
-				String remoteName = file.getName();
-				boolean ok = upload(ftpClient, file, remoteName);
-				if (ok) {
-					Utils.debug(String.format("Uploaded %s to %s%s/%s", file, url.getHost(), pwd, remoteName));
-				}
-			}
-		}
-		
-		Utils.debug("Logging out ... ");
-//		ftpClient.completePendingCommand();  // hangs?
-		ftpClient.logout();
-	    ftpClient.disconnect();
-		Utils.debug("Disconnected");
-		return true;
-	}
-
-	private boolean upload(FTPClient ftpClient, File localFile, String remoteName) throws FileNotFoundException, IOException {
-		InputStream inputStream = null;
-		try {
-			inputStream = new FileInputStream(localFile);
-			return ftpClient.storeFile(remoteName, inputStream);
-		} finally {
-			if (inputStream != null) {
-				inputStream.close();
-			}
 		}
 	}
 
@@ -121,4 +88,41 @@ public class BookmarkPublisher {
 		
 		return ftpClient;
 	}
+	
+	private static boolean uploadFiles(FTPClient ftpClient, URL url, Collection<File> files) throws SocketException, IOException {
+		String remotePath = url.getPath();
+		if (ftpClient.changeWorkingDirectory(remotePath)) {
+			String pwd = ftpClient.printWorkingDirectory();
+			for (File file : files) {
+				Utils.log(String.format("Uploading %s ...", file));
+				String remoteName = file.getName();
+				boolean ok = uploadFile(ftpClient, file, remoteName);
+				if (ok) {
+					Utils.debug(String.format("Uploaded %s to %s%s/%s", file, url.getHost(), pwd, remoteName));
+				}
+			}
+		}
+		return true;
+	}
+
+	private static boolean uploadFile(FTPClient ftpClient, File localFile, String remoteName) throws FileNotFoundException, IOException {
+		InputStream inputStream = null;
+		try {
+			inputStream = new FileInputStream(localFile);
+			return ftpClient.storeFile(remoteName, inputStream);
+		} finally {
+			if (inputStream != null) {
+				inputStream.close();
+			}
+		}
+	}
+
+	private static void disconnect(FTPClient ftpClient) throws IOException {
+		Utils.debug("Logging out ... ");
+//		ftpClient.completePendingCommand();  // hangs?
+		ftpClient.logout();
+	    ftpClient.disconnect();
+		Utils.debug("Disconnected");
+	}
+
 }
