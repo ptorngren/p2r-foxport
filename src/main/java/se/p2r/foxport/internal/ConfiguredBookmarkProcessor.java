@@ -31,9 +31,6 @@ import org.apache.commons.collections4.ListValuedMap;
 
 import se.p2r.foxport.Bookmark;
 import se.p2r.foxport.BookmarkReader;
-import se.p2r.foxport.html.HTMLFileWriter;
-import se.p2r.foxport.html.HTMLListGenerator;
-import se.p2r.foxport.html.HTMLTreeGenerator;
 import se.p2r.foxport.internal.exceptions.ConfigurationException;
 import se.p2r.foxport.util.DeepBookmarkSelector;
 import se.p2r.foxport.util.Log;
@@ -55,8 +52,8 @@ import se.p2r.foxport.util.Utils.BrowserType;
  */
 public class ConfiguredBookmarkProcessor extends BookmarkProcessor {
 
-	public ConfiguredBookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree, boolean isForceExport) throws ConfigurationException {
-		super(browserType, targetFolder, isTree, isForceExport);
+	public ConfiguredBookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree, boolean isForceExport, LinkTester linkTester) throws ConfigurationException {
+		super(browserType, targetFolder, isTree, isForceExport, linkTester);
 	}
 
 	public List<File> process(Properties config) throws IOException {
@@ -132,10 +129,7 @@ public class ConfiguredBookmarkProcessor extends BookmarkProcessor {
 			name = nameAndDescription[0];
 			description = nameAndDescription.length > 1 ? nameAndDescription[1] : "";
 		}
-		String html = generateTree 
-				? new HTMLTreeGenerator(root, name, description).run()
-				: new HTMLListGenerator(root, name, description).run();
-		return new HTMLFileWriter(targetFolder, id).writeFile(html, root);
+		return generate(root, name, description, id);
 	}
 
 	private List<Bookmark> select(List<? extends Bookmark> prospects, Map<String, String> mappings) {

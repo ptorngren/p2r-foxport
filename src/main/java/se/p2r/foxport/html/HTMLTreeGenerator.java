@@ -27,6 +27,7 @@ import j2html.tags.DomContent;
 import j2html.tags.Tag;
 import j2html.tags.Text;
 import se.p2r.foxport.Bookmark;
+import se.p2r.foxport.internal.LinkTester;
 import se.p2r.foxport.util.BookmarkSorter;
 import se.p2r.foxport.util.Log;
 import se.p2r.foxport.util.Utils;
@@ -43,19 +44,21 @@ import se.p2r.foxport.util.Utils;
 public class HTMLTreeGenerator {
 
 	private static final String LINKBULLET = "▻ "; // HTML "&#9659;"
+
 	private final Bookmark root;
+	private final String name;
+	private final LinkTester linkTester;
 
 	private int uriConter = 0;
 	private int containerCounter = 0;
-	private final String name;
 	private int containerDepth = 0;
 	private String description;
 
-
-	public HTMLTreeGenerator(Bookmark root, String name, String description) {
+	public HTMLTreeGenerator(Bookmark root, String name, String description, LinkTester linkTester) {
 		this.root = root;
 		this.name = name;
 		this.description = description;
+		this.linkTester = linkTester;
 	}
 
 	public String run() {
@@ -105,9 +108,12 @@ public class HTMLTreeGenerator {
 		List<DomContent> result = new ArrayList();
 		Collection<Bookmark> sortedChildren = BookmarkSorter.sort(children);
 		
+		// TODO avoid empty folders when all children are invalid
 		for (Bookmark bm: sortedChildren) {
 			if (bm.isLink()) {
-				result.add(newLink(bm));
+				if (linkTester.test(bm)) {
+					result.add(newLink(bm));
+				}
 			} else if (bm.hasChildren()) {
 				result.add(newContainer(bm));
 			} else {

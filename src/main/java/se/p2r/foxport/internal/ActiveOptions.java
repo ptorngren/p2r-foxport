@@ -15,6 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.internal;
 
+import static se.p2r.foxport.internal.CommandLineParser.*;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -52,28 +54,28 @@ public final class ActiveOptions {
 	}
 
 	public BrowserType getBrowserType() {
-		return commandLine.hasOption('b') ? BrowserType.from(commandLine.getOptionValue('b')) : BrowserType.CHROME;
+		return commandLine.hasOption(BROWSERTYPE) ? BrowserType.from(commandLine.getOptionValue('b')) : BrowserType.CHROME;
 	}
 
 	public File getTargetFolder() {
-		String target = commandLine.hasOption('t') ? commandLine.getOptionValue('t') : System.getProperty("java.io.tmpdir");
+		String target = commandLine.hasOption(TARGETFOLDER) ? commandLine.getOptionValue('t') : System.getProperty("java.io.tmpdir");
 		return new File(target);
 	}
 	
 	public File getConfigurationFile() {
-		return new File(commandLine.getOptionValue('c'));
+		return new File(commandLine.getOptionValue(CONFIGURATIONFILE));
 	}
 
 	public boolean isConfigurationFileSpecified() {
-		return commandLine.hasOption('c');
+		return commandLine.hasOption(CONFIGURATIONFILE);
 	}
 
 	public boolean isPlainList() {
-		return commandLine.hasOption('p');
+		return commandLine.hasOption(LISTOUTPUT);
 	}
 
 	public boolean isForceExport() {
-		return commandLine.hasOption('f');
+		return commandLine.hasOption(FORCE);
 	}
 
 	public boolean isTree() {
@@ -81,7 +83,7 @@ public final class ActiveOptions {
 	}
 
 	public boolean isUpload() {
-		return commandLine.hasOption("u");
+		return commandLine.hasOption(UPLOAD);
 	}
 
 	/**
@@ -105,7 +107,7 @@ public final class ActiveOptions {
 	}
 
 	public boolean isHelp() {
-		return commandLine.hasOption('h');
+		return commandLine.hasOption(HELP);
 	}
 
 	public int printHelp() {
@@ -120,7 +122,7 @@ public final class ActiveOptions {
 	}
 
 	public boolean isVersion() {
-		return commandLine.hasOption('v');
+		return commandLine.hasOption(VERSION);
 	}
 
 	public int printVersion() {
@@ -129,5 +131,8 @@ public final class ActiveOptions {
 		return 0;
 	}
 
+	public boolean isTestLinks() {
+		return commandLine.hasOption(PROBE);
+	}
 
 }

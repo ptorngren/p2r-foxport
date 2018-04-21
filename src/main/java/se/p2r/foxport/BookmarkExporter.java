@@ -30,6 +30,7 @@ import se.p2r.foxport.internal.ActiveOptions;
 import se.p2r.foxport.internal.BookmarkProcessor;
 import se.p2r.foxport.internal.CommandLineParser;
 import se.p2r.foxport.internal.ConfiguredBookmarkProcessor;
+import se.p2r.foxport.internal.LinkTester;
 import se.p2r.foxport.internal.VersionInfo;
 import se.p2r.foxport.internal.exceptions.ConfigurationException;
 import se.p2r.foxport.net.FileUploader;
@@ -55,6 +56,7 @@ public class BookmarkExporter {
 		File targetFolder = options.getTargetFolder();
 		boolean isTree = options.isTree();
 		boolean isForceExport = options.isForceExport();
+		LinkTester linkTester = new LinkTester(options.isTestLinks());
 		Collection<File> files;
 		
 		// read and write 
@@ -62,12 +64,12 @@ public class BookmarkExporter {
 			File cfgFile = options.getConfigurationFile();
 			Properties config = readProperties(cfgFile);
 			Log.log(String.format("<EXPORT> to: %s | configured by: %s", targetFolder , cfgFile.getAbsolutePath()));
-			files = new ConfiguredBookmarkProcessor(browserType, targetFolder, isTree, isForceExport).process(config);
+			files = new ConfiguredBookmarkProcessor(browserType, targetFolder, isTree, isForceExport, linkTester).process(config);
 		} else {
 			Log.log(String.format("<EXPORT> to: %s", targetFolder));
-			files = new BookmarkProcessor(browserType, targetFolder, isTree, isForceExport).process();
+			files = new BookmarkProcessor(browserType, targetFolder, isTree, isForceExport, linkTester).process();
 		}
-		Log.log("</EXPORT> Wrote " + files.size() + " files");
+		Log.log("</EXPORT> Wrote " + files.size() + " files ("+linkTester.getNumberOfErrors()+" invalid links ignored)");
 		
 		// upload
 		if (options.isUpload() && !files.isEmpty()) {

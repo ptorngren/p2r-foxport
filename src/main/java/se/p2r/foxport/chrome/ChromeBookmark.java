@@ -133,5 +133,4 @@ public class ChromeBookmark implements Bookmark {
 		return "ChromeBookmark [name=" + name + ", type=" + type + "]";
 	}
 
-
 }

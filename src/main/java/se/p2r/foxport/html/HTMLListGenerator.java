@@ -29,6 +29,7 @@ import com.hp.gagawa.java.elements.Text;
 import com.hp.gagawa.java.elements.Title;
 
 import se.p2r.foxport.Bookmark;
+import se.p2r.foxport.internal.LinkTester;
 import se.p2r.foxport.util.Log;
 import se.p2r.foxport.util.Utils;
 
@@ -43,18 +44,20 @@ import se.p2r.foxport.util.Utils;
 public class HTMLListGenerator {
 
 	private final Bookmark root;
+	private final String name;
+	private final String description;
+	private final LinkTester linkTester;
 
 	private int uriConter = 0;
 	private int containerCounter = 0;
-	private final String name;
-	private final String description;
 	private int containerDepth = 0;
 
 
-	public HTMLListGenerator(Bookmark root, String name, String description) {
+	public HTMLListGenerator(Bookmark root, String name, String description, LinkTester linkTester) {
 		this.root = root;
 		this.name = name;
 		this.description = description;
+		this.linkTester = linkTester;
 	}
 
 	public String run() {
@@ -105,7 +108,9 @@ public class HTMLListGenerator {
 
 	private void append(Dl dl, Bookmark bm) {
 		if (bm.isLink()) {
-			appendLink(dl, bm);
+			if (linkTester.test(bm)) {
+				appendLink(dl, bm);
+			}
 		} else if (bm.isContainer()) {
 			if (bm.hasChildren()) {
 				containerDepth++;

@@ -29,6 +29,16 @@ import se.p2r.foxport.util.Utils.BrowserType;
  *
  */
 public class CommandLineParser {
+	
+	static final String BROWSERTYPE = "b";
+	static final String CONFIGURATIONFILE = "c";
+	static final String FORCE = "f";
+	static final String HELP = "h";
+	static final String LISTOUTPUT = "l";
+	static final String PROBE = "p";
+	static final String TARGETFOLDER = "t";
+	static final String UPLOAD = "u";
+	static final String VERSION = "v";
 
 	private final Options validOptions;
 	private ActiveOptions activeOptions;
@@ -37,14 +47,15 @@ public class CommandLineParser {
 		
 		// TODO group options
 		this.validOptions = new Options()
-				.addOption("h", "help", false, "Show this help text")
-				.addOption("b", "browser", true, String.format("Browser type: %s (default is %s)", BrowserType.names(), BrowserType.CHROME))
-				.addOption("c", "config", true, "Configuration file (foobar.properties), mandatory if running Firefox")
-				.addOption("p", "plain", false, "Plain list output (default is tree)")
-				.addOption("t", "target", true, "Target folder for writing exported files (default is user's temp directory)")
-				.addOption("u", "upload", true, "Upload to FTP destination (default is no upload). Format follows RFC 1738: 'ftp://<user>:<password>@<host>:<port>/<path>'")
-				.addOption("f", "force", false, "Force export (ignore timestamps)")
-				.addOption("v", "version", false, "show version info");
+				.addOption(BROWSERTYPE, "browser", true, String.format("Browser type: %s (default is %s)", BrowserType.names(), BrowserType.CHROME))
+				.addOption(CONFIGURATIONFILE, "config", true, "Configuration file (foobar.properties), mandatory if running Firefox")
+				.addOption(FORCE, "force", false, "Force export (ignore timestamps)")
+				.addOption(HELP, "help", false, "Show this help text")
+				.addOption(LISTOUTPUT, "list", false, "List output (default is tree)")
+				.addOption(PROBE, "probe", false, "Probe links, ignore if host name is unknown (or not responding).")
+				.addOption(TARGETFOLDER, "target", true, "Target folder for writing exported files (default is user's temp directory)")
+				.addOption(UPLOAD, "upload", true, "Upload to FTP destination (default is no upload). Format follows RFC 1738: 'ftp://<user>:<password>@<host>:<port>/<path>'")
+				.addOption(VERSION, "version", false, "show version info");
 	}
 
 	public ActiveOptions parse(String... args) throws ParseException {

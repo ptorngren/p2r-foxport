@@ -50,18 +50,21 @@ public class BookmarkProcessor {
 	
 	protected final File targetFolder;
 	protected final BrowserType browserType;
-	protected final boolean generateTree;
 	protected final File timestampFile;
+	
+	private final boolean generateTree;
 	private final long timestamp;
 	private final boolean isForceExport;
+	private final LinkTester linkTester;
 
-	public BookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree, boolean isForceExport) throws ConfigurationException {
+	public BookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree, boolean isForceExport, LinkTester linkTester) throws ConfigurationException {
 		this.browserType = browserType;
 		this.targetFolder = targetFolder;
 		this.generateTree = isTree;
 		this.timestampFile = new File(targetFolder, getClass().getName()+".timestamp");
 		this.timestamp = timestampFile==null ? 0 : timestampFile.lastModified();
 		this.isForceExport = isForceExport;
+		this.linkTester = linkTester;
 		if (!targetFolder.isDirectory()) {
 			throw new ConfigurationException(new FileNotFoundException("Output folder does not exist: " + targetFolder));
 		}
@@ -128,10 +131,14 @@ public class BookmarkProcessor {
 		String description = root.getDescription();
 		String id = root.getExportId();
 		
+		return generate(root, name, description, id);
+	}
+
+	protected File generate(Bookmark root, String name, String description, String id) {
 		Log.debug("Processing root folder: " + id);
 		String html = generateTree 
-				? new HTMLTreeGenerator(root, name, description).run()
-				: new HTMLListGenerator(root, name, description).run();
+				? new HTMLTreeGenerator(root, name, description, linkTester).run()
+				: new HTMLListGenerator(root, name, description, linkTester).run();
 				
 		return new HTMLFileWriter(targetFolder, id).writeFile(html, root);
 	}
