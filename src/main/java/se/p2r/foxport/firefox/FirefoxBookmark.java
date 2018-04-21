@@ -67,6 +67,11 @@ public class FirefoxBookmark implements Bookmark {
 	}
 
 	@Override
+	public String getName() {
+		return title;
+	}
+
+	@Override
 	public String getTitle() {
 		return title;
 	}

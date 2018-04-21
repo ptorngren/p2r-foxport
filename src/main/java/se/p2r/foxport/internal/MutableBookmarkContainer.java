@@ -38,6 +38,7 @@ public class MutableBookmarkContainer implements Bookmark {
 
 	private String description;
 	private String title;
+	private String name;
 
 	public MutableBookmarkContainer(String exportId) {
 		this.exportId = exportId;
@@ -45,6 +46,7 @@ public class MutableBookmarkContainer implements Bookmark {
 	
 	public MutableBookmarkContainer(Bookmark source) {
 		this.title = source.getTitle();
+		this.name = source.getName();
 		this.description = source.getDescription();
 		this.exportId = source.getExportId();
 		assert validTitle();
@@ -56,6 +58,20 @@ public class MutableBookmarkContainer implements Bookmark {
 		return true;
 	}
 
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		// concatenate if title already set
+		if (this.name==null) {
+			this.name = name;
+		} else if (!this.name.equalsIgnoreCase(name)) {
+			this.title = String.format("%s & %s", this.name, name);
+		}
+	}
+	
 	@Override
 	public String getTitle() {
 		return title;

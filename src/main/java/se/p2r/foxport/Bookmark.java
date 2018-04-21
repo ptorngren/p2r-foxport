@@ -37,6 +37,14 @@ public interface Bookmark {
 	 * 
 	 * @return String (not <code>null</code>)
 	 */
+	String getName();
+
+	/**
+	 * The title of the bookmark as specified in metadata or tags - use for title
+	 * when generating a file where this bookmark is the root container.
+	 * 
+	 * @return String (not <code>null</code>)
+	 */
 	String getTitle();
 
 	/**

@@ -57,7 +57,7 @@ public class LinkTester {
 			Log.debug("host="+inet.getHostAddress());
 			return true;
 		} catch (UnknownHostException e) {
-			Log.warn(String.format("Unknown host: %s [%s => %s]", host, bm.getTitle(), bm.getUri()));
+			Log.warn(String.format("Unknown host: %s [%s => %s]", host, bm.getName(), bm.getUri()));
 			errorCtr++;
 		}
 		return false;

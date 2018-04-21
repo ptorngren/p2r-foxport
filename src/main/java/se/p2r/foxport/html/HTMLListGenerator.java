@@ -121,7 +121,7 @@ public class HTMLListGenerator {
 				}
 				containerDepth--;
 			} else {
-				Log.log("Skipping empty folder: " + bm.getTitle());
+				Log.log("Skipping empty folder: " + bm.getName());
 			}
 		} else {
 			throw new IllegalArgumentException("Unexpected type: " + bm);
@@ -144,7 +144,7 @@ public class HTMLListGenerator {
 		Dt dt = new Dt();
 		A a = new A();
 		
-		a.appendText(bm.getTitle());
+		a.appendText(bm.getName());
 		a.setHref(bm.getUri());
 		
 		dt.appendChild(a);
@@ -155,7 +155,7 @@ public class HTMLListGenerator {
 
 	private Dl appendContainer(Dl dlIn, Bookmark bm) {
 //		<dt><h3 folded="">Household (economy, home improvement, etc)</h3></dt>
-		Text title = new Text(bm.getTitle());
+		Text title = new Text(bm.getName());
 
 		Dt dt = new Dt();
 		H3 h3 = new H3();

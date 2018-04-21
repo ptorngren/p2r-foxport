@@ -54,9 +54,9 @@ public class HTMLTreeGenerator {
 	private int containerDepth = 0;
 	private String description;
 
-	public HTMLTreeGenerator(Bookmark root, String name, String description, LinkTester linkTester) {
+	public HTMLTreeGenerator(Bookmark root, String title, String description, LinkTester linkTester) {
 		this.root = root;
-		this.name = name;
+		this.name = title;
 		this.description = description;
 		this.linkTester = linkTester;
 	}
@@ -117,7 +117,7 @@ public class HTMLTreeGenerator {
 			} else if (bm.hasChildren()) {
 				result.add(newContainer(bm));
 			} else {
-				Log.log("Skipping empty folder: " + bm.getTitle());
+				Log.log("Skipping empty folder: " + bm.getName());
 			}
 		}
 		return result;
@@ -125,14 +125,14 @@ public class HTMLTreeGenerator {
 
 	private ContainerTag newLink(Bookmark bm) {
 		uriConter++;
-		ContainerTag link = a(bm.getTitle()).attr("href", bm.getUri());
+		ContainerTag link = a(bm.getName()).attr("href", bm.getUri());
 		return div(LINKBULLET).with(link);
 	}
 
 	private DomContent newContainer(Bookmark bm) {
 		containerCounter++;
 		containerDepth++;
-		DomContent summary = containerDepth<2 ? summary(strong(bm.getTitle())) : summary(bm.getTitle());
+		DomContent summary = containerDepth<2 ? summary(strong(bm.getName())) : summary(bm.getName());
 		ContainerTag result = details().with(summary);
 		if (!empty(bm.getDescription())) {
 			ContainerTag description = div(bm.getDescription());

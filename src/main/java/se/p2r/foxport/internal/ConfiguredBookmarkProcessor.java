@@ -112,7 +112,7 @@ public class ConfiguredBookmarkProcessor extends BookmarkProcessor {
 	private Bookmark merge(String id, String folderName, List<Bookmark> containers) {
 		MutableBookmarkContainer result = new MutableBookmarkContainer(id);
 		for (Bookmark c : containers) {
-			assert c.getTitle().equalsIgnoreCase(folderName) : "Not the same title: " + result + ", " + c;
+			assert c.getName().equalsIgnoreCase(folderName) : "Not the same name: " + result + ", " + c;
 			result.setTitle(c.getTitle());
 			result.setDescription(c.getDescription());
 			result.mergeChildren(c);
@@ -121,21 +121,20 @@ public class ConfiguredBookmarkProcessor extends BookmarkProcessor {
 	}
 
 	private File processContainer(String id, Bookmark root, String... nameAndDescription) {
-		Log.debug("Processing root folder: " + root.getTitle());
+		Log.debug("Processing root folder: " + root.getName());
 
-		String name = root.getTitle();
+		String title = root.getTitle();
 		String description = "";
 		if (nameAndDescription.length > 0) {
-			name = nameAndDescription[0];
+			title = nameAndDescription[0];
 			description = nameAndDescription.length > 1 ? nameAndDescription[1] : "";
 		}
-		return generate(root, name, description, id);
+		return generate(root, title, description, id);
 	}
 
 	private List<Bookmark> select(List<? extends Bookmark> prospects, Map<String, String> mappings) {
 		Collection<String> folderNames = mappings.values();
-		return prospects.stream().filter(p -> folderNames.contains(p.getTitle().toLowerCase()))
-				.collect(Collectors.toList());
+		return prospects.stream().filter(p -> folderNames.contains(p.getTitle().toLowerCase())).collect(Collectors.toList());
 	}
 
 }

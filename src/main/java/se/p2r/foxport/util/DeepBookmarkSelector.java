@@ -63,7 +63,7 @@ public class DeepBookmarkSelector {
 	}
 
 	private boolean accept(Bookmark prospect) {
-		boolean result = prospect.isContainer() && (prospect.isTaggedForExport() || wantedNames.contains(prospect.getTitle().toLowerCase()));
+		boolean result = prospect.isContainer() && (prospect.isTaggedForExport() || wantedNames.contains(prospect.getName().toLowerCase()));
 		Log.debug(prospect+": "+result);
 		return result;
 	}

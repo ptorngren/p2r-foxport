@@ -66,6 +66,11 @@ public class ChromeBookmark implements Bookmark {
 	}
 
 	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
 	public String getTitle() {
 		String title = getTagParser().getTitle();
 		return title==null ? name : title;

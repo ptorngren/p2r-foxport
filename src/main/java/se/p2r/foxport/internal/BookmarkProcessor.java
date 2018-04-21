@@ -127,18 +127,18 @@ public class BookmarkProcessor {
 	}
 
 	private File processContainer(Bookmark root) {
-		String name = root.getTitle();
+		String title = root.getTitle();
 		String description = root.getDescription();
 		String id = root.getExportId();
 		
-		return generate(root, name, description, id);
+		return generate(root, title, description, id);
 	}
 
-	protected File generate(Bookmark root, String name, String description, String id) {
+	protected File generate(Bookmark root, String title, String description, String id) {
 		Log.debug("Processing root folder: " + id);
 		String html = generateTree 
-				? new HTMLTreeGenerator(root, name, description, linkTester).run()
-				: new HTMLListGenerator(root, name, description, linkTester).run();
+				? new HTMLTreeGenerator(root, title, description, linkTester).run()
+				: new HTMLListGenerator(root, title, description, linkTester).run();
 				
 		return new HTMLFileWriter(targetFolder, id).writeFile(html, root);
 	}
