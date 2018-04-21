@@ -21,6 +21,7 @@ import static j2html.attributes.Attr.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Stack;
 
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
@@ -48,6 +49,7 @@ public class HTMLTreeGenerator {
 	private final Bookmark root;
 	private final String name;
 	private final LinkTester linkTester;
+	private final Stack trail;
 
 	private int uriConter = 0;
 	private int containerCounter = 0;
@@ -59,6 +61,7 @@ public class HTMLTreeGenerator {
 		this.name = title;
 		this.description = description;
 		this.linkTester = linkTester;
+		this.trail = new BookmarkStack(root);
 	}
 
 	public String run() {
@@ -111,7 +114,7 @@ public class HTMLTreeGenerator {
 		// TODO avoid empty folders when all children are invalid
 		for (Bookmark bm: sortedChildren) {
 			if (bm.isLink()) {
-				if (linkTester.test(bm)) {
+				if (linkTester.test(bm, trail)) {
 					result.add(newLink(bm));
 				}
 			} else if (bm.hasChildren()) {
@@ -130,6 +133,7 @@ public class HTMLTreeGenerator {
 	}
 
 	private DomContent newContainer(Bookmark bm) {
+		trail.push(bm);
 		containerCounter++;
 		containerDepth++;
 		DomContent summary = containerDepth<2 ? summary(strong(bm.getName())) : summary(bm.getName());
@@ -140,6 +144,7 @@ public class HTMLTreeGenerator {
 		}
 		result.with(newContents(bm.getChildren()));
 		containerDepth--;
+		trail.pop();
 		return result;
 	}
 

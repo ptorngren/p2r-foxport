@@ -135,7 +135,7 @@ public class BookmarkProcessor {
 	}
 
 	protected File generate(Bookmark root, String title, String description, String id) {
-		Log.debug("Processing root folder: " + id);
+		Log.log("Processing root folder: " + id);
 		String html = generateTree 
 				? new HTMLTreeGenerator(root, title, description, linkTester).run()
 				: new HTMLListGenerator(root, title, description, linkTester).run();

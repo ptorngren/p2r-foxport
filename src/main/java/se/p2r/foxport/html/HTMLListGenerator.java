@@ -15,6 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.html;
 
+import java.util.Stack;
+
 import com.hp.gagawa.java.elements.A;
 import com.hp.gagawa.java.elements.Body;
 import com.hp.gagawa.java.elements.Dl;
@@ -47,6 +49,7 @@ public class HTMLListGenerator {
 	private final String name;
 	private final String description;
 	private final LinkTester linkTester;
+	private final Stack trail;
 
 	private int uriConter = 0;
 	private int containerCounter = 0;
@@ -58,6 +61,7 @@ public class HTMLListGenerator {
 		this.name = name;
 		this.description = description;
 		this.linkTester = linkTester;
+		this.trail = new BookmarkStack(root);
 	}
 
 	public String run() {
@@ -71,7 +75,7 @@ public class HTMLListGenerator {
 		return html.write();
 	}
 
-	private Dl begin(Html html, Bookmark root2) {
+	private Dl begin(Html html, Bookmark root) {
 //		<html><head>
 //		<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>Peer's Off Duty Links</title>
 //		</head><body><h1>Peer's Off Duty Links</h1>
@@ -100,7 +104,7 @@ public class HTMLListGenerator {
         body.appendChild(p);
         
         Dl dl = new Dl();
-        appendDescription(dl, root2);  // Doesn't work? No description saved in JSON?
+        appendDescription(dl, root);  // Doesn't work? No description saved in JSON?
         body.appendChild(dl);
         
         return dl;
@@ -108,17 +112,19 @@ public class HTMLListGenerator {
 
 	private void append(Dl dl, Bookmark bm) {
 		if (bm.isLink()) {
-			if (linkTester.test(bm)) {
+			if (linkTester.test(bm, trail)) {
 				appendLink(dl, bm);
 			}
 		} else if (bm.isContainer()) {
 			if (bm.hasChildren()) {
+				trail.push(bm);
 				containerDepth++;
 				containerCounter++;
 				appendContainer(dl, bm);
 				for (Bookmark child : bm.getChildren()) {
 					append(dl, child);
 				}
+				trail.pop();
 				containerDepth--;
 			} else {
 				Log.log("Skipping empty folder: " + bm.getName());
