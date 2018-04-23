@@ -104,10 +104,10 @@ public class LinkTester {
 	public String dump(String hdr) {
 		StringPrinter p = new StringPrinter(hdr);
 		dump(p);
-		p.close();
+		String result = p.close();
 		
-		System.out.println(p.toString());
-		return p.flush();
+		System.out.println(result);
+		return result;
 	}
 
 	private void dump(StringPrinter out) {

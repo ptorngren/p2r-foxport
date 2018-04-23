@@ -15,40 +15,74 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 /**
- * TODO stub - should extend PrintStream, observe platform eol etc
+ * Print multi-line messages on a {@link String}. The print methods all return
+ * the printer instance (for stacked calls).
+ * 
  * @author peer
  *
  */
-public class StringPrinter  {
-	
-	String output;
+public class StringPrinter {
 
+	private PrintStream printStream = null;
+	private ByteArrayOutputStream outputStream = null;
+
+	/**
+	 * Default constructor.
+	 */
 	public StringPrinter() {
-		this.output = "";
+		this.outputStream = new ByteArrayOutputStream();
+		this.printStream = new PrintStream(outputStream);
 	}
 
 	/**
-	 * @param header
+	 * Convenience constructor, accepts initial line(s), e.g. a header.
+	 * 
+	 * @param lines
 	 */
-	public StringPrinter(String header) {
-		this.output = header + "\n";
+	public StringPrinter(String... lines) {
+		this();
+		println((Object[]) lines);
 	}
 
-	public void close() {
+	public StringPrinter println() {
+		doPrintln("");
+		return this;
 	}
 
-	public String flush() {
-		return output;
+	public StringPrinter println(Object... lines) {
+		for (Object line : lines) {
+			doPrintln(String.valueOf(line));
+		}
+		return this;
 	}
-	public void println(String s) {
-		output += s + "\n";
+
+	private void doPrintln(String s) {
+		assert printStream != null : "No printstream!";
+		printStream.println(s);
+	}
+
+	/**
+	 * Close all streams and return the contents as a multiline string. The instance
+	 * can no longer be used.
+	 * 
+	 * @return String
+	 */
+	public String close() {
+		assert printStream != null : "No printstream!";
+		String result = outputStream.toString();
+		printStream.close();
+		outputStream = null;
+		printStream = null;
+		return result;
 	}
 
 	@Override
 	public String toString() {
-		return output;
+		return outputStream.toString();
 	}
-
 
 }
