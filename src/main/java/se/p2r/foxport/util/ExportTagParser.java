@@ -30,22 +30,27 @@ public class ExportTagParser {
 	private final String title;
 	private final String description;
 
-	public ExportTagParser(String description) {
-		String match = "#\\w+#.*"; // #tag#whatever
+	public ExportTagParser(String description, String defaultExportTag) {
+		String match = "#\\w*#.*"; // "#tag#whatever" or "##whatever"
 		boolean isTag = description!=null && description.matches(match);
 		
 		if (isTag) {
 			// export id
-			String tag = "#\\w+#"; // #tag#
-			this.exportId = description.split("[#]")[1];
+			String tag = "#\\w*#"; // #tag#
+			String[] split = description.split("[#]");
+			this.exportId = split.length>2 && !split[1].isEmpty() ? split[1] : defaultExportTag;
 			String withoutTag = description.replaceFirst(tag, "");
 
 			// title
 			int delimiter = withoutTag.indexOf(';'); // title;description
-			this.title = withoutTag.substring(0, delimiter);
+			this.title = delimiter>0 ? withoutTag.substring(0, delimiter) : exportId;
 			
 			// description
 			this.description = withoutTag.substring(1+delimiter);
+			
+			// assert parsing
+			assert Utils.defined(this.exportId): "No export ID generated: "+description;
+			assert Utils.defined(this.title) : "No export ID generated: "+description;
 			
 		} else {
 			this.exportId = null;

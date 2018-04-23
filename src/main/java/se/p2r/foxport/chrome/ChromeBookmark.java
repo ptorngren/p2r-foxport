@@ -108,7 +108,7 @@ public class ChromeBookmark implements Bookmark {
 	private ExportTagParser getTagParser() {
 		if (tagParser == null) {
 			String description = metaInfo==null ? null : metaInfo.description;
-			tagParser = new ExportTagParser(description);
+			tagParser = new ExportTagParser(description, name);
 		}
 		return tagParser;
 	}

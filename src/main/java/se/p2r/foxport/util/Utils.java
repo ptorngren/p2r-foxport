@@ -139,6 +139,11 @@ public final class Utils {
 		return s==null || s.trim().isEmpty() ? null : s.trim();
 	}
 
+	public static boolean defined(String s) {
+		boolean undefined = s==null || s.trim().isEmpty();
+		return !undefined;
+	}
+
 	public static Properties loadPropertyFile(String filename) {
 		Properties result = new Properties();
 		InputStream input = null;
