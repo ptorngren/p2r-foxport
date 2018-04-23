@@ -98,7 +98,11 @@ public class LinkTester {
 	}
 
 	public String dump() {
-		StringPrinter p = new StringPrinter();
+		return dump("");
+	}
+
+	public String dump(String hdr) {
+		StringPrinter p = new StringPrinter(hdr);
 		dump(p);
 		p.close();
 		

@@ -70,8 +70,12 @@ public class BookmarkExporter {
 			files = new BookmarkProcessor(browserType, targetFolder, isTree, isForceExport, linkTester).process();
 		}
 		Log.log("</EXPORT> Wrote " + files.size() + " files ("+linkTester.getNumberOfErrors()+" invalid links ignored)");
+		
+		// report errors
 		if (linkTester.isEnabled()) {
-			Log.log(linkTester.dump());
+			int errors = linkTester.getNumberOfErrors();
+			String hdr = String.format("Found %d bad links:", Integer.valueOf(errors));
+			Log.warn(linkTester.dump(hdr));
 		}
 		
 		// upload

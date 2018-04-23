@@ -22,7 +22,18 @@ package se.p2r.foxport.util;
  */
 public class StringPrinter  {
 	
-	String output = "";
+	String output;
+
+	public StringPrinter() {
+		this.output = "";
+	}
+
+	/**
+	 * @param header
+	 */
+	public StringPrinter(String header) {
+		this.output = header + "\n";
+	}
 
 	public void close() {
 	}
