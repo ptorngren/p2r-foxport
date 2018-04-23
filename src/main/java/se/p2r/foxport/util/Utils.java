@@ -72,7 +72,7 @@ public final class Utils {
 	public static final String JSON = ".json";
 	public static final String JSONLZ4 = ".jsonlz4";  // firefox "new" format
 	public static final String ENCODING_JSON = System.getProperty("file.encoding"); // UTF-8? input, defined by your browser?
-	public static final String ENCODING_HTML = "utf-8";  // output, defined by you to suite your browsers 
+	public static final String ENCODING_HTML = "UTF-8";  // output, defined by you to suite your browsers 
 
 
 	public static final boolean endsWith(File file, String wantedEnding) {
