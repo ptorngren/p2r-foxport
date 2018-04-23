@@ -127,7 +127,7 @@ public class HTMLListGenerator {
 				trail.pop();
 				containerDepth--;
 			} else {
-				Log.log("Skipping empty folder: " + bm.getName());
+				Log.log(String.format("Skipping empty folder: %s (%s)", bm.getName(), trail));
 			}
 		} else {
 			throw new IllegalArgumentException("Unexpected type: " + bm);

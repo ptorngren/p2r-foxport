@@ -120,7 +120,7 @@ public class HTMLTreeGenerator {
 			} else if (bm.hasChildren()) {
 				result.add(newContainer(bm));
 			} else {
-				Log.log("Skipping empty folder: " + bm.getName());
+				Log.log(String.format("Skipping empty folder: %s (%s)", bm.getName(), trail));
 			}
 		}
 		return result;
