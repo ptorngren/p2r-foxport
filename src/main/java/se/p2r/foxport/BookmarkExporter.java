@@ -70,6 +70,9 @@ public class BookmarkExporter {
 			files = new BookmarkProcessor(browserType, targetFolder, isTree, isForceExport, linkTester).process();
 		}
 		Log.log("</EXPORT> Wrote " + files.size() + " files ("+linkTester.getNumberOfErrors()+" invalid links ignored)");
+		if (linkTester.isEnabled()) {
+			Log.log(linkTester.dump());
+		}
 		
 		// upload
 		if (options.isUpload() && !files.isEmpty()) {

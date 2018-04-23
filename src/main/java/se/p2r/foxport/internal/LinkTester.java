@@ -19,10 +19,16 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
+import java.util.TreeMap;
 
 import se.p2r.foxport.Bookmark;
 import se.p2r.foxport.util.Log;
+import se.p2r.foxport.util.StringPrinter;
 
 /**
  * Test links by looking up host name. Would like to ping hosts, but this takes
@@ -35,6 +41,7 @@ public class LinkTester {
 
 	private final boolean enabled;
 	private int errorCtr = 0;
+	private Map<String, Collection<Bookmark>> badLinks = new TreeMap();
 
 	public LinkTester(boolean enabled) {
 		this.enabled = enabled;
@@ -44,7 +51,7 @@ public class LinkTester {
 		return errorCtr;
 	}
 	
-	public boolean test(Bookmark bm, Stack trail) {
+	public boolean test(Bookmark bm, Stack<Bookmark> trail) {
 		try {
 			return !enabled || doTest(bm, trail);
 		} catch (Exception e) {
@@ -53,19 +60,65 @@ public class LinkTester {
 		return false;
 	}
 
-	private boolean doTest(Bookmark bm, Stack trail) throws URISyntaxException {
-		URI uri = new URI(bm.getUri());
-		String host = uri.getHost();
-		Log.debug("Testing " + host + "...");
+	private boolean doTest(Bookmark bm, Stack<Bookmark> trail) throws URISyntaxException {
+		String host = new URI(bm.getUri()).getHost();
 		try {
-			InetAddress inet = InetAddress.getByName(host);
-			Log.debug("host="+inet.getHostAddress());
-			return true;
+			return probe(host);
 		} catch (UnknownHostException e) {
-			Log.warn(String.format("Unknown host: %s [%s => %s] (%s)", host, bm.getName(), bm.getUri(), trail));
-			errorCtr++;
+			handleBadLink(bm, trail, host);
 		}
 		return false;
+	}
+
+	private void handleBadLink(Bookmark bm, Stack<Bookmark> trail, String host) {
+		Log.warn(String.format("Unknown host: %s [%s => %s] (%s)", host, bm.getName(), bm.getUri(), trail));
+		errorCtr++;
+		register(bm, trail);
+	}
+
+	private void register(Bookmark bm, Stack<Bookmark> trail) {
+		String key = trail.toString();
+		Collection<Bookmark> values = badLinks.get(key);
+		if (values==null) {
+			values = new HashSet();
+			badLinks.put(key, values);
+		}
+		values.add(bm);
+	}
+
+	private boolean probe(String host) throws UnknownHostException {
+		Log.debug("Testing " + host + "...");
+		InetAddress inet = InetAddress.getByName(host);
+		Log.debug("OK: host="+inet.getHostAddress());
+		return true;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public String dump() {
+		StringPrinter p = new StringPrinter();
+		dump(p);
+		p.close();
+		
+		System.out.println(p.toString());
+		return p.flush();
+	}
+
+	private void dump(StringPrinter out) {
+		for (Entry<String, Collection<Bookmark>> each: badLinks.entrySet()) {
+			String folderStructure = each.getKey();
+			Collection<Bookmark> links = each.getValue();
+			
+			String hdr = String.format("%s (%d bad link(s))", folderStructure, Integer.valueOf(links.size()));
+			out.println(hdr);
+	
+			for (Bookmark link: links) {
+				String msg = String.format("\t%s\t[%s]", link.getName(), link.getUri());
+				out.println(msg);
+			}
+		}
 	}
 
 }
