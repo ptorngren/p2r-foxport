@@ -30,7 +30,12 @@ public class ExportTagParser {
 	private final String title;
 	private final String description;
 
-	public ExportTagParser(String description, String defaultExportTag) {
+	/**
+	 * 
+	 * @param description syntax "#<exportId>#<title>;<description> where all elements are optional
+	 * @param folderName as seen in browser, default for both {@link #exportId} and {@link #title} if not specified 
+	 */
+	public ExportTagParser(String description, String folderName) {
 		String match = "#\\w*#.*"; // "#tag#whatever" or "##whatever"
 		boolean isTag = description!=null && description.matches(match);
 		
@@ -38,12 +43,12 @@ public class ExportTagParser {
 			// export id
 			String tag = "#\\w*#"; // #tag#
 			String[] split = description.split("[#]");
-			this.exportId = split.length>2 && !split[1].isEmpty() ? split[1] : defaultExportTag;
+			this.exportId = split.length>2 && !split[1].isEmpty() ? split[1] : folderName;
 			String withoutTag = description.replaceFirst(tag, "");
 
 			// title
 			int delimiter = withoutTag.indexOf(';'); // title;description
-			this.title = delimiter>0 ? withoutTag.substring(0, delimiter) : exportId;
+			this.title = delimiter>0 ? withoutTag.substring(0, delimiter) : folderName;
 			
 			// description
 			this.description = withoutTag.substring(1+delimiter);
