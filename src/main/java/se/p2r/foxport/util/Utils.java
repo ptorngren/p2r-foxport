@@ -31,7 +31,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
+import se.p2r.foxport.Bookmark;
 import se.p2r.foxport.internal.exceptions.UnhandledException;
 
 /**
@@ -163,6 +165,15 @@ public final class Utils {
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * Extract names from supplied bookmarks.
+	 * @param bookmarks
+	 * @return Collection of names
+	 */
+	public static Collection<String> toNames(Collection<? extends Bookmark> bookmarks) {
+		return bookmarks.stream().map(b->b==null ? String.valueOf(null) : b.getName()).collect(Collectors.toList());
 	}
 
 }

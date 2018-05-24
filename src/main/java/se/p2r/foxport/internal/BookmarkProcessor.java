@@ -18,7 +18,6 @@ package se.p2r.foxport.internal;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +33,7 @@ import se.p2r.foxport.html.HTMLTreeGenerator;
 import se.p2r.foxport.internal.exceptions.ConfigurationException;
 import se.p2r.foxport.util.DeepBookmarkSelector;
 import se.p2r.foxport.util.Log;
+import se.p2r.foxport.util.Utils;
 import se.p2r.foxport.util.Utils.BrowserType;
 
 /**
@@ -76,11 +76,12 @@ public class BookmarkProcessor {
 			Bookmark bookmarksRoot = reader.load();
 	
 			// first select tagged root containers, then recursively collect tagged containers in these roots
-			List<Bookmark> rootContainers = select(bookmarksRoot.getChildren());
-			ListValuedMap<String, Bookmark> selectedContainers = new DeepBookmarkSelector().select(rootContainers);
-	
-			timestamp();
-			return export(selectedContainers);
+			List<Bookmark> rootsToExport = selectChildrenToExport(bookmarksRoot);
+			ListValuedMap<String, Bookmark> allContainersToExport = new DeepBookmarkSelector().select(rootsToExport);
+			if (!allContainersToExport.isEmpty()) {
+				timestamp();
+				return export(allContainersToExport);
+			}
 		}
 		return Collections.EMPTY_LIST;
 	}
@@ -89,7 +90,7 @@ public class BookmarkProcessor {
 		if (isForceExport || reader.getTimestamp()>timestamp) {
 			return true;
 		}
-		Log.log("Skipping export - bookmarks have not changed since last run: "+new SimpleDateFormat().format(Long.valueOf(timestamp)));
+		Log.log(String.format("Skipping export - bookmarks have not changed since last run. Bookmarks: %s - Last run: %s", Utils.formatTimeISO(reader.getTimestamp()), Utils.formatTimeISO(timestamp)));
 		return false;
 	}
 
@@ -98,12 +99,12 @@ public class BookmarkProcessor {
 		timestampFile.setLastModified(System.currentTimeMillis());
 	}
 
-	private List<File> export(ListValuedMap<String, Bookmark> selectedContainers) {
+	private List<File> export(ListValuedMap<String, Bookmark> containers) {
 		List<File> files = new ArrayList();
 
 		// process each selected folder by id
-		for (String id : selectedContainers.keySet()) {
-			List<Bookmark> containersWithSameID = selectedContainers.get(id);
+		for (String id : containers.keySet()) {
+			List<Bookmark> containersWithSameID = containers.get(id);
 			assert !containersWithSameID.isEmpty() : "No containers for id: " + id;
 			
 			// process each id (multiple containers may exist)
@@ -143,8 +144,14 @@ public class BookmarkProcessor {
 		return new HTMLFileWriter(targetFolder, id).writeFile(html, root);
 	}
 
-	private List<Bookmark> select(List<? extends Bookmark> prospects) {
-		return prospects.stream().filter(p -> p.isTaggedForExport()).collect(Collectors.toList());
+	private List<Bookmark> selectChildrenToExport(Bookmark bookmarksRoot) {
+		List<? extends Bookmark> roots = bookmarksRoot.getChildren();
+		List<Bookmark> result = roots.stream().filter(p -> p.isTaggedForExport()).collect(Collectors.toList());
+		if (result.isEmpty()) {
+			Log.warn("No folder is tagged for export: "+Utils.toNames(roots));
+//			Expected format is #<exportId>#<title>;<description> (all elements are optional, only initial # is required)");
+		}
+		return result;
 	}
 
 }
