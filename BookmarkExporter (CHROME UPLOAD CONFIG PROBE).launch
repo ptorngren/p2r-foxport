@@ -11,7 +11,7 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="se.p2r.foxport.BookmarkExporter"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-b=f -t=C:/tmp/BookmarkExporter -c=&quot;${project_loc:p2r-foxport}/src/test/data/BookmarkExporter.properties&quot;"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-b=CHROME -f -p -u=ftp://p2r.se:${string_prompt}@ftp.p2r.se:21/links/ -c=${project_loc:p2r-foxport}/src/test/data/BookmarkExporter.properties"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="p2r-foxport"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
 </launchConfiguration>
