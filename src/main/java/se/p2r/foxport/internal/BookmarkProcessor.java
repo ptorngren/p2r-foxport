@@ -50,20 +50,18 @@ public class BookmarkProcessor {
 	
 	protected final File targetFolder;
 	protected final BrowserType browserType;
-	protected final File timestampFile;
+	protected final long timestamp;
 	
 	private final boolean generateTree;
-	private final long timestamp;
 	private final boolean isForceExport;
 	private final LinkTester linkTester;
 
-	public BookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree, boolean isForceExport, LinkTester linkTester) throws ConfigurationException {
+	public BookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree, boolean isForceExport, long timestamp, LinkTester linkTester) throws ConfigurationException {
 		this.browserType = browserType;
 		this.targetFolder = targetFolder;
 		this.generateTree = isTree;
-		this.timestampFile = new File(targetFolder, getClass().getName()+".timestamp");
-		this.timestamp = timestampFile==null ? 0 : timestampFile.lastModified();
 		this.isForceExport = isForceExport;
+		this.timestamp = timestamp;
 		this.linkTester = linkTester;
 		if (!targetFolder.isDirectory()) {
 			throw new ConfigurationException(new FileNotFoundException("Output folder does not exist: " + targetFolder));
@@ -79,7 +77,6 @@ public class BookmarkProcessor {
 			List<Bookmark> rootsToExport = selectChildrenToExport(bookmarksRoot);
 			ListValuedMap<String, Bookmark> allContainersToExport = new DeepBookmarkSelector().select(rootsToExport);
 			if (!allContainersToExport.isEmpty()) {
-				timestamp();
 				return export(allContainersToExport);
 			}
 		}
@@ -92,11 +89,6 @@ public class BookmarkProcessor {
 		}
 		Log.log(String.format("Skipping export - bookmarks have not changed since last run. Bookmarks: %s - Last run: %s", Utils.formatTimeISO(reader.getTimestamp()), Utils.formatTimeISO(timestamp)));
 		return false;
-	}
-
-	protected void timestamp() throws IOException {
-		timestampFile.createNewFile();  // does nothing if file already exists
-		timestampFile.setLastModified(System.currentTimeMillis());
 	}
 
 	private List<File> export(ListValuedMap<String, Bookmark> containers) {

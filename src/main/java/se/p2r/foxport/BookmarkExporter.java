@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Properties;
 
 import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.ParseException;
@@ -35,7 +34,6 @@ import se.p2r.foxport.internal.VersionInfo;
 import se.p2r.foxport.internal.exceptions.ConfigurationException;
 import se.p2r.foxport.net.FileUploader;
 import se.p2r.foxport.util.Log;
-import se.p2r.foxport.util.Utils;
 import se.p2r.foxport.util.Utils.BrowserType;
 
 /**
@@ -58,16 +56,20 @@ public class BookmarkExporter {
 		boolean isForceExport = options.isForceExport();
 		LinkTester linkTester = new LinkTester(options.isTestLinks());
 		Collection<File> files;
+		File timestampFile = new File(targetFolder, BookmarkExporter.class.getName()+".timestamp");
+		long timestamp = timestampFile.lastModified(); // returns 0 if not existing
+
 		
 		// read and write 
 		if (options.isConfigurationFileSpecified()) {
 			File cfgFile = options.getConfigurationFile();
-			Properties config = Utils.loadPropertyFile(cfgFile, Utils.ISO8859);
 			Log.log(String.format("<EXPORT> to: %s | configured by: %s", targetFolder , cfgFile.getAbsolutePath()));
-			files = new ConfiguredBookmarkProcessor(browserType, targetFolder, isTree, isForceExport, linkTester).process(config);
+			ConfiguredBookmarkProcessor configuredBookmarkProcessor = new ConfiguredBookmarkProcessor(browserType, targetFolder, isTree, isForceExport, timestamp, linkTester);
+			files = configuredBookmarkProcessor.process(cfgFile);
 		} else {
 			Log.log(String.format("<EXPORT> to: %s", targetFolder));
-			files = new BookmarkProcessor(browserType, targetFolder, isTree, isForceExport, linkTester).process();
+			BookmarkProcessor bookmarkProcessor = new BookmarkProcessor(browserType, targetFolder, isTree, isForceExport, timestamp,linkTester);
+			files = bookmarkProcessor.process();
 		}
 		Log.log("</EXPORT> Wrote " + files.size() + " files ("+linkTester.getNumberOfErrors()+" invalid links ignored)");
 		
@@ -85,7 +87,14 @@ public class BookmarkExporter {
 			publisher.upload(files);
 		}
 		
+		// mark time if ending happy
+		timestamp(timestampFile);
 		return 0;
+	}
+
+	private static void timestamp(File timestampFile) throws IOException {
+		timestampFile.createNewFile();  // does nothing if file already exists
+		timestampFile.setLastModified(System.currentTimeMillis());
 	}
 
 	/**

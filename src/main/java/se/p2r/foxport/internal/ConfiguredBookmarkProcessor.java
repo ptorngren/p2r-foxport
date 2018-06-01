@@ -37,6 +37,7 @@ import se.p2r.foxport.internal.exceptions.ConfigurationException;
 import se.p2r.foxport.util.DeepBookmarkSelector;
 import se.p2r.foxport.util.Log;
 import se.p2r.foxport.util.StringPrinter;
+import se.p2r.foxport.util.Utils;
 import se.p2r.foxport.util.Utils.BrowserType;
 
 /**
@@ -55,13 +56,15 @@ import se.p2r.foxport.util.Utils.BrowserType;
  */
 public class ConfiguredBookmarkProcessor extends BookmarkProcessor {
 
-	public ConfiguredBookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree, boolean isForceExport, LinkTester linkTester) throws ConfigurationException {
-		super(browserType, targetFolder, isTree, isForceExport, linkTester);
+	public ConfiguredBookmarkProcessor(BrowserType browserType, File targetFolder, boolean isTree, boolean isForceExport, long timestamp, LinkTester linkTester) throws ConfigurationException {
+		super(browserType, targetFolder, isTree, isForceExport, timestamp, linkTester);
 	}
 
-	public List<File> process(Properties config) throws IOException {
+	public List<File> process(File cfgFile) throws IOException, ConfigurationException {
+		Properties config = Utils.loadPropertyFile(cfgFile, Utils.ISO8859);
 		BookmarkReader reader = BookmarkReader.Factory.makeReader(browserType);
-		if (needsUpdate(reader)) {
+
+		if (needsUpdate(reader, cfgFile)) {
 			Bookmark bookmarksRoot = reader.load();
 			Map<String, String> mappings = mapNames(config);
 
@@ -71,13 +74,16 @@ public class ConfiguredBookmarkProcessor extends BookmarkProcessor {
 			List<Bookmark> rootContainers = select(bookmarksRoot.getChildren(), mappings);
 			ListValuedMap<String, Bookmark> selectedContainers = new DeepBookmarkSelector(mappings.keySet()).select(rootContainers);
 
-			timestamp();
 			return export(config, selectedContainers, mappings);
 		}
 
 		return Collections.EMPTY_LIST;
 	}
 
+	protected boolean needsUpdate(BookmarkReader reader, File cfgFile) {
+		return cfgFile.lastModified() > timestamp || needsUpdate(reader);
+	}
+	
 	private List<File> export(Properties config, ListValuedMap<String, Bookmark> selectedContainers, Map<String, String> mappings) {
 		List<File> files = new ArrayList();
 		// process each selected folder
