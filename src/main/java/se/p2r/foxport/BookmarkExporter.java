@@ -76,8 +76,14 @@ public class BookmarkExporter {
 		// report errors
 		if (linkTester.isEnabled()) {
 			int errors = linkTester.getNumberOfErrors();
-			String hdr = String.format("Found %d bad links:", Integer.valueOf(errors));
-			Log.warn(linkTester.dump(hdr));
+			if (errors>0) {
+				String hdr = String.format("Found %d bad links:", Integer.valueOf(errors));
+				Log.warn(linkTester.dump(hdr));
+			} else {
+				Log.log("(no bad links found)");
+			}
+		} else {
+			Log.log("(links not tested)");
 		}
 		
 		// upload
