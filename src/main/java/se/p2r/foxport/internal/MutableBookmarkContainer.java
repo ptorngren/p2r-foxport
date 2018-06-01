@@ -142,7 +142,7 @@ public class MutableBookmarkContainer implements Bookmark {
 	 */
 	public void mergeChildren(Bookmark source) {
 		assert source.isContainer() : "Not a container: " + source;
-		assert source.getTitle().equalsIgnoreCase(title) : "Wrong title. This: " + title + ", source to merge: " + source;
+		assert name==null || source.getName().equalsIgnoreCase(name) : "Wrong name. This: " + name + ", source to merge: " + source;
 
 		for (Bookmark sourceChild: source.getChildren()) {
 			if (sourceChild.isLink()) {

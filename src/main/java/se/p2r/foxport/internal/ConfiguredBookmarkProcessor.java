@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListValuedMap;
@@ -34,6 +36,7 @@ import se.p2r.foxport.BookmarkReader;
 import se.p2r.foxport.internal.exceptions.ConfigurationException;
 import se.p2r.foxport.util.DeepBookmarkSelector;
 import se.p2r.foxport.util.Log;
+import se.p2r.foxport.util.StringPrinter;
 import se.p2r.foxport.util.Utils.BrowserType;
 
 /**
@@ -79,7 +82,7 @@ public class ConfiguredBookmarkProcessor extends BookmarkProcessor {
 		List<File> files = new ArrayList();
 		// process each selected folder
 		for (String folderName : selectedContainers.keySet()) {
-			String id = mappings.get(folderName);
+			String id = getMappedID(mappings, folderName);
 			String[] description = config.getProperty(id, "").split(";");
 			List<Bookmark> containers = selectedContainers.get(folderName);
 			assert !containers.isEmpty() : "No containers for title: " + folderName;
@@ -88,6 +91,19 @@ public class ConfiguredBookmarkProcessor extends BookmarkProcessor {
 		}
 
 		return files;
+	}
+
+	private static String getMappedID(Map<String, String> mappings, String folderName) {
+		String mappedID = mappings.get(folderName);
+		if (mappedID==null) {
+			StringPrinter sp = new StringPrinter();
+			String msg = String.format("Folder '%s' is marked for export but not found in configuration file. Does folder name match a configuration file entry? Available keys in file:", folderName);
+			Set keys = new TreeSet(mappings.keySet());
+			sp.println(msg);
+			sp.println(keys);
+			throw new IllegalArgumentException(sp.close());
+		}
+		return mappedID;
 	}
 
 	// map names to folders bidirectional. If not mapped, entry has same key and value.
@@ -134,7 +150,11 @@ public class ConfiguredBookmarkProcessor extends BookmarkProcessor {
 
 	private List<Bookmark> select(List<? extends Bookmark> prospects, Map<String, String> mappings) {
 		Collection<String> folderNames = mappings.values();
-		return prospects.stream().filter(p -> folderNames.contains(p.getTitle().toLowerCase())).collect(Collectors.toList());
+		return prospects.stream().filter(p -> match(folderNames, p)).collect(Collectors.toList());
 	}
 
+	private static boolean match(Collection<String> folderNames, Bookmark p) {
+		String name = p.getName().toLowerCase();
+		return folderNames.contains(name);
+	}
 }

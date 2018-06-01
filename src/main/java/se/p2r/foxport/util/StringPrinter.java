@@ -17,6 +17,7 @@ package se.p2r.foxport.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.Collection;
 
 /**
  * Print multi-line messages on a {@link String}. The print methods all return
@@ -54,6 +55,13 @@ public class StringPrinter {
 	}
 
 	public StringPrinter println(Object... lines) {
+		for (Object line : lines) {
+			doPrintln(String.valueOf(line));
+		}
+		return this;
+	}
+
+	public StringPrinter println(Collection lines) {
 		for (Object line : lines) {
 			doPrintln(String.valueOf(line));
 		}

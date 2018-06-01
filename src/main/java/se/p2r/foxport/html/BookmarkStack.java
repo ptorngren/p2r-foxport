@@ -41,9 +41,20 @@ public class BookmarkStack extends Stack<Bookmark> {
 				sb.append(" -- ");
 			}
 			Bookmark bm = elementAt(i);
-			sb.append(bm.getName());
+			sb.append(getCaption(bm));
 		}
 		return sb.toString();
+	}
+
+	private static String getCaption(Bookmark bm) {
+		String result = bm.getName();
+		if (result==null) {
+			result=bm.getExportId();
+		}
+		if (result==null) {
+			result=bm.getTitle();
+		}
+		return result;
 	}
 
 }

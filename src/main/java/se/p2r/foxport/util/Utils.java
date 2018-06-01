@@ -15,13 +15,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 package se.p2r.foxport.util;
 
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -34,6 +35,8 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import se.p2r.foxport.Bookmark;
+import se.p2r.foxport.internal.exceptions.ConfigurationException;
+import se.p2r.foxport.internal.exceptions.FatalException;
 import se.p2r.foxport.internal.exceptions.UnhandledException;
 
 /**
@@ -69,12 +72,16 @@ public final class Utils {
 	}
 
 	private Utils() {} // static utility
+	
+	public static final String SYSTEM_ENCODING = System.getProperty("file.encoding");
+	public static final String UTF8 = StandardCharsets.UTF_8.name();
+	public static final String ISO8859 = StandardCharsets.ISO_8859_1.name();
 
 	public static final String HTML = ".html";
 	public static final String JSON = ".json";
 	public static final String JSONLZ4 = ".jsonlz4";  // firefox "new" format
-	public static final String ENCODING_JSON = System.getProperty("file.encoding"); // UTF-8? input, defined by your browser?
-	public static final String ENCODING_HTML = "UTF-8";  // output, defined by you to suite your browsers 
+	public static final String ENCODING_JSON = SYSTEM_ENCODING; // UTF-8? input, defined by your browser?
+	public static final String ENCODING_HTML = UTF8;  // output, defined by you to suite your browsers 
 
 
 	public static final boolean endsWith(File file, String wantedEnding) {
@@ -89,9 +96,14 @@ public final class Utils {
 		return result;
 	}
 
-	public static InputStreamReader getInputStreamReader(File file) throws FileNotFoundException {
-		DataInputStream in = new DataInputStream(new FileInputStream(file));
-		InputStreamReader isr = new InputStreamReader(in);
+	public static InputStreamReader getInputStreamReader(File file, String characterSet) throws FileNotFoundException {
+		InputStream in = new FileInputStream(file);
+		InputStreamReader isr;
+		try {
+			isr = new InputStreamReader(in, characterSet);
+		} catch (UnsupportedEncodingException e) {
+			throw new FatalException("Cannot handle character set: "+characterSet, e);
+		}
 		return isr;
 	}
 
@@ -146,7 +158,7 @@ public final class Utils {
 		return !undefined;
 	}
 
-	public static Properties loadPropertyFile(String filename) {
+	public static Properties loadPropertyFileResource(String filename) {
 		Properties result = new Properties();
 		InputStream input = null;
 		try {
@@ -167,6 +179,16 @@ public final class Utils {
 		return result;
 	}
 
+	public static Properties loadPropertyFile(File cfgFile, String characterSet) throws ConfigurationException {
+		Properties cfg = new Properties();
+		try {
+			cfg.load(getInputStreamReader(cfgFile, characterSet));
+			return cfg;
+		} catch (Exception e) {
+			throw new ConfigurationException("Could not read configuration file: " + cfgFile, e);
+		}
+	}
+
 	/**
 	 * Extract names from supplied bookmarks.
 	 * @param bookmarks
@@ -175,5 +197,4 @@ public final class Utils {
 	public static Collection<String> toNames(Collection<? extends Bookmark> bookmarks) {
 		return bookmarks.stream().map(b->b==null ? String.valueOf(null) : b.getName()).collect(Collectors.toList());
 	}
-
 }

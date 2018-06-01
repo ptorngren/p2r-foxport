@@ -49,11 +49,16 @@ public class DeepBookmarkSelector {
 		this.wantedNames = wantedNames;
 	}
 
+	/**
+	 * Get map of folders to export, keyed by name of folder
+	 * @param bookmarks
+	 * @return Map<String, Bookmark>
+	 */
 	public ListValuedMap<String, Bookmark> select(List<? extends Bookmark> bookmarks) {
 		ListValuedMap<String, Bookmark> result = new ArrayListValuedHashMap();
 		for (Bookmark each : bookmarks) {
 			if (accept(each)) {
-				result.put(each.getTitle().toLowerCase(), each);
+				result.put(each.getName().toLowerCase(), each);
 			}
 			if (each.hasChildren()) {
 				result.putAll(select(each.getChildren()));

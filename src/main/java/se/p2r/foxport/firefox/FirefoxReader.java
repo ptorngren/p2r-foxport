@@ -108,7 +108,7 @@ public class FirefoxReader implements BookmarkReader {
 		List<String> lines = new ArrayList();
 		BufferedReader br = null;
 		try {
-			br = new BufferedReader(Utils.getInputStreamReader(profile));
+			br = new BufferedReader(Utils.getInputStreamReader(profile, Utils.UTF8));
 			String strLine = null;
 			while ((strLine = br.readLine()) != null) {
 				lines.add(strLine);

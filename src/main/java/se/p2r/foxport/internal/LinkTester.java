@@ -71,7 +71,9 @@ public class LinkTester {
 	}
 
 	private void handleBadLink(Bookmark bm, Stack<Bookmark> trail, String host) {
-		Log.warn(String.format("Unknown host: %s [%s => %s] (%s)", host, bm.getName(), bm.getUri(), trail));
+		String trailString = trail.toString();
+		String msg = String.format("Unknown host: %s [%s => %s] (%s)", host, bm.getName(), bm.getUri(), trailString);
+		Log.warn(msg);
 		errorCtr++;
 		register(bm, trail);
 	}

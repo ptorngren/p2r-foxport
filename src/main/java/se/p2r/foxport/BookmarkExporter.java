@@ -62,7 +62,7 @@ public class BookmarkExporter {
 		// read and write 
 		if (options.isConfigurationFileSpecified()) {
 			File cfgFile = options.getConfigurationFile();
-			Properties config = readProperties(cfgFile);
+			Properties config = Utils.loadPropertyFile(cfgFile, Utils.ISO8859);
 			Log.log(String.format("<EXPORT> to: %s | configured by: %s", targetFolder , cfgFile.getAbsolutePath()));
 			files = new ConfiguredBookmarkProcessor(browserType, targetFolder, isTree, isForceExport, linkTester).process(config);
 		} else {
@@ -86,16 +86,6 @@ public class BookmarkExporter {
 		}
 		
 		return 0;
-	}
-
-	private static Properties readProperties(File cfgFile) throws ConfigurationException {
-		Properties cfg = new Properties();
-		try {
-			cfg.load(Utils.getInputStreamReader(cfgFile));
-			return cfg;
-		} catch (Exception e) {
-			throw new ConfigurationException("Could not read configuration file: " + cfgFile, e);
-		}
 	}
 
 	/**

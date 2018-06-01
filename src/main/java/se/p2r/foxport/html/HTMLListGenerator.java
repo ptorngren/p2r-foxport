@@ -65,7 +65,7 @@ public class HTMLListGenerator {
 	}
 
 	public String run() {
-		assert root.hasChildren() : root.getTitle() + ": no children; should have been checked by caller!";
+		assert root.hasChildren() : root.getName() + ": no children; should have been checked by caller!";
 		Html html = new Html();
 		Dl dl = begin(html, root);
 		for (Bookmark child : root.getChildren()) {

@@ -29,7 +29,7 @@ public class VersionInfo {
 	private final Properties versionProperties;
 
 	public VersionInfo() {
-		this.versionProperties = Utils.loadPropertyFile("version.properties");
+		this.versionProperties = Utils.loadPropertyFileResource("version.properties");
 	}
 
 	public String getVersionString() {
