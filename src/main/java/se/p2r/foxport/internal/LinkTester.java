@@ -63,6 +63,7 @@ public class LinkTester {
 	private boolean doTest(Bookmark bm, Stack<Bookmark> trail) throws URISyntaxException {
 		String host = new URI(bm.getUri()).getHost();
 		try {
+			// TODO probe for 404 (page not found)
 			return probe(host);
 		} catch (UnknownHostException e) {
 			handleBadLink(bm, trail, host);
@@ -106,10 +107,7 @@ public class LinkTester {
 	public String dump(String hdr) {
 		StringPrinter p = new StringPrinter(hdr);
 		dump(p);
-		String result = p.close();
-		
-		System.out.println(result);
-		return result;
+		return p.close();
 	}
 
 	private void dump(StringPrinter out) {
