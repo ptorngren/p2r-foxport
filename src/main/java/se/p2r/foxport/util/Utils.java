@@ -80,6 +80,8 @@ public final class Utils {
 	public static final String HTML = ".html";
 	public static final String JSON = ".json";
 	public static final String JSONLZ4 = ".jsonlz4";  // firefox "new" format
+	
+	// TODO figure out how to use charsets properly
 	public static final String ENCODING_JSON = SYSTEM_ENCODING; // UTF-8? input, defined by your browser?
 	public static final String ENCODING_HTML = SYSTEM_ENCODING;  // output, defined by you to suite your browsers 
 

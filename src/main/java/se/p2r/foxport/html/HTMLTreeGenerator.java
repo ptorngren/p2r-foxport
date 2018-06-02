@@ -44,7 +44,7 @@ import se.p2r.foxport.util.Utils;
  */
 public class HTMLTreeGenerator {
 
-	private static final String LINKBULLET = "▻ "; // HTML "&#9659;"
+	private static final String LINKBULLET = "> "; //"▻ "; // HTML "&#9659;"
 
 	private final Bookmark root;
 	private final String name;
