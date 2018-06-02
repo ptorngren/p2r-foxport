@@ -76,8 +76,9 @@ public class BookmarkExporter {
 		// report errors
 		if (linkTester.isEnabled()) {
 			int errors = linkTester.getNumberOfErrors();
-			if (errors>0) {
-				String hdr = String.format("Found %d bad links:", Integer.valueOf(errors));
+			int redirects = linkTester.getNumberOfMoved();
+			if (errors+redirects>0) {
+				String hdr = String.format("Found %d bad links and %d redirected links:", Integer.valueOf(errors), Integer.valueOf(redirects));
 				Log.warn(linkTester.dump(hdr));
 			} else {
 				Log.log("(no bad links found)");
