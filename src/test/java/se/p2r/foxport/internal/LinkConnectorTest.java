@@ -20,8 +20,8 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.net.URL;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Not a proper unit test since it depends on brittle, external resources.
@@ -29,17 +29,17 @@ import org.junit.jupiter.api.Test;
  * @author peer
  *
  */
-class LinkConnectorTest {
+public class LinkConnectorTest {
 
 	private LinkConnector testee;
 
-	@BeforeEach
+	@Before
 	public void setUp() {
 		testee = new LinkConnector();
 	}
 
 	@Test
-	void connect() throws Exception {
+	public void connect() throws Exception {
 		expect(200, "http://p2r.se");
 //		expect(301, "http://code.google.com/p/socialmusicdiscovery");
 //		expect(302, "http://p2r.se/starters");
@@ -50,7 +50,7 @@ class LinkConnectorTest {
 	}
 
 	@Test
-	void timeout() throws Exception {
+	public void timeout() throws Exception {
 		testee = new LinkConnector(1);
 		expect(408, "http://p2r.se");
 	}

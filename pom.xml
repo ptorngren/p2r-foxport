@@ -45,6 +45,19 @@
 					</descriptorRefs>
 				</configuration>
 			</plugin>
+			<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.21.0</version>
+				<!-- doesn't run!? -->
+				<configuration>
+					<includes>
+						<include>None</include>
+					</includes>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 	<dependencies>
@@ -96,6 +109,14 @@
 			<artifactId>j2html</artifactId>
 			<version>1.2.2</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>compile</scope>
+		</dependency>
+
 	</dependencies>
 
 	<artifactId>p2r-foxport</artifactId>
