@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014, Peer Törngren
+Copyright (c) 2018, Peer Törngren
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,56 +13,38 @@ Redistribution and use in source and binary forms, with or without modification,
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+package se.p2r.foxport.util;
 
-package se.p2r.foxport;
-
-import java.io.File;
-import java.io.IOException;
-
-import se.p2r.foxport.chrome.ChromeReader;
-import se.p2r.foxport.firefox.FirefoxReader;
-import se.p2r.foxport.util.BrowserType;
+import java.util.Arrays;
 
 /**
+ * The browser types we support, enumerated to match command line args.
  * @author peer
  *
  */
-public interface BookmarkReader {
+public enum BrowserType {FIREFOX, CHROME;
+	
+	public static BrowserType from(String type) {
+		return type.length() == 1 ? fromShort(type.charAt(0)) : valueOf(type.toUpperCase());
+	}
 
-	/**
-	 * Load bookmarks file and return the root bookmark for the tree that should be
-	 * exported, typically the 'bookmarks' container, as opposed to the 'toolbar'
-	 * container.
-	 * 
-	 * @return {@link Bookmark} (never <code>null</code>)
-	 */
-	Bookmark load();
+	private static BrowserType fromShort(char type) {
+		switch (type) {
+		case 'c':
+			return CHROME;
 
-	public final class Factory {
+		case 'f':
+			return FIREFOX;
 
-		private Factory() {
+		default:
+			throw new IllegalArgumentException("Unexpexted id: " + type);
 		}
-
-		public static BookmarkReader makeReader(BrowserType browserType) throws IOException {
-			switch (browserType) {
-			case FIREFOX:
-				return new FirefoxReader();
-
-			case CHROME:
-				return new ChromeReader();
-
-			default:
-				throw new IllegalArgumentException("Unexpected browsertype: "+browserType);
-			}
-		}
-
 	}
 
 	/**
-	 * Get the last modified time of the bookmark file.
-	 * @return ms
-	 * @see File#lastModified()
+	 * @return human readable string of choices
 	 */
-	long getTimestamp();
-
+	public static String names() {
+		return Arrays.asList(values()).toString();
+	}
 }

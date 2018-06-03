@@ -21,7 +21,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import se.p2r.foxport.util.Utils.BrowserType;
+import se.p2r.foxport.util.BrowserType;
 
 /**
  * Parses the commandline.

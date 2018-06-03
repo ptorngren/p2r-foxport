@@ -33,8 +33,8 @@ import se.p2r.foxport.internal.LinkTester;
 import se.p2r.foxport.internal.VersionInfo;
 import se.p2r.foxport.internal.exceptions.ConfigurationException;
 import se.p2r.foxport.net.FileUploader;
+import se.p2r.foxport.util.BrowserType;
 import se.p2r.foxport.util.Log;
-import se.p2r.foxport.util.Utils.BrowserType;
 
 /**
  * Main entry for reading and exporting bookmarks.

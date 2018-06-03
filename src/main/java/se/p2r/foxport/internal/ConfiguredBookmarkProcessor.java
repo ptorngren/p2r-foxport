@@ -34,11 +34,11 @@ import org.apache.commons.collections4.ListValuedMap;
 import se.p2r.foxport.Bookmark;
 import se.p2r.foxport.BookmarkReader;
 import se.p2r.foxport.internal.exceptions.ConfigurationException;
+import se.p2r.foxport.util.BrowserType;
 import se.p2r.foxport.util.DeepBookmarkSelector;
 import se.p2r.foxport.util.Log;
 import se.p2r.foxport.util.StringPrinter;
 import se.p2r.foxport.util.Utils;
-import se.p2r.foxport.util.Utils.BrowserType;
 
 /**
  * <p>

@@ -27,7 +27,6 @@ import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -44,33 +43,6 @@ import se.p2r.foxport.internal.exceptions.UnhandledException;
  *
  */
 public final class Utils {
-	public static enum BrowserType {FIREFOX, CHROME;
-		
-		public static BrowserType from(String type) {
-			return type.length() == 1 ? fromShort(type.charAt(0)) : valueOf(type.toUpperCase());
-		}
-
-		private static BrowserType fromShort(char type) {
-			switch (type) {
-			case 'c':
-				return CHROME;
-
-			case 'f':
-				return FIREFOX;
-
-			default:
-				throw new IllegalArgumentException("Unexpexted id: " + type);
-			}
-		}
-
-		/**
-		 * @return human readable string of choices
-		 */
-		public static String names() {
-			return Arrays.asList(values()).toString();
-		}
-	}
-
 	private Utils() {} // static utility
 	
 	public static final String SYSTEM_ENCODING = System.getProperty("file.encoding");

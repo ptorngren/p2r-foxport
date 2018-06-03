@@ -16,10 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 package se.p2r.foxport.internal;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -44,6 +42,8 @@ import se.p2r.foxport.util.StringPrinter;
 public class LinkTester {
 
 	private final boolean enabled;
+	private final LinkConnector connector = new LinkConnector();
+	
 	private int errorCtr = 0;
 	private int movedCtr = 0;
 	private Map<String, Collection<Bookmark>> badLinks = new TreeMap();
@@ -111,11 +111,13 @@ public class LinkTester {
 	 */
 	private boolean probeURL(Bookmark bm, URL url, Stack<Bookmark> trail) throws IOException {
 		Log.debug(String.format("%s: testing URL '%s' (%s) ...", bm.getName(), url, trail));
-		int responseCode = connect(url);
+		int responseCode = connector.connect(url);
+		
 		switch (responseCode) {
 
 		// OK 
 		case HttpURLConnection.HTTP_OK: // 200
+		case HttpURLConnection.HTTP_ACCEPTED: // 202
 		case HttpURLConnection.HTTP_MOVED_TEMP: // 302
 		case HttpURLConnection.HTTP_NOT_MODIFIED: // 304
 		case 307:
@@ -127,38 +129,14 @@ public class LinkTester {
 		case 308:
 			return registerMovedBookmark(bm, trail, responseCode);
 
+		// no response
+		case HttpURLConnection.HTTP_CLIENT_TIMEOUT: // 408
+			return registerBadBookmark(bm, trail, String.format("Timeout on link (%d): %s => %s (%s)", Integer.valueOf(responseCode), bm.getName(), bm.getUri(), trail));
+			
 		// Everything else is a failure
 		default:
 			return registerBadBookmark(bm, trail, String.format("Unresolved link (%d): %s => %s (%s)", Integer.valueOf(responseCode), bm.getName(), bm.getUri(), trail));
 		}
-	}
-
-	private int connect(URL url) throws IOException, ProtocolException {
-
-		// probe connection
-		HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-		huc.setRequestMethod("HEAD");
-		huc.setConnectTimeout(2000);
-		huc.setReadTimeout(2000);
-		
-		huc.connect();
-		int responseCode = 0;
-		// get input stream to force error instead of hanging on response code
-		// https://community.oracle.com/thread/1147201
-		InputStream inputStream = null;
-		try {
-			inputStream = huc.getInputStream();
-			responseCode = huc.getResponseCode();
-		} catch (IOException e) {
-			responseCode = HttpURLConnection.HTTP_MOVED_PERM;  
-		} finally {
-			if (inputStream!=null) {
-				inputStream.close();
-			}
-		}
-
-		huc.disconnect();
-		return responseCode;
 	}
 
 	private boolean registerMovedBookmark(Bookmark bm, Stack<Bookmark> trail, int responseCode) {

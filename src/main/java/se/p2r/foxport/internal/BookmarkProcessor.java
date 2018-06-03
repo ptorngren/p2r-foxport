@@ -31,10 +31,10 @@ import se.p2r.foxport.html.HTMLFileWriter;
 import se.p2r.foxport.html.HTMLListGenerator;
 import se.p2r.foxport.html.HTMLTreeGenerator;
 import se.p2r.foxport.internal.exceptions.ConfigurationException;
+import se.p2r.foxport.util.BrowserType;
 import se.p2r.foxport.util.DeepBookmarkSelector;
 import se.p2r.foxport.util.Log;
 import se.p2r.foxport.util.Utils;
-import se.p2r.foxport.util.Utils.BrowserType;
 
 /**
  * <p>

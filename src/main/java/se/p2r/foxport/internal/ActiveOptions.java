@@ -31,7 +31,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.UnrecognizedOptionException;
 
 import se.p2r.foxport.BookmarkExporter;
-import se.p2r.foxport.util.Utils.BrowserType;
+import se.p2r.foxport.util.BrowserType;
 
 public final class ActiveOptions {
 
