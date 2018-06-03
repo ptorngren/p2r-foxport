@@ -39,18 +39,31 @@ public class LinkConnectorTest {
 	}
 
 	@Test
-	public void connect() throws Exception {
+	public void ok200() throws Exception {
 		expect(200, "http://p2r.se");
-//		expect(301, "http://code.google.com/p/socialmusicdiscovery");
-//		expect(302, "http://p2r.se/starters");
-		expect(404, "http://p2r.se/dummy");
-		expect(408, "http://hotell.kelkoo.se/Error/PageNotFound?aspxerrorpath=/TrafficInspection/23ff9ee0-6711-11e8-abb1-d56650547a15");
-		expect(200, "http://www.laget.se/sdg/");
-		expect(302, "http://bose.com/");
+		expect(200, "http://p2r.se/starters");
+		expect(200, "http://www.rollingstones.com"); // will give 403 unless user agent is set
 	}
 
 	@Test
-	public void timeout() throws Exception {
+	public void ok200WithGET() throws Exception {
+		expect(200, "http://www.laget.se/sdg/");
+		expect(302, "http://bose.com/");
+	}
+	
+	@Test
+	public void redirected300() throws Exception {
+		expect(301, "http://code.google.com/p/socialmusicdiscovery");
+	}
+
+	@Test
+	public void fail400() throws Exception {
+		expect(404, "http://p2r.se/dummy");
+		expect(408, "http://hotell.kelkoo.se/Error/PageNotFound?aspxerrorpath=/TrafficInspection/23ff9ee0-6711-11e8-abb1-d56650547a15");
+	}
+		
+	@Test
+	public void failWithTimeout() throws Exception {
 		testee = new LinkConnector(1);
 		expect(408, "http://p2r.se");
 	}

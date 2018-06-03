@@ -72,10 +72,22 @@ public class LinkConnector {
 	 */
 	public int connect(URL url) throws IOException, ProtocolException {
 		int responseCode = doConnect(url, "HEAD");
-		if (responseCode==HttpURLConnection.HTTP_NOT_FOUND || responseCode==HttpURLConnection.HTTP_BAD_METHOD) {
+		if (mightWorkWithGET(responseCode)) {
 			responseCode = doConnect(url, "GET");
 		}
 		return responseCode;
+	}
+
+	private boolean mightWorkWithGET(int code) {
+		switch (code) {
+		case HttpURLConnection.HTTP_NOT_FOUND:
+		case HttpURLConnection.HTTP_BAD_METHOD:
+		case HttpURLConnection.HTTP_FORBIDDEN:
+			return true;
+
+		default:
+			return false;
+		}
 	}
 
 	/* Should ideally use "HEAD", but some sites seem to report 404 for "HEAD" whereas "GET" works fine (example: http://www.laget.se/sdg)
@@ -90,6 +102,7 @@ public class LinkConnector {
 			huc.setRequestMethod(requestMethod); 
 			huc.setConnectTimeout(timeout);
 			huc.setReadTimeout(timeout);
+			huc.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 			
 			// probe connection
 			return openConnection(url, huc);
