@@ -27,6 +27,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import se.p2r.foxport.util.Log;
+
 /**
  * Connect to an URL and get response code without hanging on bad URLs. Can get input stream to force 
  * error instead of hanging when getting response code (some pages will not return response code), but we will have a hard time to find proper codes.
@@ -47,7 +49,7 @@ public class LinkConnector {
 
 		@Override
 		public Integer call() throws Exception {
-			System.out.println(MyConnectorTask.class.getName()+".call() ["+huc.getRequestMethod()+"]:"+huc.getURL());
+			Log.debug(MyConnectorTask.class.getName()+".call() ["+huc.getRequestMethod()+"]:"+huc.getURL());
 			huc.connect();
 			return Integer.valueOf(huc.getResponseCode());
 		}
