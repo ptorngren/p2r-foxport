@@ -54,8 +54,8 @@ public final class Utils {
 	public static final String JSONLZ4 = ".jsonlz4";  // firefox "new" format
 	
 	// TODO figure out how to use charsets properly
-	public static final String ENCODING_JSON = SYSTEM_ENCODING; // UTF-8? input, defined by your browser?
-	public static final String ENCODING_HTML = SYSTEM_ENCODING;  // output, defined by you to suite your browsers 
+	public static final String ENCODING_JSON = UTF8; // UTF-8? input, defined by your browser?
+	public static final String ENCODING_HTML = UTF8;  // output, defined by you to suite your browsers 
 
 
 	public static final boolean endsWith(File file, String wantedEnding) {
